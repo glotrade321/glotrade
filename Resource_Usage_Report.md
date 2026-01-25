@@ -281,6 +281,58 @@ This document provides a comprehensive breakdown of hosting costs and resource u
 
 ---
 
+---
+
+## Infrastructure Completion Status (January 25, 2026)
+
+The following production-level services have been successfully integrated and verified:
+
+### 1. Cloud Storage (Cloudflare R2)
+- **Status:** ✅ ACTIVE
+- **Service:** R2 Bucket + Self-hosted Sharp Image Optimizer.
+- **Benefit:** Indefinite free-tier usage for up to 10GB of assets; high-speed WebP image delivery.
+
+### 2. Email Delivery (SendGrid)
+- **Status:** ✅ ACTIVE
+- **Service:** SendGrid API + Branded Master Template System.
+- **Benefit:** Guaranteed deliverability with professional "Glotrade" consistent branding for all 20+ notification types.
+
+### 3. Caching & Rate Limiting (Upstash Redis)
+- **Status:** ✅ ACTIVE
+- **Service:** Managed Upstash Redis Cluster (Global).
+- **Benefit:** sub-millisecond data cache and unified rate-limiting across Vercel serverless functions.
+
+### **Final Readiness:**
+The platform is now fully decoupled from local development dependencies and is ready for the production move to **Vercel** and **MongoDB Atlas**.
+
+---
+
+---
+
+## Deployment Roadmap & Manual Actions
+
+To complete the launch, the following manual steps are required from the USER:
+
+### 1. Database: MongoDB Atlas (Manual)
+- **Target:** Production Data Cluster.
+- **Action:** Register for a new [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) account for Glotrade.
+- **Completion:** Create a persistent user and cluster, then provide the **Connection String** (SRV) for backend configuration.
+
+### 2. Backend: Render Deployment
+- **Target:** `apps/api`.
+- **Action:** Connect the GitHub repository to [Render.com](https://render.com).
+- **Setup:** Configure the Environment Variables (using `env.example` as a full guide) and deploy the Node.js service.
+
+### 3. Frontend: Vercel Deployment
+- **Target:** `apps/web`.
+- **Action:** Connect the GitHub repository to [Vercel](https://vercel.com).
+- **Setup:** Finalize the frontend deployment; ensure the `NEXT_PUBLIC_API_URL` points to the new Render backend endpoint.
+
+---
+
 **Last Updated:** January 25, 2026  
 **Optimizations Applied:** Yes (60-80% resource reduction)  
+**Infrastructure Stack:** Verified (R2, SendGrid, Upstash)  
 **Next Review:** After first 100 users
+
+

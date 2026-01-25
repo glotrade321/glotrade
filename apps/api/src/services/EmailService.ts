@@ -1,9 +1,11 @@
 import nodemailer from "nodemailer";
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
+import sgMail from "@sendgrid/mail";
 
 export enum EmailProvider {
     SMTP = "smtp",
     SES = "ses",
+    SENDGRID = "sendgrid",
 }
 
 export interface EmailOptions {
@@ -12,6 +14,10 @@ export interface EmailOptions {
     text?: string;
     html?: string;
     from?: string;
+    cta?: {
+        label: string;
+        url: string;
+    };
 }
 
 export class EmailService {
@@ -19,12 +25,26 @@ export class EmailService {
     private sesClient: SESv2Client | null = null;
     private provider: EmailProvider;
 
+    // Brand Colors
+    private readonly PRIMARY_BLUE = "#2EA5FF";
+    private readonly SECONDARY_ORANGE = "#F9A407";
+    private readonly TEXT_DARK = "#1A1A1A";
+
     constructor() {
         this.provider = (process.env.EMAIL_PROVIDER as EmailProvider) || EmailProvider.SMTP;
         this.initProvider();
     }
 
     private initProvider() {
+        if (this.provider === EmailProvider.SENDGRID) {
+            const apiKey = process.env.SENDGRID_API_KEY;
+            if (apiKey) {
+                sgMail.setApiKey(apiKey);
+            } else {
+                console.error("[EmailService] SENDGRID_API_KEY is missing");
+            }
+        }
+
         if (this.provider === EmailProvider.SES) {
             this.sesClient = new SESv2Client({
                 region: process.env.AWS_REGION || "us-east-1",
@@ -34,10 +54,6 @@ export class EmailService {
                 },
             });
         }
-
-        // Initialize Nodemailer transporter for SMTP or as a wrapper for SES raw email if needed
-        // However, for SES we can use the SDK directly or nodemailer-ses-transport.
-        // For simplicity and flexibility, we'll use Nodemailer for SMTP and AWS SDK for SES.
 
         if (this.provider === EmailProvider.SMTP) {
             const resolvedPort = Number(process.env.SMTP_PORT || 587);
@@ -59,6 +75,61 @@ export class EmailService {
     }
 
     /**
+     * Master Branded HTML Wrapper
+     */
+    private getBrandedLayout(content: string, subject: string, cta?: { label: string, url: string }): string {
+        return `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: ${this.TEXT_DARK}; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
+    .header { background-color: ${this.PRIMARY_BLUE}; padding: 40px 20px; text-align: center; }
+    .logo { color: #ffffff; font-size: 28px; font-weight: bold; letter-spacing: 1px; text-decoration: none; }
+    .content { padding: 40px 30px; }
+    .footer { background-color: #f8f9fa; padding: 30px 20px; text-align: center; color: #666666; font-size: 12px; }
+    .button { 
+        display: inline-block; 
+        padding: 14px 30px; 
+        background-color: ${this.SECONDARY_ORANGE}; 
+        color: #ffffff !important; 
+        text-decoration: none; 
+        border-radius: 8px; 
+        font-weight: bold; 
+        margin-top: 25px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .divider { border-top: 1px solid #eeeeee; margin: 30px 0; }
+    .social-links { margin: 20px 0; }
+    .social-links a { color: ${this.PRIMARY_BLUE}; text-decoration: none; margin: 0 10px; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="https://glotrade.online" class="logo">GLOTRADE</a>
+    </div>
+    <div class="content">
+      <h2 style="color: ${this.PRIMARY_BLUE}; margin-top: 0;">${subject}</h2>
+      ${content}
+      ${cta ? `<center><a href="${cta.url}" class="button">${cta.label}</a></center>` : ''}
+      <div class="divider"></div>
+      <p style="font-size: 14px; color: #666;">If you have any questions, reply to this email or visit our help center.</p>
+    </div>
+    <div class="footer">
+      <div class="social-links">
+        <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Instagram</a>
+      </div>
+      <p>&copy; ${new Date().getFullYear()} Glotrade International. All rights reserved.</p>
+      <p>Lagos, Nigeria</p>
+    </div>
+  </div>
+</body>
+</html>`;
+    }
+
+    /**
      * Send an email using the configured provider
      */
     async sendEmail(options: EmailOptions): Promise<void> {
@@ -68,18 +139,39 @@ export class EmailService {
         }
 
         const from = options.from || process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@glotrade.online";
+        
+        // Wrap content in branded layout if html is provided
+        const finalHtml = options.html ? this.getBrandedLayout(options.html, options.subject, options.cta) : undefined;
+
         console.log(`[EmailService] Sending via ${this.provider} to ${options.to} (Subject: ${options.subject})`);
 
-        if (this.provider === EmailProvider.SES && this.sesClient) {
-            await this.sendViaSES(from, options);
-        } else if (this.transporter) {
-            await this.sendViaSMTP(from, options);
-        } else {
-            console.warn("[EmailService] No email provider initialized. Falling back to Ethereal in non-production.");
-            if (process.env.NODE_ENV !== "production") {
-                await this.sendViaEthereal(options);
+        try {
+            if (this.provider === EmailProvider.SENDGRID) {
+                await this.sendViaSendGrid(from, { ...options, html: finalHtml });
+            } else if (this.provider === EmailProvider.SES && this.sesClient) {
+                await this.sendViaSES(from, { ...options, html: finalHtml });
+            } else if (this.transporter) {
+                await this.sendViaSMTP(from, { ...options, html: finalHtml });
+            } else {
+                console.warn("[EmailService] No email provider initialized. Falling back to Ethereal in non-production.");
+                if (process.env.NODE_ENV !== "production") {
+                    await this.sendViaEthereal({ ...options, html: finalHtml });
+                }
             }
+        } catch (error) {
+            console.error(`[EmailService] Error sending email via ${this.provider}:`, error);
+            throw error;
         }
+    }
+
+    private async sendViaSendGrid(from: string, options: EmailOptions): Promise<void> {
+        await sgMail.send({
+            to: options.to,
+            from,
+            subject: options.subject,
+            text: options.text,
+            html: options.html,
+        });
     }
 
     private async sendViaSMTP(from: string, options: EmailOptions): Promise<void> {
@@ -96,8 +188,6 @@ export class EmailService {
     private async sendViaSES(from: string, options: EmailOptions): Promise<void> {
         if (!this.sesClient) return;
 
-        // For SES, we'll use the SDK directly to avoid version-specific wrapper issues in Nodemailer.
-        // This is more reliable and gives us better control over errors.
         const command = new SendEmailCommand({
             FromEmailAddress: from,
             Destination: {
@@ -147,8 +237,12 @@ export class EmailService {
         await this.sendEmail({
             to: email,
             subject: "Verify your email",
-            text: `Verify: ${url}`,
-            html: `<p>Verify your account:</p><p><a href="${url}">${url}</a></p>`,
+            text: `Welcome to Glotrade! Please verify your account using this link: ${url}`,
+            html: `<p>Welcome to <strong>Glotrade</strong>!</p><p>We're excited to have you on board. To get started and secure your account, please verify your email address.</p>`,
+            cta: {
+                label: "Verify My Account",
+                url: url
+            }
         });
     }
 
@@ -159,8 +253,12 @@ export class EmailService {
         await this.sendEmail({
             to: email,
             subject: "Reset your password",
-            text: `Reset link: ${url}`,
-            html: `<p>Click to reset your password:</p><p><a href="${url}">${url}</a></p>`,
+            text: `You requested a password reset. Use this link to proceed: ${url}`,
+            html: `<p>We received a request to reset the password for your Glotrade account.</p><p>If you didn't make this request, you can safely ignore this email.</p>`,
+            cta: {
+                label: "Reset Password",
+                url: url
+            }
         });
     }
 
@@ -173,12 +271,14 @@ export class EmailService {
             subject: "Account Reactivation Required",
             text: `Your account was marked for deletion. Click here to reactivate: ${url}`,
             html: `
-        <p>Your account was marked for deletion and requires reactivation.</p>
-        <p>This is deletion attempt #${deletionCount}.</p>
-        <p>Click the link below to reactivate your account:</p>
-        <p><a href="${url}">${url}</a></p>
-        <p>This link expires in 24 hours.</p>
+        <p>Your Glotrade account was recently marked for deletion and requires reactivation to stay active.</p>
+        <p>This is deletion attempt <strong>#${deletionCount}</strong>.</p>
+        <p>Click the button below to reactivate your account immediately. This link expires in 24 hours.</p>
       `,
+            cta: {
+                label: "Reactivate My Account",
+                url: url
+            }
         });
     }
 }

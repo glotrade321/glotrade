@@ -87,12 +87,7 @@ export class NotificationService extends BaseService<INotification> {
         await EmailService.sendEmail({
           to: user.email,
           subject,
-          html: `<div style="font-family: sans-serif; line-height: 1.6; color: #333;">
-            <h2>${subject}</h2>
-            <p>${html}</p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="font-size: 12px; color: #777;">This is an automated notification from Glotrade International.</p>
-          </div>`
+          html: `<p>${html}</p>`
         });
       }
     } catch (error) {
