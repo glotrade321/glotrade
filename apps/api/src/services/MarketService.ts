@@ -201,6 +201,24 @@ export class MarketService extends BaseService<IProduct> {
       });
     }
 
+    // Add verifiedSeller filter to the main query
+    if (verifiedSeller) {
+      // We'll need to use aggregation for this since it requires a join
+      // For now, we'll handle it differently - fetch verified seller IDs first
+      const verifiedSellers = await mongoose.model("User").find({
+        role: "seller",
+        isVerified: true
+      }).select("_id").lean();
+
+      const verifiedSellerIds = verifiedSellers.map(s => s._id);
+      queryObj.seller = { $in: verifiedSellerIds };
+    }
+
+    // Add ratingMin filter to the main query
+    if (typeof ratingMin === 'number') {
+      queryObj.rating = { $gte: ratingMin };
+    }
+
     const skip = (page - 1) * limit;
     const queryExec = this.model
       .find(queryObj)
@@ -210,7 +228,6 @@ export class MarketService extends BaseService<IProduct> {
       .populate({
         path: "seller",
         select: "username reputation role isVerified",
-        match: verifiedSeller ? { isVerified: true } : undefined,
       });
 
     const [products, totalDocs] = await Promise.all([
@@ -218,24 +235,9 @@ export class MarketService extends BaseService<IProduct> {
       this.model.countDocuments(queryObj),
     ]);
 
-    // Verified seller: after populate with match, any non-matching entries will have seller=null
-    const verifiedFiltered = verifiedSeller
-      ? (products as any[]).filter((p) => p.seller && p.seller.isVerified === true)
-      : (products as any[]);
-
-    // ratingMin filtering (mock): filter by product.rating if present
-    const ratingFiltered = typeof ratingMin === 'number'
-      ? verifiedFiltered.filter((p: any) => (p.rating ?? 0) >= ratingMin)
-      : verifiedFiltered;
-
-    // Note: In-memory filtering (verifiedSeller, ratingMin) breaks accurate pagination total
-    // For now, we use totalDocs from the DB query which covers the main filters (category, search, etc)
-    // This fixes the Admin Panel pagination issue where total was limited to the page size
-    const total = verifiedSeller || typeof ratingMin === 'number' ? ratingFiltered.length : totalDocs;
-
     return {
-      products: ratingFiltered as unknown as IProduct[],
-      total: totalDocs, // Always return the DB total for proper pagination UI
+      products: products as unknown as IProduct[],
+      total: totalDocs,
       page,
       totalPages: Math.ceil(totalDocs / limit),
     };
@@ -587,99 +589,62 @@ export class MarketService extends BaseService<IProduct> {
     try {
       console.log(`🔍 Getting vendor metrics for sellerId: ${sellerId}`);
 
-      // First, let's see ALL orders for this seller
-      const allOrders = await mongoose.model("Order").find({
-        $or: [
-          { seller: sellerId },
-          { "lineItems.vendorId": sellerId }
-        ]
-      });
-      console.log(`📦 Total orders found for seller: ${allOrders.length}`);
+      // Use aggregation to calculate sold count and revenue efficiently
+      const salesMetrics = await mongoose.model("Order").aggregate([
+        {
+          $match: {
+            $or: [
+              { seller: new mongoose.Types.ObjectId(sellerId) },
+              { "lineItems.vendorId": new mongoose.Types.ObjectId(sellerId) }
+            ],
+            status: { $in: ["delivered", "shipped"] },
+            paymentStatus: "completed"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            soldCount: { $sum: { $ifNull: ["$quantity", 1] } },
+            totalRevenue: { $sum: "$totalPrice" }
+          }
+        }
+      ]);
 
-      // Log order details for debugging
-      allOrders.forEach((order, index) => {
-        console.log(`Order ${index + 1}:`, {
-          id: order._id,
-          status: order.status,
-          paymentStatus: order.paymentStatus,
-          quantity: order.quantity,
-          totalPrice: order.totalPrice,
-          seller: order.seller,
-          lineItems: order.lineItems
-        });
-      });
-
-      // Get completed orders - check multiple statuses that might indicate successful sales
-      const completedOrders = await mongoose.model("Order").find({
-        $or: [
-          { seller: sellerId },
-          { "lineItems.vendorId": sellerId }
-        ],
-        status: { $in: ["delivered", "shipped"] }, // Include shipped orders too
-        paymentStatus: "completed"
-      });
-
-      console.log(`✅ Completed orders (delivered/shipped + paid): ${completedOrders.length}`);
-
-      // Let's also check orders with different statuses
-      const pendingOrders = await mongoose.model("Order").find({
-        $or: [
-          { seller: sellerId },
-          { "lineItems.vendorId": sellerId }
-        ],
-        status: "pending"
-      });
-      console.log(`⏳ Pending orders: ${pendingOrders.length}`);
-
-      const processingOrders = await mongoose.model("Order").find({
-        $or: [
-          { seller: sellerId },
-          { "lineItems.vendorId": sellerId }
-        ],
-        status: "processing"
-      });
-      console.log(`🔄 Processing orders: ${processingOrders.length}`);
-
-      const shippedOrders = await mongoose.model("Order").find({
-        $or: [
-          { seller: sellerId },
-          { "lineItems.vendorId": sellerId }
-        ],
-        status: "shipped"
-      });
-      console.log(`🚚 Shipped orders: ${shippedOrders.length}`);
-
-      // Calculate sold count and revenue
-      const soldCount = completedOrders.reduce((total, order) => {
-        return total + (order.quantity || 1);
-      }, 0);
-
-      const totalRevenue = completedOrders.reduce((total, order) => {
-        return total + (order.totalPrice || 0);
-      }, 0);
+      const soldCount = salesMetrics.length > 0 ? salesMetrics[0].soldCount : 0;
+      const totalRevenue = salesMetrics.length > 0 ? salesMetrics[0].totalRevenue : 0;
 
       console.log(`💰 Sold count: ${soldCount}, Revenue: ${totalRevenue}`);
 
-      // Get average rating from products
-      const products = await this.model.find({ seller: sellerId });
-      const totalRating = products.reduce((sum, product) => sum + (product.rating || 0), 0);
-      const averageRating = products.length > 0 ? totalRating / products.length : 0;
+      // Get product metrics using aggregation
+      const productMetrics = await this.model.aggregate([
+        {
+          $match: { seller: new mongoose.Types.ObjectId(sellerId) }
+        },
+        {
+          $group: {
+            _id: null,
+            totalProducts: { $sum: 1 },
+            totalRating: { $sum: { $ifNull: ["$rating", 0] } },
+            totalViews: { $sum: { $ifNull: ["$views", 0] } },
+            minCreatedAt: { $min: "$createdAt" }
+          }
+        }
+      ]);
 
-      // Get total views
-      const totalViews = products.reduce((sum, product) => sum + (product.views || 0), 0);
-
-      // Get active since date (earliest product creation)
-      const activeSince = products.length > 0
-        ? new Date(Math.min(...products.map(p => p.createdAt.getTime())))
-        : new Date();
+      const totalProducts = productMetrics.length > 0 ? productMetrics[0].totalProducts : 0;
+      const averageRating = productMetrics.length > 0 && totalProducts > 0
+        ? Math.round((productMetrics[0].totalRating / totalProducts) * 10) / 10
+        : 0;
+      const totalViews = productMetrics.length > 0 ? productMetrics[0].totalViews : 0;
+      const activeSince = productMetrics.length > 0 ? productMetrics[0].minCreatedAt : new Date();
 
       const result = {
         soldCount,
         totalRevenue,
-        averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+        averageRating,
         totalViews,
         activeSince,
-        totalProducts: products.length
+        totalProducts
       };
 
       console.log(`📊 Final metrics:`, result);

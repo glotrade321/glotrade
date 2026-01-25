@@ -195,7 +195,7 @@ export class MarketController extends BaseController<IProduct> {
         createdSinceDays: createdSinceDays ? Number(createdSinceDays) : undefined,
         sellerId: rest?.sellerId as string | undefined,
         attributes: Object.fromEntries(
-          Object.entries(rest).filter(([k]) => k.startsWith('attr_')).map(([k,v]) => [k.replace('attr_',''), String(v)])
+          Object.entries(rest).filter(([k]) => k.startsWith('attr_')).map(([k, v]) => [k.replace('attr_', ''), String(v)])
         )
       });
 
@@ -574,7 +574,7 @@ export class MarketController extends BaseController<IProduct> {
   getBatchProductAnalytics = async (req: any, res: any, next: any) => {
     try {
       const { productIds } = req.query;
-      
+
       if (!productIds || !Array.isArray(productIds)) {
         return res.status(400).json({
           status: "error",
@@ -582,70 +582,84 @@ export class MarketController extends BaseController<IProduct> {
         });
       }
 
-      const analytics = await Promise.all(
-        productIds.map(async (productId: string) => {
-          // Get product basic info
-          const product = await this.marketService.findById(productId);
-          
-          if (!product) {
-            return {
-              productId,
-              views: 0,
-              rating: 0,
-              discount: 0,
-              sales: 0,
-              revenue: 0
-            };
+      // Convert all productIds to ObjectId
+      const productObjectIds = productIds.map((id: string) => new mongoose.Types.ObjectId(id));
+
+      // Fetch all products in one query
+      const products = await this.marketService.model.find({
+        _id: { $in: productObjectIds }
+      }).lean();
+
+      // Create a map for quick lookup
+      const productMap = new Map(products.map(p => [p._id.toString(), p]));
+
+      // Single aggregation to get sales data for ALL products at once
+      const salesData = await mongoose.model("Order").aggregate([
+        {
+          $match: {
+            $or: [
+              { product: { $in: productObjectIds } },
+              { "lineItems.productId": { $in: productObjectIds } }
+            ],
+            status: { $in: ["delivered", "shipped"] },
+            paymentStatus: "completed"
           }
-
-          // Get sales data from orders
-          const salesData = await mongoose.model("Order").aggregate([
-            {
-              $match: {
-                $or: [
-                  { product: new mongoose.Types.ObjectId(productId) },
-                  { "lineItems.productId": new mongoose.Types.ObjectId(productId) }
-                ],
-                status: { $in: ["delivered", "shipped"] },
-                paymentStatus: "completed"
-              }
+        },
+        {
+          $unwind: {
+            path: "$lineItems",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $match: {
+            $or: [
+              { product: { $in: productObjectIds } },
+              { "lineItems.productId": { $in: productObjectIds } }
+            ]
+          }
+        },
+        {
+          $group: {
+            _id: {
+              $ifNull: ["$lineItems.productId", "$product"]
             },
-            {
-              $unwind: {
-                path: "$lineItems",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
-              $match: {
-                $or: [
-                  { product: new mongoose.Types.ObjectId(productId) },
-                  { "lineItems.productId": new mongoose.Types.ObjectId(productId) }
-                ]
-              }
-            },
-            {
-              $group: {
-                _id: null,
-                sales: { $sum: { $ifNull: ["$lineItems.qty", 1] } },
-                revenue: { $sum: { $ifNull: ["$lineItems.unitPrice", "$totalPrice"] } }
-              }
-            }
-          ]);
+            sales: { $sum: { $ifNull: ["$lineItems.qty", 1] } },
+            revenue: { $sum: { $ifNull: ["$lineItems.unitPrice", "$totalPrice"] } }
+          }
+        }
+      ]);
 
-          const sales = salesData.length > 0 ? salesData[0].sales : 0;
-          const revenue = salesData.length > 0 ? salesData[0].revenue : 0;
+      // Create a map of sales data by productId
+      const salesMap = new Map(
+        salesData.map(s => [s._id.toString(), { sales: s.sales, revenue: s.revenue }])
+      );
 
+      // Build analytics array
+      const analytics = productIds.map((productId: string) => {
+        const product = productMap.get(productId);
+        const sales = salesMap.get(productId);
+
+        if (!product) {
           return {
             productId,
-            views: product.views || 0,
-            rating: product.rating || 0,
-            discount: product.discount || 0,
-            sales,
-            revenue
+            views: 0,
+            rating: 0,
+            discount: 0,
+            sales: 0,
+            revenue: 0
           };
-        })
-      );
+        }
+
+        return {
+          productId,
+          views: product.views || 0,
+          rating: product.rating || 0,
+          discount: product.discount || 0,
+          sales: sales?.sales || 0,
+          revenue: sales?.revenue || 0
+        };
+      });
 
       res.status(200).json({
         status: "success",

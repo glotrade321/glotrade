@@ -134,6 +134,21 @@ const orderSchema = new Schema<IOrder>(
   }
 );
 
+// Critical indexes for performance
+// Index for product analytics queries (getBatchProductAnalytics)
+orderSchema.index({ "lineItems.productId": 1, status: 1, paymentStatus: 1 });
+orderSchema.index({ product: 1, status: 1, paymentStatus: 1 });
+
+// Index for vendor metrics queries (getVendorMetrics)
+orderSchema.index({ "lineItems.vendorId": 1, status: 1, paymentStatus: 1 });
+orderSchema.index({ seller: 1, status: 1, paymentStatus: 1 });
+
+// Index for buyer order history
+orderSchema.index({ buyer: 1, createdAt: -1 });
+
+// Index for order status tracking
+orderSchema.index({ status: 1, createdAt: -1 });
+
 // Add hooks before creating the model
 orderSchema.post("save", async function (doc) {
   if (doc.buyer) {
