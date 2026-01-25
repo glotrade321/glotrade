@@ -585,8 +585,9 @@ export class MarketController extends BaseController<IProduct> {
       // Convert all productIds to ObjectId
       const productObjectIds = productIds.map((id: string) => new mongoose.Types.ObjectId(id));
 
-      // Fetch all products in one query
-      const products = await this.marketService.model.find({
+      // Fetch all products in one query using Product model directly
+      const Product = mongoose.model("Product");
+      const products = await Product.find({
         _id: { $in: productObjectIds }
       }).lean();
 
