@@ -3,19 +3,28 @@ export function getOptimizedImageUrl(src: string, options: { width?: number; hei
     if (!src) return '';
 
     let key = src;
+    let isR2Url = false;
 
     // If it's an R2 public URL, extract the key (path after the domain)
     if (src.startsWith('http')) {
         try {
             const url = new URL(src);
-            // Extract everything after the domain (e.g., /products/abc/image.jpg -> products/abc/image.jpg)
-            key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+            // Check if it's an R2 URL
+            if (url.hostname.includes('r2.dev') || url.hostname.includes('r2.cloudflarestorage.com')) {
+                // Extract everything after the domain (e.g., /products/abc/image.jpg -> products/abc/image.jpg)
+                key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+                isR2Url = true;
+            } else {
+                // External URL (not R2), return as-is
+                return src;
+            }
         } catch {
-            // If URL parsing fails, return original (might be external image)
+            // If URL parsing fails, return original
             return src;
         }
     }
 
+    // Only optimize if it's from R2 or a relative path
     const params = new URLSearchParams();
     if (options.width) params.set('w', options.width.toString());
     if (options.height) params.set('h', options.height.toString());
