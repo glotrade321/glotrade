@@ -119,6 +119,12 @@ export default function ProductCard({ product, locale }: { product: ProductCardD
           alt={p.title}
           loading="lazy"
           decoding="async"
+          onError={(e) => {
+            // Fallback to original R2 URL if optimization fails
+            if (p.images?.[0] && e.currentTarget.src !== p.images[0]) {
+              e.currentTarget.src = p.images[0];
+            }
+          }}
           className="relative z-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
         />
       </div>
