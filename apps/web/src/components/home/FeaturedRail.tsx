@@ -4,6 +4,8 @@ import Link from "next/link";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
+import EmptyState from "../common/EmptyState";
+import { ShoppingBag } from "lucide-react";
 
 type Product = {
   _id: string;
@@ -113,7 +115,27 @@ export default function FeaturedRail() {
     return () => { el.removeEventListener("mousedown", down); el.removeEventListener("mouseleave", leave); el.removeEventListener("mouseup", up); el.removeEventListener("mousemove", move); };
   }, []);
 
-  if (loading || items.length === 0) return null;
+
+  if (loading) return (
+    <div className="flex gap-4 overflow-hidden mb-6">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="min-w-[160px] h-[240px] rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+      ))}
+    </div>
+  );
+
+  if (items.length === 0) {
+    return (
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">{translate(locale, "home.featuredForYou")}</h2>
+        <EmptyState
+          title="New Arrivals Coming Soon"
+          description="We are stocking up our shelves with amazing products. Check back shortly!"
+          icon={<ShoppingBag size={48} strokeWidth={1} />}
+        />
+      </section>
+    );
+  }
 
   return (
     <section className="mb-4 sm:mb-6">

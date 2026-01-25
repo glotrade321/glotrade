@@ -9,6 +9,7 @@ import ProductFilters from "@/components/filters/ProductFilters";
 import MobileQuickChips from "./MobileQuickChips";
 import DesktopQuickChips from "./DesktopQuickChips";
 import { translate, Locale } from "@/utils/i18n";
+import EmptyState from "@/components/common/EmptyState";
 
 type Product = {
   _id: string;
@@ -135,7 +136,13 @@ export default async function MarketplacePage({
             />
           </div>
           {products.length === 0 ? (
-            <div className="text-sm text-neutral-500">{translate(locale, "market.noProducts")}</div>
+            <div className="mt-8">
+              <EmptyState
+                title="No products found"
+                description="Try adjusting your filters or search keywords."
+                action={{ label: "Clear Filters", href: "/marketplace", variant: "outline" }}
+              />
+            </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {products.map((p) => (
