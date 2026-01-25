@@ -295,10 +295,6 @@ export default function ProductFilters({
           {sortChips}
         </div>
         <div>
-          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.seller")}</div>
-          {sellerChips}
-        </div>
-        <div>
           <div className="text-sm font-semibold mb-3">{translate(locale, "filters.shipping")}</div>
           {shippingChips}
         </div>
@@ -337,10 +333,6 @@ export default function ProductFilters({
         <div className="mt-4">
           <div className="text-sm font-semibold mb-3">{translate(locale, "filters.rating")}</div>
           {ratingChips}
-        </div>
-        <div className="mt-4">
-          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.seller")}</div>
-          {sellerChips}
         </div>
         <div className="mt-4">
           <div className="text-sm font-semibold mb-3">{translate(locale, "filters.shipping")}</div>

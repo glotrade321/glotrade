@@ -55,7 +55,6 @@ export default async function MarketplacePage({
   const condition = params?.condition;
   const sort = params?.sort;
   const ratingMin = params?.ratingMin;
-  const verifiedSeller = params?.verifiedSeller;
   const freeShipping = params?.freeShipping;
   const etaMaxDays = params?.etaMaxDays;
   const discountMin = params?.discountMin;
@@ -74,7 +73,6 @@ export default async function MarketplacePage({
         condition,
         sort,
         ratingMin,
-        verifiedSeller,
         freeShipping,
         etaMaxDays,
         discountMin,

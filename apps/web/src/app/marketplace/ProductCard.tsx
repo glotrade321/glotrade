@@ -176,9 +176,6 @@ export default function ProductCard({ product, locale }: { product: ProductCardD
         ) : (typeof eta === 'number' && eta !== Number.MAX_SAFE_INTEGER) ? (
           <span className="inline-flex items-center gap-0.5 sm:gap-1 bg-info/15 text-info px-1 sm:px-1.5 py-0.5 rounded"><Truck size={10} className="sm:w-3 sm:h-3" />≤ {eta}d</span>
         ) : null}
-        {p.seller?.isVerified ? (
-          <span className="inline-flex items-center gap-0.5 sm:gap-1 bg-success/15 text-success px-1 sm:px-1.5 py-0.5 rounded"><BadgeCheck size={10} className="sm:w-3 sm:h-3" /><span className="hidden sm:inline">{translate(locale, "product.verified")}</span><span className="sm:hidden">✓</span></span>
-        ) : null}
       </div>
       {showAuth ? (
         <div className="fixed inset-0 z-[70] flex items-center justify-center">

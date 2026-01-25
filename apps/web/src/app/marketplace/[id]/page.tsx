@@ -193,12 +193,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     translate(locale, "product.newProduct")
                   )}
                 </span>
-                {/* SINGLE VENDOR MODE: Hide vendor info
-                <span className="text-grey-500">sold by</span>
-                <a href={product?.seller?.store?.name ? `/s/${encodeURIComponent(product?.seller?.store?.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'))}` : undefined} className="font-semibold text-black hover:underline">
-                  {product?.seller?.store?.name || product?.seller?.username || product.brand}
-                </a>
-                */}
+                {/* SINGLE VENDOR MODE: Vendor info removed */}
               </span>
               {averageRating > 0 ? (
                 <span className="inline-flex items-center gap-2">
