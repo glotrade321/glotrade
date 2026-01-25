@@ -7,15 +7,19 @@ import type { ProductCardData } from "@/types/product";
 
 
 import { translate, Locale } from "@/utils/i18n";
+import { getOptimizedImageUrl } from "@/utils/image";
 
 export default function ProductCard({ product, locale }: { product: ProductCardData; locale: Locale }) {
   const p = product;
   const router = useRouter();
   const pathname = usePathname();
-  const src = useMemo(() => (p.images?.[0] && p.images[0].startsWith("http")
-    ? p.images[0]
-    : `https://placehold.co/1200x675?text=${encodeURIComponent(p.title)}`
-  ), [p.images, p.title]);
+  const src = useMemo(() => {
+    if (!p.images?.[0]) return `https://placehold.co/1200x675?text=${encodeURIComponent(p.title)}`;
+
+    // Use our new optimizer! 
+    // Requesting 400px width (2x for retina) with 80% quality
+    return getOptimizedImageUrl(p.images[0], { width: 400, quality: 80 });
+  }, [p.images, p.title]);
 
   const hasFreeShipping = p.shippingOptions?.some((s) => (s.cost ?? 0) === 0);
   const eta = p.shippingOptions?.reduce((min, s) =>
