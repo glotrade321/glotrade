@@ -8,6 +8,7 @@ import ProductCard from "../marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { API_BASE_URL, apiGet } from "@/utils/api";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
+import { getOptimizedImageUrl } from "@/utils/image";
 
 // types
 type ApiProduct = {
@@ -287,7 +288,16 @@ export default function CartPage() {
                   <div key={p._id} className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 flex items-start gap-3">
                     <input type="checkbox" className="mt-2 sm:mt-3" checked={!!selected[p._id]} onChange={() => setSelected((s) => ({ ...s, [p._id]: !s[p._id] }))} />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={(p.images?.[0]) || `https://placehold.co/200x200?text=${encodeURIComponent(p.title)}`} alt={p.title} className="h-16 w-16 sm:h-20 sm:w-20 rounded-md object-cover bg-neutral-100 dark:bg-neutral-900 flex-shrink-0" />
+                    <img
+                      src={p.images?.[0] ? getOptimizedImageUrl(p.images[0], { width: 200, quality: 75 }) : `https://placehold.co/200x200?text=${encodeURIComponent(p.title)}`}
+                      alt={p.title}
+                      onError={(e) => {
+                        if (p.images?.[0] && e.currentTarget.src !== p.images[0]) {
+                          e.currentTarget.src = p.images[0];
+                        }
+                      }}
+                      className="h-16 w-16 sm:h-20 sm:w-20 rounded-md object-cover bg-neutral-100 dark:bg-neutral-900 flex-shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm sm:text-base truncate">{p.title}</div>
                       {p.minOrderQuantity && p.minOrderQuantity > 1 && (

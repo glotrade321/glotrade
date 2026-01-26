@@ -350,7 +350,7 @@ function WalletPageContent() {
       // Use the same base URL and auth as other API calls
       const API_BASE_URL = process.env.NODE_ENV === 'development'
         ? "http://localhost:8080"
-        : (process.env.NEXT_PUBLIC_API_URL || "https://afritrade-api.onrender.com");
+        : (process.env.NEXT_PUBLIC_API_URL || "https://glotradecom.onrender.com");
       const url = `${API_BASE_URL}/api/v1/wallets/export/transactions?${params}`;
 
       // Get auth header from the same utility used by other API calls

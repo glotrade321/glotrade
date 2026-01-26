@@ -1,4 +1,5 @@
 "use client";
+import { getOptimizedImageUrl } from "@/utils/image";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/utils/api";
@@ -188,7 +189,7 @@ export default function AdminBannersPage() {
                                         <tr key={banner._id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="w-24 h-12 bg-gray-100 rounded overflow-hidden">
-                                                    <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
+                                                    <img src={getOptimizedImageUrl(banner.image, { width: 200, quality: 70 })} alt={banner.title} className="w-full h-full object-cover" />
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">

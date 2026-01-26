@@ -47,10 +47,17 @@ import { initScheduledJobs } from "./jobs/scheduler";
 // Configured at top of file
 
 const app = express();
+const IS_PROD = process.env.NODE_ENV === "production";
+
+// Global header middleware
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+});
 
 // Security middleware
 // Configure CORS to support credentials by reflecting a specific allowed origin (not "*")
-const rawAllowedOrigins = process.env.CORS_ORIGIN || "http://localhost:3000,https://glotrade-ecom-web.vercel.app";
+const rawAllowedOrigins = process.env.CORS_ORIGIN || "http://localhost:3000";
 const allowedOrigins = rawAllowedOrigins
   .split(",")
   .map((o) => o.trim())
@@ -111,10 +118,21 @@ app.use(
   })
 );
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "img-src": ["'self'", "data:", "blob:", "http://localhost:8080", ...allowedOrigins],
+        "upgrade-insecure-requests": IS_PROD ? [] : null,
+      },
+    },
+  })
+);
 
 // Rate limiting (skip in development to avoid 429s during SSR/HMR and local testing)
-const IS_PROD = process.env.NODE_ENV === "production";
 const redisClient = cacheService.getClient();
 
 const limiter = rateLimit({

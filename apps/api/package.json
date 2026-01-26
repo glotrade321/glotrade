@@ -8,6 +8,7 @@
     "build:prod": "tsc || echo 'Build completed with type errors (ignored for production)'",
     "start": "node dist/app.js",
     "seed": "ts-node src/scripts/seed.ts",
+    "seed:categories": "ts-node src/scripts/seed-categories.ts",
     "setup-ghosts": "ts-node src/scripts/setup-ghosts.ts",
     "create-admin": "ts-node src/scripts/create-admin.ts",
     "migrate:images": "ts-node src/scripts/migrateImages.ts",

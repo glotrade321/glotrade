@@ -23,6 +23,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/utils/api";
+import { getOptimizedImageUrl } from "@/utils/image";
 
 interface User {
   _id: string;
@@ -502,7 +503,16 @@ export default function UserManagementPage() {
                 <div className="flex flex-row items-center gap-3 sm:gap-4">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
                     {selectedUser.profilePicture ? (
-                      <img src={selectedUser.profilePicture} alt={selectedUser.username} className="w-16 h-16 sm:w-20 sm:h-20 rounded-full" />
+                      <img
+                        src={getOptimizedImageUrl(selectedUser.profilePicture, { width: 150, quality: 75 })}
+                        alt={selectedUser.username}
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full"
+                        onError={(e) => {
+                          if (selectedUser.profilePicture && e.currentTarget.src !== selectedUser.profilePicture) {
+                            e.currentTarget.src = selectedUser.profilePicture;
+                          }
+                        }}
+                      />
                     ) : (
                       <span className="text-lg sm:text-2xl font-bold text-gray-600">
                         {selectedUser.username.charAt(0).toUpperCase()}

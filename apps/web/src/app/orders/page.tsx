@@ -23,6 +23,7 @@ import {
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
+import { getOptimizedImageUrl } from "@/utils/image";
 
 // Register Chart.js components
 ChartJS.register(
@@ -339,7 +340,16 @@ export default function OrdersPage() {
                           return (
                             <div key={idx} className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <img src={meta.image || '/next.svg'} alt={meta.title || 'Product'} className="h-9 w-9 rounded-md object-cover bg-gray-100 dark:bg-gray-700 flex-shrink-0" />
+                                <img
+                                  src={meta.image ? getOptimizedImageUrl(meta.image, { width: 100, quality: 75 }) : '/next.svg'}
+                                  alt={meta.title || 'Product'}
+                                  onError={(e) => {
+                                    if (meta.image && e.currentTarget.src !== meta.image) {
+                                      e.currentTarget.src = meta.image;
+                                    }
+                                  }}
+                                  className="h-9 w-9 rounded-md object-cover bg-gray-100 dark:bg-gray-700 flex-shrink-0"
+                                />
                                 <Link href={`/marketplace/${li.productId}`} className="truncate text-sm text-gray-700 dark:text-gray-200 hover:underline">{meta.title || 'Product'} <span className="text-xs text-gray-500">× {li.qty}</span></Link>
                               </div>
                               <div className="text-right text-sm whitespace-nowrap flex-shrink-0">

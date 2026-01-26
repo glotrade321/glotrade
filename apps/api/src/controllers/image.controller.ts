@@ -35,6 +35,7 @@ export class ImageController {
             res.send(buffer);
         } catch (error) {
             console.error("Image controller error:", error);
+
             // If original not found, 404
             if ((error as Error).message === "Image not found" || (error as any).name === "NoSuchKey") {
                 return res.status(404).json({ error: "Image not found" });

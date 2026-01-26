@@ -11,6 +11,7 @@ import { clearUserData, logout, getUserId } from "@/utils/auth";
 import { useRouter } from "next/navigation";
 import { getCountryPhoneCode, getStatesForCountry, getCitiesForState, getCountryNames } from "@/utils/countryData";
 import { getStoredLocale, setStoredLocale, translate, Locale } from "@/utils/i18n";
+import { getOptimizedImageUrl } from "@/utils/image";
 
 // Shared UI classes for headers inside cards (module scope so subcomponents can reuse)
 const CARD_HEADER = "flex items-center gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 px-3 py-2";
@@ -779,7 +780,7 @@ export default function ProfilePage() {
                 <div className="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
                   {item.images?.[0] ? (
                     <img
-                      src={item.images[0].startsWith('http') ? item.images[0] : `https://placehold.co/100?text=${encodeURIComponent(item.title)}`}
+                      src={item.images[0] ? getOptimizedImageUrl(item.images[0], { width: 100, quality: 70 }) : `https://placehold.co/100?text=${encodeURIComponent(item.title)}`}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
@@ -1148,7 +1149,11 @@ export default function ProfilePage() {
                 <div className="relative">
                   <div className="h-24 w-24 rounded-full overflow-hidden ring-4 ring-gray-50 dark:ring-gray-900 bg-gray-100 dark:bg-gray-700">
                     {avatar ? (
-                      <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
+                      <img src={getOptimizedImageUrl(avatar, { width: 200, height: 200, quality: 80 })} alt="avatar" className="h-full w-full object-cover" onError={(e) => {
+                        if (avatar && e.currentTarget.src !== avatar) {
+                          e.currentTarget.src = avatar;
+                        }
+                      }} />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-gray-400">
                         {firstName[0] || "?"}

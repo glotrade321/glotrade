@@ -15,6 +15,7 @@ import {
     MoreVertical
 } from "lucide-react";
 import Link from "next/link";
+import { getOptimizedImageUrl } from "@/utils/image";
 
 interface Product {
     _id: string;
@@ -262,7 +263,7 @@ export default function AdminProductsPage() {
                                                     <div className="flex items-center">
                                                         <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                                                             {product.images && product.images.length > 0 ? (
-                                                                <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
+                                                                <img src={getOptimizedImageUrl(product.images[0], { width: 100, quality: 70 })} alt={product.title} className="w-full h-full object-cover" />
                                                             ) : (
                                                                 <Package size={24} className="text-gray-400" />
                                                             )}
@@ -360,7 +361,7 @@ export default function AdminProductsPage() {
                                         <div className="flex gap-4">
                                             <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                                                 {product.images && product.images.length > 0 ? (
-                                                    <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
+                                                    <img src={getOptimizedImageUrl(product.images[0], { width: 150, quality: 70 })} alt={product.title} className="w-full h-full object-cover" />
                                                 ) : (
                                                     <Package size={32} className="text-gray-400" />
                                                 )}
@@ -456,7 +457,7 @@ export default function AdminProductsPage() {
                                     <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
                                         {deleteModal.product.images && deleteModal.product.images.length > 0 && (
                                             <img
-                                                src={deleteModal.product.images[0]}
+                                                src={getOptimizedImageUrl(deleteModal.product.images[0], { width: 100, quality: 60 })}
                                                 alt={deleteModal.product.title}
                                                 className="w-12 h-12 object-cover rounded"
                                             />

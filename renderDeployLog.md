@@ -1,243 +1,100 @@
-2025-12-16T13:09:28.457689612Z ==> Downloading cache...
-2025-12-16T13:09:28.49573546Z ==> Cloning from https://github.com/harzjunior/glotrade_ecom
-2025-12-16T13:09:29.030081533Z ==> Checking out commit de970cc24615e87bd76c44710f9b89854be660ac in branch main
-2025-12-16T13:09:36.605319951Z ==> Downloaded 879MB in 6s. Extraction took 1s.
-2025-12-16T13:09:44.875464379Z #1 [internal] load build definition from Dockerfile
-2025-12-16T13:09:44.8754967Z #1 transferring dockerfile: 1.44kB done
-2025-12-16T13:09:44.87549978Z #1 DONE 0.0s
-2025-12-16T13:09:44.87550242Z 
-2025-12-16T13:09:44.875523531Z #2 [internal] load metadata for docker.io/library/node:18-alpine
-2025-12-16T13:09:45.328098311Z #2 ...
-2025-12-16T13:09:45.328111001Z 
-2025-12-16T13:09:45.328114602Z #3 [auth] library/node:pull render-prod/docker-mirror-repository/library/node:pull token for us-west1-docker.pkg.dev
-2025-12-16T13:09:45.328118362Z #3 DONE 0.0s
-2025-12-16T13:09:45.478227572Z 
-2025-12-16T13:09:45.478242763Z #2 [internal] load metadata for docker.io/library/node:18-alpine
-2025-12-16T13:09:46.692436672Z #2 DONE 2.0s
-2025-12-16T13:09:46.793169553Z 
-2025-12-16T13:09:46.793191654Z #4 [internal] load .dockerignore
-2025-12-16T13:09:46.793197074Z #4 transferring context: 2B done
-2025-12-16T13:09:46.793201674Z #4 DONE 0.0s
-2025-12-16T13:09:46.793205744Z 
-2025-12-16T13:09:46.793210474Z #5 importing cache manifest from local:9113907173614556171
-2025-12-16T13:09:46.793215434Z #5 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
-2025-12-16T13:09:46.793220204Z #5 DONE 0.0s
-2025-12-16T13:09:46.793224335Z 
-2025-12-16T13:09:46.793227855Z #6 [base 1/1] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
-2025-12-16T13:09:46.793230755Z #6 resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 0.0s done
-2025-12-16T13:09:46.793233565Z #6 DONE 0.0s
-2025-12-16T13:09:46.793236295Z 
-2025-12-16T13:09:46.793239075Z #7 [internal] load build context
-2025-12-16T13:09:46.793242735Z #7 transferring context: 1.87MB 0.0s done
-2025-12-16T13:09:46.793245585Z #7 DONE 0.1s
-2025-12-16T13:09:46.793248305Z 
-2025-12-16T13:09:46.793251125Z #8 [builder 4/6] COPY apps/api ./apps/api
-2025-12-16T13:09:46.793253985Z #8 CACHED
-2025-12-16T13:09:46.793256705Z 
-2025-12-16T13:09:46.793259525Z #9 [deps 1/4] WORKDIR /app
-2025-12-16T13:09:46.793262336Z #9 CACHED
-2025-12-16T13:09:46.793265016Z 
-2025-12-16T13:09:46.793267856Z #10 [builder 5/6] WORKDIR /app/apps/api
-2025-12-16T13:09:46.793270986Z #10 CACHED
-2025-12-16T13:09:46.793273686Z 
-2025-12-16T13:09:46.793276496Z #11 [runner 2/8] RUN addgroup --system --gid 1001 nodejs
-2025-12-16T13:09:46.793279316Z #11 CACHED
-2025-12-16T13:09:46.793282006Z 
-2025-12-16T13:09:46.793285646Z #12 [runner 5/8] COPY --from=builder --chown=apiuser:nodejs /app/apps/api/package.json ./package.json
-2025-12-16T13:09:46.793288436Z #12 CACHED
-2025-12-16T13:09:46.793291117Z 
-2025-12-16T13:09:46.793294346Z #13 [runner 4/8] COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist ./dist
-2025-12-16T13:09:46.793297157Z #13 CACHED
-2025-12-16T13:09:46.793299857Z 
-2025-12-16T13:09:46.793302687Z #14 [runner 7/8] COPY --from=deps --chown=apiuser:nodejs /app/apps/api/node_modules ./apps_api_modules
-2025-12-16T13:09:46.793305537Z #14 CACHED
-2025-12-16T13:09:46.793308187Z 
-2025-12-16T13:09:46.793310947Z #15 [deps 2/4] COPY package.json yarn.lock* ./
-2025-12-16T13:09:46.793313817Z #15 CACHED
-2025-12-16T13:09:46.793326727Z 
-2025-12-16T13:09:46.793331538Z #16 [builder 2/6] COPY --from=deps /app/node_modules ./node_modules
-2025-12-16T13:09:46.793335968Z #16 CACHED
-2025-12-16T13:09:46.793339888Z 
-2025-12-16T13:09:46.793344178Z #17 [deps 3/4] COPY apps/api/package.json ./apps/api/
-2025-12-16T13:09:46.793348848Z #17 CACHED
-2025-12-16T13:09:46.793351928Z 
-2025-12-16T13:09:46.793354698Z #18 [runner 6/8] COPY --from=deps --chown=apiuser:nodejs /app/node_modules ./node_modules
-2025-12-16T13:09:46.793367639Z #18 CACHED
-2025-12-16T13:09:46.793369429Z 
-2025-12-16T13:09:46.793371189Z #19 [deps 4/4] RUN yarn install --frozen-lockfile
-2025-12-16T13:09:46.793372929Z #19 CACHED
-2025-12-16T13:09:46.793374549Z 
-2025-12-16T13:09:46.793376609Z #20 [builder 3/6] COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
-2025-12-16T13:09:46.793378319Z #20 CACHED
-2025-12-16T13:09:46.793379869Z 
-2025-12-16T13:09:46.793381499Z #21 [builder 6/6] RUN yarn build:prod
-2025-12-16T13:09:46.793383199Z #21 CACHED
-2025-12-16T13:09:46.793384749Z 
-2025-12-16T13:09:46.793386459Z #22 [runner 3/8] RUN adduser --system --uid 1001 apiuser
-2025-12-16T13:09:46.793388149Z #22 CACHED
-2025-12-16T13:09:46.793389719Z 
-2025-12-16T13:09:46.79339138Z #23 [runner 8/8] RUN mkdir -p /app/public/invoices && chown -R apiuser:nodejs /app/public
-2025-12-16T13:09:46.961992296Z #23 sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 3.64MB / 3.64MB 0.1s done
-2025-12-16T13:09:46.962004266Z #23 extracting sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 0.1s done
-2025-12-16T13:09:47.126264752Z #23 sha256:dd71dde834b5c203d162902e6b8994cb2309ae049a0eabc4efea161b2b5a3d0e 39.85MB / 40.01MB 0.2s
-2025-12-16T13:09:47.342704644Z #23 sha256:dd71dde834b5c203d162902e6b8994cb2309ae049a0eabc4efea161b2b5a3d0e 40.01MB / 40.01MB 0.2s done
-2025-12-16T13:09:47.342717414Z #23 extracting sha256:dd71dde834b5c203d162902e6b8994cb2309ae049a0eabc4efea161b2b5a3d0e
-2025-12-16T13:09:50.792172076Z #23 extracting sha256:dd71dde834b5c203d162902e6b8994cb2309ae049a0eabc4efea161b2b5a3d0e 3.6s done
-2025-12-16T13:09:50.913462685Z #23 sha256:1e5a4c89cee5c0826c540ab06d4b6b491c96eda01837f430bd47f0d26702d6e3 1.26MB / 1.26MB 0.0s done
-2025-12-16T13:09:50.913479505Z #23 extracting sha256:1e5a4c89cee5c0826c540ab06d4b6b491c96eda01837f430bd47f0d26702d6e3 0.1s done
-2025-12-16T13:09:51.018416724Z #23 sha256:25ff2da83641908f65c3a74d80409d6b1b62ccfaab220b9ea70b80df5a2e0549 446B / 446B done
-2025-12-16T13:09:51.018438255Z #23 extracting sha256:25ff2da83641908f65c3a74d80409d6b1b62ccfaab220b9ea70b80df5a2e0549 0.0s done
-2025-12-16T13:09:51.018442725Z #23 sha256:c63543a61b87c01d5112015a23cf40a43d7417a74d800d932ce0eeba67b62794 92B / 92B done
-2025-12-16T13:09:51.018446545Z #23 extracting sha256:c63543a61b87c01d5112015a23cf40a43d7417a74d800d932ce0eeba67b62794 0.0s done
-2025-12-16T13:09:51.018450085Z #23 sha256:31fbcb6020f8afd167df702563e498d767cafa743cb0b7193e53026a2c7d2953 460B / 460B done
-2025-12-16T13:09:51.120725824Z #23 extracting sha256:31fbcb6020f8afd167df702563e498d767cafa743cb0b7193e53026a2c7d2953 0.0s done
-2025-12-16T13:09:51.120747895Z #23 sha256:abac9d2fb27dce7a4fbca39d0475b4d90eff3df09cb85dcabd4d99cd0286d68d 976B / 976B done
-2025-12-16T13:09:51.120753395Z #23 extracting sha256:abac9d2fb27dce7a4fbca39d0475b4d90eff3df09cb85dcabd4d99cd0286d68d 0.0s done
-2025-12-16T13:09:51.120758705Z #23 sha256:5d8d074c1ff6cf428a0f6f42f4ccf1d07dcfb675de8faba236119488cbb1e8d1 206.81kB / 206.81kB done
-2025-12-16T13:09:51.120763556Z #23 extracting sha256:5d8d074c1ff6cf428a0f6f42f4ccf1d07dcfb675de8faba236119488cbb1e8d1
-2025-12-16T13:09:51.223575701Z #23 extracting sha256:5d8d074c1ff6cf428a0f6f42f4ccf1d07dcfb675de8faba236119488cbb1e8d1 0.1s done
-2025-12-16T13:09:51.223597492Z #23 sha256:43b8a7730be795beb0a428e9d8f303c1d28ff388a5072ef29dcd8df3a13ffd40 844B / 844B done
-2025-12-16T13:09:51.223602292Z #23 extracting sha256:43b8a7730be795beb0a428e9d8f303c1d28ff388a5072ef29dcd8df3a13ffd40
-2025-12-16T13:09:51.426977385Z #23 extracting sha256:43b8a7730be795beb0a428e9d8f303c1d28ff388a5072ef29dcd8df3a13ffd40 0.0s done
-2025-12-16T13:09:51.44778841Z #23 sha256:0ec85d3fb31c732e5f231c1422483e54666d7c9ae113ab45e73db6cb27aeca9f 35.65MB / 43.08MB 0.2s
-2025-12-16T13:09:51.643465362Z #23 sha256:0ec85d3fb31c732e5f231c1422483e54666d7c9ae113ab45e73db6cb27aeca9f 43.08MB / 43.08MB 0.2s done
-2025-12-16T13:09:51.643481422Z #23 extracting sha256:0ec85d3fb31c732e5f231c1422483e54666d7c9ae113ab45e73db6cb27aeca9f
-2025-12-16T13:10:00.135496277Z #23 extracting sha256:0ec85d3fb31c732e5f231c1422483e54666d7c9ae113ab45e73db6cb27aeca9f 8.6s done
-2025-12-16T13:10:00.61314436Z #23 sha256:206783351543d89c9b74c70c3371a419c8ce897ce16b253a25316fd191679a44 625.75kB / 625.75kB 0.0s done
-2025-12-16T13:10:00.61316467Z #23 extracting sha256:206783351543d89c9b74c70c3371a419c8ce897ce16b253a25316fd191679a44 0.1s done
-2025-12-16T13:10:00.818279194Z #23 sha256:fad75f9869588521c3546cdde2a83350eb752c3cbd35ce162acd563d80d2178e 144B / 144B done
-2025-12-16T13:10:00.818299434Z #23 extracting sha256:fad75f9869588521c3546cdde2a83350eb752c3cbd35ce162acd563d80d2178e 0.0s done
-2025-12-16T13:10:00.818303084Z #23 CACHED
-2025-12-16T13:10:01.047337167Z 
-2025-12-16T13:10:01.047386038Z #24 exporting to docker image format
-2025-12-16T13:10:01.047397689Z #24 exporting layers done
-2025-12-16T13:10:01.047403218Z #24 exporting manifest sha256:a49f5292fcafbdddd9a5d8fcee9b663efa2a69c6b3615a8cce7e51ce56f54c0f 0.0s done
-2025-12-16T13:10:01.047407629Z #24 exporting config sha256:92efb54c5b3f0362cc84cca2c4b5081352ea26163b94b26c735dae96537e61c2 0.0s done
-2025-12-16T13:10:01.374830499Z #24 DONE 0.6s
-2025-12-16T13:10:01.374848089Z 
-2025-12-16T13:10:01.374852099Z #25 exporting cache to client directory
-2025-12-16T13:10:01.374855279Z #25 preparing build cache for export
-2025-12-16T13:10:01.699120704Z #25 sha256:438ce48e20ebb6f703c4b65bcbc4296a7d32d357f71adf694965b9f6f49968f2 31.87MB / 43.08MB 0.2s
-2025-12-16T13:10:01.8117785Z #25 sha256:438ce48e20ebb6f703c4b65bcbc4296a7d32d357f71adf694965b9f6f49968f2 43.08MB / 43.08MB 0.3s done
-2025-12-16T13:10:01.966959624Z #25 extracting sha256:438ce48e20ebb6f703c4b65bcbc4296a7d32d357f71adf694965b9f6f49968f2
-2025-12-16T13:10:07.773636604Z #25 extracting sha256:438ce48e20ebb6f703c4b65bcbc4296a7d32d357f71adf694965b9f6f49968f2 6.0s done
-2025-12-16T13:10:07.904337365Z #25 sha256:cc95166bca5c2768c98069fd03cf4e2e35d1429459b1e81bee12ad36c5d7990c 625.62kB / 625.62kB done
-2025-12-16T13:10:07.904357176Z #25 extracting sha256:cc95166bca5c2768c98069fd03cf4e2e35d1429459b1e81bee12ad36c5d7990c 0.1s done
-2025-12-16T13:10:08.00689832Z #25 sha256:5a9d01d43456831050de617c6f3469899f895fff3b28bc472a0df5d71d3c633f 413.45kB / 413.45kB done
-2025-12-16T13:10:08.006918551Z #25 extracting sha256:5a9d01d43456831050de617c6f3469899f895fff3b28bc472a0df5d71d3c633f 0.1s done
-2025-12-16T13:10:08.148570832Z #25 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 32B / 32B done
-2025-12-16T13:10:08.148598973Z #25 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 0.0s done
-2025-12-16T13:10:08.148605243Z #25 sha256:e939da3568a3274ab999f18418a0e7b86c1932dd0a4287c2a1d1897a7a9e2708 1.17MB / 1.17MB 0.0s done
-2025-12-16T13:10:08.148609663Z #25 extracting sha256:e939da3568a3274ab999f18418a0e7b86c1932dd0a4287c2a1d1897a7a9e2708 0.1s done
-2025-12-16T13:10:08.25786652Z #25 sha256:acedc6844880be8ae1853e6e5017a85336b301da825b2c96c2bf1dadb34f18e1 412B / 412B done
-2025-12-16T13:10:08.25788663Z #25 extracting sha256:acedc6844880be8ae1853e6e5017a85336b301da825b2c96c2bf1dadb34f18e1 0.0s done
-2025-12-16T13:10:08.257891561Z #25 sha256:9770d1198e2b7b22481ed87d04785db1cb6746ef1908e038e2659f2d37c68a66 872B / 872B done
-2025-12-16T13:10:08.44404402Z #25 extracting sha256:9770d1198e2b7b22481ed87d04785db1cb6746ef1908e038e2659f2d37c68a66 0.0s done
-2025-12-16T13:10:08.47758787Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 35.65MB / 280.45MB 0.2s
-2025-12-16T13:10:08.647924774Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 70.25MB / 280.45MB 0.3s
-2025-12-16T13:10:08.777703748Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 99.61MB / 280.45MB 0.5s
-2025-12-16T13:10:08.927014069Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 133.17MB / 280.45MB 0.6s
-2025-12-16T13:10:09.077040743Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 165.68MB / 280.45MB 0.8s
-2025-12-16T13:10:09.247596464Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 200.28MB / 280.45MB 0.9s
-2025-12-16T13:10:09.377461882Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 228.59MB / 280.45MB 1.1s
-2025-12-16T13:10:09.527754313Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 266.89MB / 280.45MB 1.2s
-2025-12-16T13:10:11.574061379Z #25 sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 280.45MB / 280.45MB 3.0s done
-2025-12-16T13:10:11.57408611Z #25 extracting sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca
-2025-12-16T13:10:24.873311667Z #25 extracting sha256:13ad74b7290a0988d5cf9c6ec746c55306c2162a4c736225db167b7e19ed95ca 13.4s done
-2025-12-16T13:10:24.993223692Z #25 writing cache image manifest sha256:367b83cb354cee9bf0bddd1feff6268a2af2871bbfd3d130d722ddfc33ef86a6 done
-2025-12-16T13:10:24.993243133Z #25 DONE 23.5s
-2025-12-16T13:10:36.854156414Z Pushing image to registry...
-2025-12-16T13:10:37.611404474Z Upload succeeded
-2025-12-16T13:10:42.910340534Z ==> Deploying...
-2025-12-16T13:10:58.227917493Z node:internal/modules/cjs/loader:1143
-2025-12-16T13:10:58.227980064Z   throw err;
-2025-12-16T13:10:58.227983544Z   ^
-2025-12-16T13:10:58.227986184Z 
-2025-12-16T13:10:58.227989564Z Error: Cannot find module 'nanoid'
-2025-12-16T13:10:58.227992334Z Require stack:
-2025-12-16T13:10:58.227994664Z - /app/dist/services/ReferralService.js
-2025-12-16T13:10:58.227996894Z - /app/dist/controllers/auth.controller.js
-2025-12-16T13:10:58.227999355Z - /app/dist/routes/auth.routes.js
-2025-12-16T13:10:58.228002604Z - /app/dist/app.js
-2025-12-16T13:10:58.228006525Z     at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
-2025-12-16T13:10:58.228009005Z     at Module._load (node:internal/modules/cjs/loader:981:27)
-2025-12-16T13:10:58.228011355Z     at Module.require (node:internal/modules/cjs/loader:1231:19)
-2025-12-16T13:10:58.228031545Z     at require (node:internal/modules/helpers:177:18)
-2025-12-16T13:10:58.228039555Z     at Object.<anonymous> (/app/dist/services/ReferralService.js:11:18)
-2025-12-16T13:10:58.228042465Z     at Module._compile (node:internal/modules/cjs/loader:1364:14)
-2025-12-16T13:10:58.228044875Z     at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
-2025-12-16T13:10:58.228047845Z     at Module.load (node:internal/modules/cjs/loader:1203:32)
-2025-12-16T13:10:58.228050196Z     at Module._load (node:internal/modules/cjs/loader:1019:12)
-2025-12-16T13:10:58.228052385Z     at Module.require (node:internal/modules/cjs/loader:1231:19) {
-2025-12-16T13:10:58.228055696Z   code: 'MODULE_NOT_FOUND',
-2025-12-16T13:10:58.228058246Z   requireStack: [
-2025-12-16T13:10:58.228060646Z     '/app/dist/services/ReferralService.js',
-2025-12-16T13:10:58.228062886Z     '/app/dist/controllers/auth.controller.js',
-2025-12-16T13:10:58.228065296Z     '/app/dist/routes/auth.routes.js',
-2025-12-16T13:10:58.228067506Z     '/app/dist/app.js'
-2025-12-16T13:10:58.228069896Z   ]
-2025-12-16T13:10:58.228072346Z }
-2025-12-16T13:10:58.228085836Z 
-2025-12-16T13:10:58.228088796Z Node.js v18.20.8
-2025-12-16T13:11:01.908734978Z ==> Exited with status 1
-2025-12-16T13:11:01.974058192Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
-2025-12-16T13:11:05.518767129Z node:internal/modules/cjs/loader:1143
-2025-12-16T13:11:05.51881309Z   throw err;
-2025-12-16T13:11:05.51881629Z   ^
-2025-12-16T13:11:05.51881851Z 
-2025-12-16T13:11:05.51882072Z Error: Cannot find module 'nanoid'
-2025-12-16T13:11:05.51882282Z Require stack:
-2025-12-16T13:11:05.51882495Z - /app/dist/services/ReferralService.js
-2025-12-16T13:11:05.51882704Z - /app/dist/controllers/auth.controller.js
-2025-12-16T13:11:05.51882929Z - /app/dist/routes/auth.routes.js
-2025-12-16T13:11:05.51883164Z - /app/dist/app.js
-2025-12-16T13:11:05.51883433Z     at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
-2025-12-16T13:11:05.518837091Z     at Module._load (node:internal/modules/cjs/loader:981:27)
-2025-12-16T13:11:05.51883936Z     at Module.require (node:internal/modules/cjs/loader:1231:19)
-2025-12-16T13:11:05.518841711Z     at require (node:internal/modules/helpers:177:18)
-2025-12-16T13:11:05.518844011Z     at Object.<anonymous> (/app/dist/services/ReferralService.js:11:18)
-2025-12-16T13:11:05.518846201Z     at Module._compile (node:internal/modules/cjs/loader:1364:14)
-2025-12-16T13:11:05.518848411Z     at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
-2025-12-16T13:11:05.518850701Z     at Module.load (node:internal/modules/cjs/loader:1203:32)
-2025-12-16T13:11:05.518853011Z     at Module._load (node:internal/modules/cjs/loader:1019:12)
-2025-12-16T13:11:05.518855621Z     at Module.require (node:internal/modules/cjs/loader:1231:19) {
-2025-12-16T13:11:05.518858681Z   code: 'MODULE_NOT_FOUND',
-2025-12-16T13:11:05.518861381Z   requireStack: [
-2025-12-16T13:11:05.518863691Z     '/app/dist/services/ReferralService.js',
-2025-12-16T13:11:05.518865771Z     '/app/dist/controllers/auth.controller.js',
-2025-12-16T13:11:05.518867981Z     '/app/dist/routes/auth.routes.js',
-2025-12-16T13:11:05.518870091Z     '/app/dist/app.js'
-2025-12-16T13:11:05.518872211Z   ]
-2025-12-16T13:11:05.518874341Z }
-2025-12-16T13:11:05.518876171Z 
-2025-12-16T13:11:05.518878401Z Node.js v18.20.8
-2025-12-16T13:11:29.40562477Z node:internal/modules/cjs/loader:1143
-2025-12-16T13:11:29.405655651Z   throw err;
-2025-12-16T13:11:29.405659131Z   ^
-2025-12-16T13:11:29.405661801Z 
-2025-12-16T13:11:29.405664261Z Error: Cannot find module 'nanoid'
-2025-12-16T13:11:29.405666541Z Require stack:
-2025-12-16T13:11:29.405668911Z - /app/dist/services/ReferralService.js
-2025-12-16T13:11:29.405671461Z - /app/dist/controllers/auth.controller.js
-2025-12-16T13:11:29.405674131Z - /app/dist/routes/auth.routes.js
-2025-12-16T13:11:29.405677481Z - /app/dist/app.js
-2025-12-16T13:11:29.405681141Z     at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
-2025-12-16T13:11:29.405683721Z     at Module._load (node:internal/modules/cjs/loader:981:27)
-2025-12-16T13:11:29.405686921Z     at Module.require (node:internal/modules/cjs/loader:1231:19)
-2025-12-16T13:11:29.405689491Z     at require (node:internal/modules/helpers:177:18)
-2025-12-16T13:11:29.405692341Z     at Object.<anonymous> (/app/dist/services/ReferralService.js:11:18)
-2025-12-16T13:11:29.405695411Z     at Module._compile (node:internal/modules/cjs/loader:1364:14)
-2025-12-16T13:11:29.405698381Z     at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
-2025-12-16T13:11:29.405701321Z     at Module.load (node:internal/modules/cjs/loader:1203:32)
-2025-12-16T13:11:29.405703912Z     at Module._load (node:internal/modules/cjs/loader:1019:12)
-2025-12-16T13:11:29.405706381Z     at Module.require (node:internal/modules/cjs/loader:1231:19) {
-2025-12-16T13:11:29.405709241Z   code: 'MODULE_NOT_FOUND',
-2025-12-16T13:11:29.405711872Z   requireStack: [
-2025-12-16T13:11:29.405714542Z     '/app/dist/services/ReferralService.js',
-2025-12-16T13:11:29.405717262Z     '/app/dist/controllers/auth.controller.js',
-2025-12-16T13:11:29.405720012Z     '/app/dist/routes/auth.routes.js',
-2025-12-16T13:11:29.405722522Z     '/app/dist/app.js'
-2025-12-16T13:11:29.405724982Z   ]
-2025-12-16T13:11:29.405727312Z }
-2025-12-16T13:11:29.405729572Z 
-2025-12-16T13:11:29.405732012Z Node.js v18.20.8
+2026-01-25T21:28:54.902788403Z     maxElectionId: null,
+2026-01-25T21:28:54.902791133Z     maxSetVersion: null,
+2026-01-25T21:28:54.902794043Z     commonWireVersion: 0,
+2026-01-25T21:28:54.902796973Z     logicalSessionTimeoutMinutes: null
+2026-01-25T21:28:54.902799573Z   },
+2026-01-25T21:28:54.902802333Z   code: undefined,
+2026-01-25T21:28:54.902805213Z   cause: TopologyDescription {
+2026-01-25T21:28:54.902808093Z     type: 'ReplicaSetNoPrimary',
+2026-01-25T21:28:54.902811373Z     servers: Map(3) {
+2026-01-25T21:28:54.902814203Z       'ac-dkzlh2m-shard-00-02.xdnfnob.mongodb.net:27017' => [ServerDescription],
+2026-01-25T21:28:54.902817023Z       'ac-dkzlh2m-shard-00-00.xdnfnob.mongodb.net:27017' => [ServerDescription],
+2026-01-25T21:28:54.902820103Z       'ac-dkzlh2m-shard-00-01.xdnfnob.mongodb.net:27017' => [ServerDescription]
+2026-01-25T21:28:54.902823003Z     },
+2026-01-25T21:28:54.902825764Z     stale: false,
+2026-01-25T21:28:54.902828144Z     compatible: true,
+2026-01-25T21:28:54.902830693Z     heartbeatFrequencyMS: 10000,
+2026-01-25T21:28:54.902833264Z     localThresholdMS: 15,
+2026-01-25T21:28:54.902836124Z     setName: 'atlas-n0h2di-shard-0',
+2026-01-25T21:28:54.902839124Z     maxElectionId: null,
+2026-01-25T21:28:54.902841504Z     maxSetVersion: null,
+2026-01-25T21:28:54.902843844Z     commonWireVersion: 0,
+2026-01-25T21:28:54.902846464Z     logicalSessionTimeoutMinutes: null
+2026-01-25T21:28:54.902859944Z   }
+2026-01-25T21:28:54.902862664Z }
+2026-01-25T21:28:57.556518544Z ==> Exited with status 1
+2026-01-25T21:28:57.572344553Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+2026-01-25T21:29:00.951595805Z ℹ️ Redis is disabled. Using memory cache.
+2026-01-25T21:29:03.447256563Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:03.447280143Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:03.548141923Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:03.548170133Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:03.648673285Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:03.648885169Z Orange Money credentials not fully configured. Set ORANGE_MONEY_CLIENT_ID, ORANGE_MONEY_CLIENT_SECRET, and ORANGE_MONEY_MERCHANT_CODE
+2026-01-25T21:29:05.249611943Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:05.249644714Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:05.251989972Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:05.252126885Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:05.253229627Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:05.25337657Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:06.250767995Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:06.250900608Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:06.551790981Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:06.551937514Z [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
+2026-01-25T21:29:06.554640069Z 🔒 CORS Allowed Origins: [
+2026-01-25T21:29:06.554650179Z   'https://glotrade-web.vercel.app',
+2026-01-25T21:29:06.554653239Z   'https://www.glotrade-web.vercel.app'
+2026-01-25T21:29:06.554655979Z ]
+2026-01-25T21:29:06.6580468Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"name":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658070251Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-01-25T21:29:06.658079631Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"orderId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658287185Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"userId":1,"status":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658431938Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"tpiaId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658482279Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"profitDistributed":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658495539Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"userId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658562011Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"code":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658608142Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"reference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658762465Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"externalReference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:06.658824676Z (node:1) [MONGOOSE] Warning: Duplicate schema index on {"reference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-01-25T21:29:12.056874274Z ❌ MongoDB connection error: MongooseServerSelectionError: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/
+2026-01-25T21:29:12.056907655Z     at _handleConnectionErrors (/app/node_modules/mongoose/lib/connection.js:1169:11)
+2026-01-25T21:29:12.056913245Z     at NativeConnection.openUri (/app/node_modules/mongoose/lib/connection.js:1100:11)
+2026-01-25T21:29:12.056918725Z     at async connectDB (/app/dist/config/db.js:22:9)
+2026-01-25T21:29:12.056922825Z     at async startServer (/app/dist/app.js:200:9) {
+2026-01-25T21:29:12.056927885Z   errorLabelSet: Set(0) {},
+2026-01-25T21:29:12.056932315Z   reason: TopologyDescription {
+2026-01-25T21:29:12.056936526Z     type: 'ReplicaSetNoPrimary',
+2026-01-25T21:29:12.056941096Z     servers: Map(3) {
+2026-01-25T21:29:12.056946026Z       'ac-dkzlh2m-shard-00-02.xdnfnob.mongodb.net:27017' => [ServerDescription],
+2026-01-25T21:29:12.056950026Z       'ac-dkzlh2m-shard-00-00.xdnfnob.mongodb.net:27017' => [ServerDescription],
+2026-01-25T21:29:12.056954426Z       'ac-dkzlh2m-shard-00-01.xdnfnob.mongodb.net:27017' => [ServerDescription]
+2026-01-25T21:29:12.056992677Z     },
+2026-01-25T21:29:12.056999187Z     stale: false,
+2026-01-25T21:29:12.057003347Z     compatible: true,
+2026-01-25T21:29:12.057007797Z     heartbeatFrequencyMS: 10000,
+2026-01-25T21:29:12.057011787Z     localThresholdMS: 15,
+2026-01-25T21:29:12.057017027Z     setName: 'atlas-n0h2di-shard-0',
+2026-01-25T21:29:12.057021137Z     maxElectionId: null,
+2026-01-25T21:29:12.057025287Z     maxSetVersion: null,
+2026-01-25T21:29:12.057029828Z     commonWireVersion: 0,
+2026-01-25T21:29:12.057034008Z     logicalSessionTimeoutMinutes: null
+2026-01-25T21:29:12.057038488Z   },
+2026-01-25T21:29:12.057042558Z   code: undefined,
+2026-01-25T21:29:12.057046538Z   cause: TopologyDescription {
+2026-01-25T21:29:12.057051188Z     type: 'ReplicaSetNoPrimary',
+2026-01-25T21:29:12.057055558Z     servers: Map(3) {
+2026-01-25T21:29:12.057059878Z       'ac-dkzlh2m-shard-00-02.xdnfnob.mongodb.net:27017' => [ServerDescription],
+2026-01-25T21:29:12.057063998Z       'ac-dkzlh2m-shard-00-00.xdnfnob.mongodb.net:27017' => [ServerDescription],
+2026-01-25T21:29:12.057068078Z       'ac-dkzlh2m-shard-00-01.xdnfnob.mongodb.net:27017' => [ServerDescription]
+2026-01-25T21:29:12.057072428Z     },
+2026-01-25T21:29:12.057076748Z     stale: false,
+2026-01-25T21:29:12.057080918Z     compatible: true,
+2026-01-25T21:29:12.057084978Z     heartbeatFrequencyMS: 10000,
+2026-01-25T21:29:12.057089129Z     localThresholdMS: 15,
+2026-01-25T21:29:12.057093249Z     setName: 'atlas-n0h2di-shard-0',
+2026-01-25T21:29:12.057097619Z     maxElectionId: null,
+2026-01-25T21:29:12.057101779Z     maxSetVersion: null,
+2026-01-25T21:29:12.057105899Z     commonWireVersion: 0,
+2026-01-25T21:29:12.057109949Z     logicalSessionTimeoutMinutes: null
+2026-01-25T21:29:12.057128179Z   }
+2026-01-25T21:29:12.057131319Z }

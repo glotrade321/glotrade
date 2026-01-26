@@ -7,6 +7,7 @@ import { toast } from "@/components/common/Toast";
 import { Check, ChevronRight, Package, Truck, BadgeCheck, Printer, ChevronLeft, RotateCcw, FileText, MapPin, Clock, X, Star, ArrowLeft } from "lucide-react";
 import ReviewForm from "@/components/reviews/ReviewForm";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
+import { getOptimizedImageUrl } from "@/utils/image";
 
 
 type OrderDoc = {
@@ -271,7 +272,16 @@ export default function OrderDetailPage() {
                     <div key={idx} className="flex items-start justify-between gap-2 sm:gap-3">
                       <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={li.productImage || '/next.svg'} alt={li.productTitle || `Product ${String(li.productId).slice(-6)}`} className="h-12 w-12 rounded object-cover bg-gray-100 dark:bg-gray-700 flex-shrink-0" />
+                        <img
+                          src={li.productImage ? getOptimizedImageUrl(li.productImage, { width: 150, quality: 75 }) : '/next.svg'}
+                          alt={li.productTitle || `Product ${String(li.productId).slice(-6)}`}
+                          onError={(e) => {
+                            if (li.productImage && e.currentTarget.src !== li.productImage) {
+                              e.currentTarget.src = li.productImage;
+                            }
+                          }}
+                          className="h-12 w-12 rounded object-cover bg-gray-100 dark:bg-gray-700 flex-shrink-0"
+                        />
                         <div className="min-w-0 flex-1">
                           <div className="text-sm font-medium truncate text-gray-900 dark:text-white">{li.productTitle || `Product ${String(li.productId).slice(-6)}`}</div>
                           <div className="text-xs text-gray-500 mt-0.5">{translate(locale, "orders.details.items.qty", { count: String(li.qty) })} • {(li.unitPrice || 0).toLocaleString()} {li.currency || "NGN"}</div>
@@ -519,7 +529,16 @@ export default function OrderDetailPage() {
                     {(order?.lineItems || []).map((item, idx) => (
                       <div key={idx} className="flex items-start justify-between gap-4 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
                         <div className="flex items-start gap-3 flex-1">
-                          <img src={item.productImage || '/next.svg'} alt={item.productTitle || 'Product'} className="w-12 h-12 rounded object-cover bg-gray-100 dark:bg-gray-700" />
+                          <img
+                            src={item.productImage ? getOptimizedImageUrl(item.productImage, { width: 150, quality: 75 }) : '/next.svg'}
+                            alt={item.productTitle || 'Product'}
+                            onError={(e) => {
+                              if (item.productImage && e.currentTarget.src !== item.productImage) {
+                                e.currentTarget.src = item.productImage;
+                              }
+                            }}
+                            className="w-12 h-12 rounded object-cover bg-gray-100 dark:bg-gray-700"
+                          />
                           <div className="flex-1">
                             <p className="text-sm font-medium text-gray-900 dark:text-white">{item.productTitle || `Product ${String(item.productId).slice(-6)}`}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{translate(locale, "orders.details.items.qty", { count: String(item.qty) })}: {item.qty} × {(item.unitPrice || 0).toLocaleString()} {item.currency || 'NGN'}</p>

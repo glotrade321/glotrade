@@ -1,5 +1,5 @@
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://afritrade-api.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://glotradecom.onrender.com";
 
 type FetchOptions = RequestInit & {
   query?: Record<string, string | number | boolean | undefined>;
