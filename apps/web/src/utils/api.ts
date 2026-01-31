@@ -48,8 +48,8 @@ export async function apiGet<T>(path: string, options: FetchOptions = {}) {
       ...getAuthHeader(),
       ...(headers || {}),
     },
-    cache: "no-store",
-    credentials: "include", // Send cookies
+    // cache: "no-store", // REMOVED: caused forced dynamic rendering
+    credentials: "include",
     ...rest,
   });
 
