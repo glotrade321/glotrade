@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { apiGet, apiPost, apiDelete } from '@/utils/api';
 
 interface ProductManager {
     _id: string;
@@ -31,17 +32,8 @@ export default function ProductManagersPage() {
 
     const fetchProductManagers = async () => {
         try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-            const response = await fetch(`${API_URL}/api/v1/admin/product-managers`, {
-                credentials: 'include',
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch Product Managers');
-            }
-
-            const data = await response.json();
-            setProductManagers(data.data || []);
+            const response = await apiGet<{ data: ProductManager[] }>('/api/v1/admin/product-managers');
+            setProductManagers(response.data || []);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -55,16 +47,7 @@ export default function ProductManagersPage() {
         }
 
         try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-            const response = await fetch(`${API_URL}/api/v1/admin/product-managers/${id}/reset-password`, {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to reset password');
-            }
-
+            await apiPost(`/api/v1/admin/product-managers/${id}/reset-password`);
             alert('Password reset successfully! New credentials sent to email.');
         } catch (err: any) {
             alert(err.message || 'Failed to reset password');
@@ -77,16 +60,7 @@ export default function ProductManagersPage() {
         }
 
         try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-            const response = await fetch(`${API_URL}/api/v1/admin/product-managers/${id}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete Product Manager');
-            }
-
+            await apiDelete(`/api/v1/admin/product-managers/${id}`);
             alert('Product Manager deleted successfully');
             fetchProductManagers(); // Refresh list
         } catch (err: any) {
