@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Star, Camera, CheckCircle, Plus, Edit, MessageSquare } from "lucide-react";
 import { ProductReview } from "@/types/review";
 import { fetchProductReviews, checkUserReview } from "@/utils/reviewApi";
-import { API_BASE_URL } from "@/utils/api";
+import { apiGet } from "@/utils/api";
 import ReviewForm from "./ReviewForm";
 import { toast } from "@/components/common/Toast";
 
@@ -40,49 +40,34 @@ export default function ProductReviews({ productId, productTitle, locale }: Prod
       }
 
       // Check user's orders for this product
-      const response = await fetch(new URL(`/api/v1/orders?userId=${userId}`, API_BASE_URL).toString(), {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('afritrade:auth') || ''}`
-        },
-        cache: 'no-store'
-      });
+      const ordersData = await apiGet<any>(`/api/v1/orders?userId=${userId}`);
 
-      if (response.ok) {
-        const ordersData = await response.json();
-        // console.log('Orders API response:', ordersData);
-
-        // Handle different possible data structures
-        let orders: any[] = [];
-        if (ordersData?.data) {
-          if (Array.isArray(ordersData.data)) {
-            orders = ordersData.data;
-          } else if (ordersData.data.orders && Array.isArray(ordersData.data.orders)) {
-            orders = ordersData.data.orders;
-          } else if (ordersData.data.items && Array.isArray(ordersData.data.items)) {
-            orders = ordersData.data.items;
-          }
+      // Handle different possible data structures
+      let orders: any[] = [];
+      if (ordersData?.data) {
+        if (Array.isArray(ordersData.data)) {
+          orders = ordersData.data;
+        } else if (ordersData.data.orders && Array.isArray(ordersData.data.orders)) {
+          orders = ordersData.data.orders;
+        } else if (ordersData.data.items && Array.isArray(ordersData.data.items)) {
+          orders = ordersData.data.items;
         }
+      }
 
-        // console.log('Processed orders array:', orders);
+      // Ensure orders is an array before using .some()
+      if (Array.isArray(orders)) {
+        // Check if user has any delivered orders containing this product
+        const hasPurchased = orders.some((order: any) => {
+          if (order.status !== 'delivered') return false;
 
-        // Ensure orders is an array before using .some()
-        if (Array.isArray(orders)) {
-          // Check if user has any delivered orders containing this product
-          const hasPurchased = orders.some((order: any) => {
-            if (order.status !== 'delivered') return false;
+          return order.lineItems?.some((item: any) =>
+            String(item.productId) === productId
+          );
+        });
 
-            return order.lineItems?.some((item: any) =>
-              String(item.productId) === productId
-            );
-          });
-
-          setUserHasPurchased(hasPurchased);
-        } else {
-          console.error('Orders is not an array:', orders);
-          setUserHasPurchased(false);
-        }
+        setUserHasPurchased(hasPurchased);
       } else {
-        console.error('Orders API failed:', response.status, response.statusText);
+        console.error('Orders is not an array:', orders);
         setUserHasPurchased(false);
       }
     } catch (error) {

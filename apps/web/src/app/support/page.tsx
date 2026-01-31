@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { HelpCircle, Mail, MessageSquare, Phone, Search, Send, Clock, ShieldCheck, Truck, RotateCcw, CreditCard, User, ChevronRight } from "lucide-react";
 import { translate } from "@/utils/translate";
+import { apiPost } from "@/utils/api";
 
 type Faq = { q: string; a: string; icon?: React.ReactNode; categoryKey: string };
 
@@ -45,15 +46,7 @@ export default function SupportPage() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/v1/support/inquiry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await response.json();
+      const data = await apiPost<any>(`/api/v1/support/inquiry`, form);
 
       if (data.status === 'success') {
         setSent(translate("support.contact.success"));

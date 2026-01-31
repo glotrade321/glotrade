@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/Guards";
-import { apiGet, apiPost, getAuthHeader } from "@/utils/api";
+import { apiGet, apiPost, apiGetBlob } from "@/utils/api";
 import { getUserId } from "@/utils/auth";
 import Modal from "@/components/common/Modal";
 import { toast } from "@/components/common/Toast";
@@ -339,49 +339,26 @@ function WalletPageContent() {
   // Handle export transactions
   const handleExportTransactions = async () => {
     try {
-      const params = new URLSearchParams({
+      const query = {
         format: exportFormat,
         ...(exportStartDate && { startDate: exportStartDate }),
         ...(exportEndDate && { endDate: exportEndDate }),
         ...(exportType !== "all" && { type: exportType }),
         ...(exportCurrency !== "all" && { currency: exportCurrency })
-      });
+      };
 
-      // Use the same base URL and auth as other API calls
-      const API_BASE_URL = process.env.NODE_ENV === 'development'
-        ? "http://localhost:8080"
-        : (process.env.NEXT_PUBLIC_API_URL || "https://glotradecom.onrender.com");
-      const url = `${API_BASE_URL}/api/v1/wallets/export/transactions?${params}`;
+      const blob = await apiGetBlob(`/api/v1/wallets/export/transactions`, { query });
 
-      // Get auth header from the same utility used by other API calls
-      const authHeader = getAuthHeader();
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...authHeader,
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `wallet-transactions-${new Date().toISOString().split('T')[0]}.${exportFormat}`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        toast(translate("wallet.toasts.exportSuccess"), "success");
-        setShowExportModal(false);
-      } else {
-        const errorText = await response.text();
-        console.error("Export failed:", response.status, errorText);
-        toast(translate("wallet.toasts.exportError"), "error");
-      }
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `wallet-transactions-${new Date().toISOString().split('T')[0]}.${exportFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast(translate("wallet.toasts.exportSuccess"), "success");
+      setShowExportModal(false);
     } catch (error) {
       console.error("Export error:", error);
       toast(translate("wallet.toasts.exportError"), "error");

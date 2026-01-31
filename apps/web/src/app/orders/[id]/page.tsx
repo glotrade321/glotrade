@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { API_BASE_URL, apiGet, apiPatch, getAuthHeader } from "@/utils/api";
+import { apiGet, apiPatch, apiGetBlob, getAuthHeader } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import { Check, ChevronRight, Package, Truck, BadgeCheck, Printer, ChevronLeft, RotateCcw, FileText, MapPin, Clock, X, Star, ArrowLeft } from "lucide-react";
 import ReviewForm from "@/components/reviews/ReviewForm";
@@ -75,22 +75,15 @@ export default function OrderDetailPage() {
         for (const item of order.lineItems) {
           const productId = String(item.productId);
           try {
-            const res = await fetch(new URL(`/api/v1/market/products/${productId}/reviews`, API_BASE_URL).toString(), {
-              headers: { ...getAuthHeader() },
-              cache: "no-store"
-            });
+            const json = await apiGet<any>(`/api/v1/market/products/${productId}/reviews`);
+            const reviews = json?.data?.reviews || json?.data || [];
 
-            if (res.ok) {
-              const json = await res.json();
-              const reviews = json?.data?.reviews || json?.data || [];
+            // Check if current user has reviewed this product
+            const user = JSON.parse(localStorage.getItem('afritrade:user') || '{}');
+            const userId = user?.id || user?._id;
 
-              // Check if current user has reviewed this product
-              const user = JSON.parse(localStorage.getItem('afritrade:user') || '{}');
-              const userId = user?.id || user?._id;
-
-              if (userId && reviews.some((review: any) => review.user._id === userId)) {
-                reviewedSet.add(productId);
-              }
+            if (userId && reviews.some((review: any) => review.user._id === userId)) {
+              reviewedSet.add(productId);
             }
           } catch (error) {
             console.error(`Failed to check reviews for product ${productId}:`, error);
@@ -123,14 +116,9 @@ export default function OrderDetailPage() {
   const handleDownloadInvoice = async () => {
     try {
       toast(translate(locale, "orders.details.toast.generatingInvoice"), "info");
-      const res = await fetch(new URL(`/api/v1/orders/${id}/invoice/download`, API_BASE_URL).toString(), {
-        headers: { ...getAuthHeader() }
-      });
+      // Download invoice
+      const blob = await apiGetBlob(`/api/v1/orders/${id}/invoice/download`);
 
-      if (!res.ok) throw new Error(await res.text());
-
-      // Handle file download
-      const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

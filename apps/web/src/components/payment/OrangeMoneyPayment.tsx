@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { toast } from '@/components/common/Toast';
-import { API_BASE_URL, getAuthHeader } from '@/utils/api';
+import { API_BASE_URL, getAuthHeader, apiPost } from '@/utils/api';
 
 interface OrangeMoneyPaymentProps {
   amount: number;
@@ -36,26 +36,17 @@ export default function OrangeMoneyPayment({
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/payments/init`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeader()
+      const data = await apiPost<{ status: string; data: { url: string }; message?: string }>("/api/v1/payments/init", {
+        orderId,
+        provider: 'orange_money',
+        amount,
+        currency,
+        customer: {
+          phone: phoneNumber
         },
-        body: JSON.stringify({
-          orderId,
-          provider: 'orange_money',
-          amount,
-          currency,
-          customer: {
-            phone: phoneNumber
-          },
-          returnUrl: `${window.location.origin}/payment/success`,
-          cancelUrl: `${window.location.origin}/payment/cancel`
-        })
+        returnUrl: `${window.location.origin}/payment/success`,
+        cancelUrl: `${window.location.origin}/payment/cancel`
       });
-
-      const data = await response.json();
 
       if (data.status === 'success') {
         // Redirect to Orange Money payment page

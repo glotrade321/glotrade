@@ -4,6 +4,7 @@ import Link from "next/link";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { translate, Locale } from "@/utils/i18n";
+import { apiGet } from "@/utils/api";
 
 type Product = {
   _id: string;
@@ -44,14 +45,12 @@ export default function ExploreInterests({ productId, seedBrand, seedCategory, l
     let aborted = false;
     async function run() {
       setLoading(true);
-      const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-      const url = new URL(`/api/v1/market/products/${productId}/recommendations`, base);
-      url.searchParams.set("limit", "12");
-      if (hints.recentBrands.length) url.searchParams.set("recentBrands", hints.recentBrands.join(","));
-      if (hints.recentCategories.length) url.searchParams.set("recentCategories", hints.recentCategories.join(","));
       try {
-        const res = await fetch(url.toString(), { cache: "no-store" });
-        const json = await res.json();
+        const queryParams = new URLSearchParams({ limit: "12" });
+        if (hints.recentBrands.length) queryParams.set("recentBrands", hints.recentBrands.join(","));
+        if (hints.recentCategories.length) queryParams.set("recentCategories", hints.recentCategories.join(","));
+
+        const json = await apiGet<any>(`/api/v1/market/products/${productId}/recommendations?${queryParams.toString()}`);
         if (!aborted) setItems(Array.isArray(json.data) ? json.data : []);
       } catch {
         if (!aborted) setItems([]);
@@ -81,4 +80,3 @@ export default function ExploreInterests({ productId, seedBrand, seedCategory, l
     </section>
   );
 }
-

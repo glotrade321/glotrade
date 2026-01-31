@@ -82,8 +82,7 @@ export default function CartPage() {
       try {
         const results = await Promise.all(
           uniqueIds.map(async (id) => {
-            const res = await fetch(new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(), { cache: "no-store" });
-            const json: ProductResponse = await res.json();
+            const json = await apiGet<ProductResponse>(`/api/v1/market/products/${id}`);
             return json.data;
           })
         );
@@ -108,8 +107,7 @@ export default function CartPage() {
       }
 
       try {
-        const res = await fetch(new URL(`/api/v1/market/products?sort=-views&limit=8`, API_BASE_URL).toString(), { cache: "no-store" });
-        const json: SearchResponse = await res.json();
+        const json = await apiGet<SearchResponse>(`/api/v1/market/products?sort=-views&limit=8`);
         if (!aborted) setPicks(Array.isArray(json.data?.products) ? json.data.products : []);
       } catch { }
 

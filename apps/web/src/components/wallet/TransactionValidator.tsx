@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { apiGet } from "@/utils/api";
-import { 
-  Shield, 
-  CheckCircle, 
-  AlertTriangle, 
-  XCircle, 
+import { apiGet, apiPost } from "@/utils/api";
+import {
+  Shield,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
   Clock,
   DollarSign,
   User,
@@ -56,12 +56,12 @@ interface TransactionValidatorProps {
   onClose: () => void;
 }
 
-export default function TransactionValidator({ 
-  recipientId, 
-  amount, 
-  currency, 
-  onValidationComplete, 
-  onClose 
+export default function TransactionValidator({
+  recipientId,
+  amount,
+  currency,
+  onValidationComplete,
+  onClose
 }: TransactionValidatorProps) {
   const [validation, setValidation] = useState<TransactionValidation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -71,72 +71,19 @@ export default function TransactionValidator({
   // Validate transaction
   useEffect(() => {
     if (hasValidated) return; // Prevent multiple validations
-    
+
     const validateTransaction = async () => {
       try {
         setIsLoading(true);
-        
-        // Call real validation API
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-        
-        // Get auth header using the same method as other parts of the app
-        const getAuthHeader = () => {
-          try {
-            const jwtToken = localStorage.getItem("afritrade:auth") || localStorage.getItem("afritrade:jwt") || localStorage.getItem("jwt") || localStorage.getItem("token");
-            if (jwtToken) {
-              return { Authorization: `Bearer ${jwtToken}` };
-            }
-            
-            const raw = localStorage.getItem("afritrade:user") || localStorage.getItem("user");
-            if (raw) {
-              const obj = JSON.parse(raw);
-              if (obj?.token) {
-                return { Authorization: `Bearer ${obj.token}` };
-              }
-              if (obj?.jwt) {
-                return { Authorization: `Bearer ${obj.jwt}` };
-              }
-              const id = obj?.id || obj?._id || obj?.userId || obj?.user?.id || obj?.user?._id || obj?.address;
-              if (id) {
-                return { Authorization: `Bearer ${id}` };
-              }
-            }
-            return {};
-          } catch (error) {
-            return {};
-          }
-        };
-        
-        const authHeader = getAuthHeader();
-        console.log('Auth header for validation:', authHeader);
-        
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/json'
-        };
-        
-        if (authHeader.Authorization) {
-          headers.Authorization = authHeader.Authorization;
-        }
-        
-        const response = await fetch(`${API_BASE_URL}/api/v1/wallets/validate-transfer`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            recipientId,
-            amount: amount.toString(),
-            currency
-          })
+
+        const data = await apiPost<{ status: string; data: TransactionValidation; message?: string }>("/api/v1/wallets/validate-transfer", {
+          recipientId,
+          amount: amount.toString(),
+          currency
         });
-        
-        // Check if response is ok before parsing JSON
-        if (!response.ok) {
-          console.error('Validation API error:', response.status, response.statusText);
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
+
         console.log('Validation API response:', data);
-        
+
         if (data.status === "success") {
           const validation: TransactionValidation = data.data;
           console.log('Validation data:', validation);
@@ -147,25 +94,25 @@ export default function TransactionValidator({
           console.error('Validation failed:', data.message || "Unknown error");
           throw new Error(data.message || "Validation failed");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error validating transaction:", error);
         // Set error state
         const errorValidation: TransactionValidation = {
           isValid: false,
           warnings: [],
-          errors: ["Failed to validate transaction"],
-          suggestions: ["Please try again or contact support"],
+          errors: [error.message || "Service error"],
+          suggestions: ["Try again later"],
           riskLevel: 'high',
           recipientInfo: {
             isVerified: false,
             kycLevel: 0,
-            lastSeen: '',
+            lastSeen: "Unknown",
             accountAge: 0,
             transactionHistory: {
               totalTransactions: 0,
               totalAmount: 0,
               averageAmount: 0,
-              lastTransaction: ''
+              lastTransaction: "None"
             }
           },
           amountValidation: {
@@ -190,280 +137,177 @@ export default function TransactionValidator({
     };
 
     validateTransaction();
-  }, [recipientId, amount, currency, onValidationComplete]);
-
-  const formatCurrency = (amount: number) => {
-    return `₦${(amount / 100).toLocaleString()}`;
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const getRiskColor = (riskLevel: string) => {
-    switch (riskLevel) {
-      case 'low':
-        return 'text-green-600 bg-green-100 dark:bg-green-900/20 dark:text-green-400';
-      case 'medium':
-        return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'high':
-        return 'text-red-600 bg-red-100 dark:bg-red-900/20 dark:text-red-400';
-      default:
-        return 'text-gray-600 bg-gray-100 dark:bg-gray-700 dark:text-gray-400';
-    }
-  };
+  }, [recipientId, amount, currency, onValidationComplete, hasValidated]);
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-xl">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Validating Transaction
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400">
-              Please wait while we verify the transaction details...
-            </p>
-          </div>
+      <div className="flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+        <div className="relative mb-6">
+          <div className="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 rounded-full animate-pulse"></div>
+          <Shield className="w-8 h-8 text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-bounce" />
         </div>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Security Verification</h3>
+        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto">
+          We're analyzing this transaction for security and compliance...
+        </p>
       </div>
     );
   }
 
-  if (!validation) {
-    return null;
-  }
+  if (!validation) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[80vh] shadow-xl flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${getRiskColor(validation.riskLevel)}`}>
-              <Shield className="w-6 h-6" />
+    <div className={`flex flex-col p-6 rounded-xl shadow-lg border-l-4 ${validation.isValid
+        ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-500'
+        : 'bg-red-50 dark:bg-red-950/20 border-red-500'
+      }`}>
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-3">
+          {validation.isValid ? (
+            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/40 rounded-full">
+              <CheckCircle className="w-6 h-6 text-emerald-600" />
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Transaction Validation
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {validation.isValid ? 'Transaction approved' : 'Transaction requires attention'}
-              </p>
+          ) : (
+            <div className="p-2 bg-red-100 dark:bg-red-900/40 rounded-full">
+              <XCircle className="w-6 h-6 text-red-600" />
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title={showDetails ? "Hide details" : "Show details"}
-            >
-              {showDetails ? <EyeOff className="w-5 h-5 text-gray-500" /> : <Eye className="w-5 h-5 text-gray-500" />}
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              <XCircle className="w-5 h-5 text-gray-500" />
-            </button>
+          )}
+          <div>
+            <h3 className={`text-lg font-bold ${validation.isValid ? 'text-emerald-900 dark:text-emerald-100' : 'text-red-900 dark:text-red-100'}`}>
+              {validation.isValid ? 'Transaction Validated' : 'Validation Failed'}
+            </h3>
+            <p className="text-xs font-medium opacity-80">
+              Risk Level: <span className={
+                validation.riskLevel === 'low' ? 'text-emerald-600' :
+                  validation.riskLevel === 'medium' ? 'text-amber-600' : 'text-red-600'
+              }>{validation.riskLevel.toUpperCase()}</span>
+            </p>
           </div>
         </div>
 
-        {/* Validation Result */}
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-6">
-            {validation.isValid ? (
-              <CheckCircle className="w-8 h-8 text-green-500" />
-            ) : (
-              <AlertTriangle className="w-8 h-8 text-red-500" />
-            )}
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {validation.isValid ? 'Transaction Approved' : 'Transaction Blocked'}
-              </h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Amount: {formatCurrency(amount)} • Risk Level: {validation.riskLevel.toUpperCase()}
-              </p>
-            </div>
-          </div>
-
-          {/* Errors */}
-          {validation.errors.length > 0 && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <h5 className="font-medium text-red-800 dark:text-red-200 mb-2">Errors</h5>
-              <ul className="space-y-1">
-                {validation.errors.map((error, index) => (
-                  <li key={index} className="text-sm text-red-700 dark:text-red-300 flex items-center gap-2">
-                    <XCircle className="w-4 h-4 flex-shrink-0" />
-                    {error}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Warnings */}
-          {validation.warnings.length > 0 && (
-            <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-              <h5 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Warnings</h5>
-              <ul className="space-y-1">
-                {validation.warnings.map((warning, index) => (
-                  <li key={index} className="text-sm text-yellow-700 dark:text-yellow-300 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                    {warning}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Suggestions */}
-          {validation.suggestions.length > 0 && (
-            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <h5 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Suggestions</h5>
-              <ul className="space-y-1">
-                {validation.suggestions.map((suggestion, index) => (
-                  <li key={index} className="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 flex-shrink-0" />
-                    {suggestion}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Detailed Information */}
-          {showDetails && (
-            <div className="space-y-4">
-              {/* Recipient Info */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <h5 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Recipient Information
-                </h5>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Verification:</span>
-                    <span className={`ml-2 ${validation.recipientInfo.isVerified ? 'text-green-600' : 'text-red-600'}`}>
-                      {validation.recipientInfo.isVerified ? 'Verified' : 'Not Verified'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">KYC Level:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {validation.recipientInfo.kycLevel}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Account Age:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {validation.recipientInfo.accountAge} days
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Last Seen:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatDate(validation.recipientInfo.lastSeen)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Transaction History */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <h5 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                  <Hash className="w-4 h-4" />
-                  Transaction History
-                </h5>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Total Transactions:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {validation.recipientInfo.transactionHistory.totalTransactions}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatCurrency(validation.recipientInfo.transactionHistory.totalAmount)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Average Amount:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatCurrency(validation.recipientInfo.transactionHistory.averageAmount)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Last Transaction:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatDate(validation.recipientInfo.transactionHistory.lastTransaction)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Amount Validation */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <h5 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4" />
-                  Amount Validation
-                </h5>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Daily Limit:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatCurrency(validation.amountValidation.dailyLimit)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Remaining:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatCurrency(validation.amountValidation.remainingDailyLimit)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Monthly Limit:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatCurrency(validation.amountValidation.monthlyLimit)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Remaining:</span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
-                      {formatCurrency(validation.amountValidation.remainingMonthlyLimit)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
-              {validation.isValid ? 'Continue' : 'Cancel'}
-            </button>
-            {validation.isValid && (
-              <button
-                onClick={() => {
-                  // Proceed with transaction
-                  onClose();
-                }}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Proceed with Transaction
-              </button>
-            )}
-          </div>
-        </div>
+        <button
+          onClick={() => setShowDetails(!showDetails)}
+          className="p-2 hover:bg-black/5 rounded-full transition-colors"
+        >
+          {showDetails ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+        </button>
       </div>
+
+      <div className="space-y-3 mb-6">
+        {validation.errors.map((error, index) => (
+          <div key={index} className="flex gap-2 items-start text-sm text-red-700 dark:text-red-300">
+            <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        ))}
+
+        {validation.warnings.map((warning, index) => (
+          <div key={index} className="flex gap-2 items-start text-sm text-amber-700 dark:text-amber-300">
+            <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <span>{warning}</span>
+          </div>
+        ))}
+
+        {validation.suggestions.length > 0 && validation.isValid && (
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <p className="text-xs font-bold text-blue-900 dark:text-blue-100 mb-2 uppercase tracking-tight">Security Tips</p>
+            {validation.suggestions.map((suggestion, index) => (
+              <div key={index} className="flex gap-2 items-start text-sm text-blue-700 dark:text-blue-300 mb-1 last:mb-0">
+                <CheckCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                <span>{suggestion}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {showDetails && (
+        <div className="mt-2 pt-4 border-t border-black/10 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <div>
+                <h4 className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase mb-2">
+                  <User className="w-3.5 h-3.5" /> Recipient Reliability
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">KYC Verified</span>
+                    <span className={validation.recipientInfo.isVerified ? 'text-emerald-600 font-bold' : 'text-red-600 font-bold'}>
+                      {validation.recipientInfo.isVerified ? 'YES' : 'NO'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Account Age</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{validation.recipientInfo.accountAge} days</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">History</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{validation.recipientInfo.transactionHistory.totalTransactions} trans.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase mb-2">
+                  <Hash className="w-3.5 h-3.5" /> Security Checks
+                </h4>
+                <div className="space-y-1.5">
+                  <div className={`p-2 rounded flex items-center justify-between text-[10px] sm:text-xs font-medium ${validation.securityChecks.isRecipientBlocked ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'
+                    }`}>
+                    <span>Blacklist Check</span>
+                    <span>{validation.securityChecks.isRecipientBlocked ? 'FAILED' : 'CLEARED'}</span>
+                  </div>
+                  <div className={`p-2 rounded flex items-center justify-between text-[10px] sm:text-xs font-medium ${validation.securityChecks.isSuspiciousActivity ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                    }`}>
+                    <span>Pattern Analysis</span>
+                    <span>{validation.securityChecks.isSuspiciousActivity ? 'SUSPICIOUS' : 'NORMAL'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <h4 className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase mb-2">
+                  <DollarSign className="w-3.5 h-3.5" /> Limits & Compliance
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-gray-500">Daily Limit Used</span>
+                      <span className="text-gray-900 dark:text-white font-medium">
+                        {Math.round(((validation.amountValidation.dailyLimit - validation.amountValidation.remainingDailyLimit) / validation.amountValidation.dailyLimit) * 100)}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${validation.amountValidation.remainingDailyLimit > 0 ? 'bg-blue-500' : 'bg-red-500'}`}
+                        style={{ width: `${Math.min(100, Math.round(((validation.amountValidation.dailyLimit - validation.amountValidation.remainingDailyLimit) / validation.amountValidation.dailyLimit) * 100))}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-1">
+                      Remaining: {validation.amountValidation.remainingDailyLimit.toLocaleString()} {currency}
+                    </p>
+                  </div>
+
+                  <div className={`p-2 rounded border border-blue-100 dark:border-blue-900/30 text-[10px] sm:text-xs italic text-blue-700 dark:text-blue-300`}>
+                    Last seen activity: {new Date(validation.recipientInfo.lastSeen).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="mt-6 w-full py-2.5 bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity"
+        >
+          {validation.isValid ? 'Continue Security Protocol' : 'Close & Investigate'}
+        </button>
+      )}
     </div>
   );
 }

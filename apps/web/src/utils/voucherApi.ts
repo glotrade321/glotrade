@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./api";
+import { apiGet, apiPost } from "./api";
 
 export interface Voucher {
   _id: string;
@@ -36,46 +36,24 @@ export interface AppliedVoucher {
   description?: string;
 }
 
-function getAuthHeader(): Record<string, string> {
-  const token = localStorage.getItem('afritrade:auth');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
 // Validate a voucher code
 export async function validateVoucher(
-  code: string, 
-  orderAmount: number, 
+  code: string,
+  orderAmount: number,
   productIds?: string[]
 ): Promise<ValidateVoucherResult> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/vouchers/validate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeader(),
-      },
-      body: JSON.stringify({
-        code,
-        orderAmount,
-        productIds
-      }),
+    const data = await apiPost<{ data: ValidateVoucherResult }>("/api/v1/vouchers/validate", {
+      code,
+      orderAmount,
+      productIds
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        isValid: false,
-        error: errorData.message || 'Failed to validate voucher'
-      };
-    }
-
-    const data = await response.json();
     return data.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error validating voucher:', error);
     return {
       isValid: false,
-      error: 'Network error occurred'
+      error: error.message || 'Failed to validate voucher'
     };
   }
 }
@@ -83,15 +61,7 @@ export async function validateVoucher(
 // Get available vouchers for the current user
 export async function getAvailableVouchers(): Promise<Voucher[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/vouchers/available`, {
-      headers: getAuthHeader(),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch vouchers: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await apiGet<{ data: Voucher[] }>("/api/v1/vouchers/available");
     return data.data || [];
   } catch (error) {
     console.error('Error fetching available vouchers:', error);
@@ -102,23 +72,10 @@ export async function getAvailableVouchers(): Promise<Voucher[]> {
 // Redeem a voucher
 export async function redeemVoucher(code: string, orderId: string): Promise<boolean> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/vouchers/redeem`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeader(),
-      },
-      body: JSON.stringify({
-        code,
-        orderId
-      }),
+    await apiPost("/api/v1/vouchers/redeem", {
+      code,
+      orderId
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to redeem voucher');
-    }
-
     return true;
   } catch (error) {
     console.error('Error redeeming voucher:', error);
@@ -129,22 +86,9 @@ export async function redeemVoucher(code: string, orderId: string): Promise<bool
 // Record voucher usage when applied during checkout
 export async function recordVoucherUsage(code: string): Promise<boolean> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/vouchers/record-usage`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeader(),
-      },
-      body: JSON.stringify({
-        code
-      }),
+    await apiPost("/api/v1/vouchers/record-usage", {
+      code
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to record voucher usage');
-    }
-
     return true;
   } catch (error) {
     console.error('Error recording voucher usage:', error);
@@ -154,7 +98,7 @@ export async function recordVoucherUsage(code: string): Promise<boolean> {
 
 // Calculate discount amount for a voucher
 export function calculateVoucherDiscount(
-  voucher: Voucher, 
+  voucher: Voucher,
   orderAmount: number
 ): number {
   switch (voucher.type) {
@@ -164,14 +108,14 @@ export function calculateVoucherDiscount(
         return Math.min(percentageDiscount, voucher.maxDiscount);
       }
       return percentageDiscount;
-    
+
     case 'fixed':
       return Math.min(voucher.value, orderAmount);
-    
+
     case 'free_shipping':
       // This would need shipping cost from the order
       return 0; // Placeholder
-    
+
     default:
       return 0;
   }

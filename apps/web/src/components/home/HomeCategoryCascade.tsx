@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
+import { apiGet } from "@/utils/api";
 
 type Category = { _id: string; name: string; slug: string; parentId?: string };
 type CategoriesResponse = { status: string; data: Category[] };
@@ -27,10 +28,8 @@ export default function HomeCategoryCascade({ items }: { items: Product[] }) {
 
   useEffect(() => {
     async function run() {
-      const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
       try {
-        const res = await fetch(new URL(`/api/v1/market/categories`, base).toString(), { cache: "no-store" });
-        const json: CategoriesResponse = await res.json();
+        const json = await apiGet<CategoriesResponse>(`/api/v1/market/categories`);
         setCategories(json.data || []);
       } catch { setCategories([]); }
     }

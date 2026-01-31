@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Heart, Check, Trash2 } from "lucide-react";
-import { API_BASE_URL } from "@/utils/api";
+import { API_BASE_URL, apiGet } from "@/utils/api";
 import ProductCard from "../marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
@@ -67,8 +67,7 @@ export default function WishlistPage() {
         try {
           const results = await Promise.all(
             ids.map(async (id) => {
-              const res = await fetch(new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(), { cache: "no-store" });
-              const json: ProductResponse = await res.json();
+              const json = await apiGet<ProductResponse>(`/api/v1/market/products/${id}`);
               return json.data;
             })
           );
@@ -82,8 +81,7 @@ export default function WishlistPage() {
 
       // Picks: same strategy as Cart page (most viewed)
       try {
-        const res = await fetch(new URL(`/api/v1/market/products?sort=-views&limit=8`, API_BASE_URL).toString(), { cache: "no-store" });
-        const json: SearchResponse = await res.json();
+        const json = await apiGet<SearchResponse>(`/api/v1/market/products?sort=-views&limit=8`);
         if (!aborted) setPicks(Array.isArray(json.data?.products) ? json.data.products : []);
       } catch { }
     }
@@ -120,8 +118,7 @@ export default function WishlistPage() {
         try {
           const results = await Promise.all(
             missing.map(async (id) => {
-              const res = await fetch(new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(), { cache: "no-store" });
-              const json: ProductResponse = await res.json();
+              const json = await apiGet<ProductResponse>(`/api/v1/market/products/${id}`);
               return json.data;
             })
           );

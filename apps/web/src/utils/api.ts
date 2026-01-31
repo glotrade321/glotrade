@@ -60,6 +60,27 @@ export async function apiGet<T>(path: string, options: FetchOptions = {}) {
   return (await res.json()) as T;
 }
 
+export async function apiGetBlob(path: string, options: FetchOptions = {}) {
+  const { query, headers, ...rest } = options;
+  const url = buildUrl(path, query);
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      ...getAuthHeader(),
+      ...(headers || {}),
+    },
+    credentials: "include",
+    ...rest,
+  });
+
+  if (!res.ok) {
+    await handleApiError(url, res);
+  }
+
+  return await res.blob();
+}
+
 export async function apiPost<T>(path: string, body?: any, options: FetchOptions = {}) {
   const { query, headers, ...rest } = options;
   const url = buildUrl(path, query);

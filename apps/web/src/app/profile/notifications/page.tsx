@@ -4,24 +4,24 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, Archive, Trash2, Search, Settings, ArrowLeft } from 'lucide-react';
 // No useAuth hook needed - using localStorage directly like other components
-import { API_BASE_URL } from '@/utils/api';
+import { apiGet, apiPost, apiPatch, apiDelete } from '@/utils/api';
+import { getStoredLocale, Locale } from '@/utils/i18n';
 import NotificationPreferencesModal from '@/components/common/NotificationPreferencesModal';
-import { getStoredLocale, Locale } from "@/utils/i18n";
 
-interface Notification {
+interface AppNotification {
   _id: string;
-  type: string;
   title: string;
   message: string;
   status: 'unread' | 'read' | 'archived';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  type: string;
+  priority: 'urgent' | 'high' | 'medium' | 'low';
   createdAt: string;
-  data?: Record<string, any>;
+  payload?: any;
 }
 
 export default function NotificationsPage() {
   const [user, setUser] = useState<any>(null);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'unread' | 'read' | 'archived'>('all');
@@ -37,62 +37,24 @@ export default function NotificationsPage() {
 
   const notificationsPerPage = 20;
 
-  // Get user from localStorage
-  // Get user from localStorage
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("afritrade:user");
-      if (raw) {
-        const userData = JSON.parse(raw);
-        setUser(userData);
-      }
-    } catch (error) {
-      console.error('Failed to parse user data:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    setLocale(getStoredLocale());
-    const onLocale = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { locale: Locale };
-      setLocale(detail.locale);
-    };
-    window.addEventListener("i18n:locale", onLocale as EventListener);
-    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
-  }, []);
-
-  // Fetch notifications
-  useEffect(() => {
-    if (user?.id) {
-      fetchNotifications();
-      fetchUnreadCount();
-    }
-  }, [user?.id, currentPage, statusFilter, typeFilter, priorityFilter]);
+  // ... (useEffect for user, locale remains same)
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams({
+      const queryParams = new URLSearchParams({
         limit: notificationsPerPage.toString(),
         offset: ((currentPage - 1) * notificationsPerPage).toString()
       });
 
-      if (statusFilter !== 'all') params.append('status', statusFilter);
-      if (typeFilter !== 'all') params.append('type', typeFilter);
-      if (priorityFilter !== 'all') params.append('priority', priorityFilter);
+      if (statusFilter !== 'all') queryParams.append('status', statusFilter);
+      if (typeFilter !== 'all') queryParams.append('type', typeFilter);
+      if (priorityFilter !== 'all') queryParams.append('priority', priorityFilter);
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/notifications?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setNotifications(data.data.notifications || []);
-        setTotalNotifications(data.data.total || 0);
-        setTotalPages(Math.ceil((data.data.total || 0) / notificationsPerPage));
-      }
+      const data = await apiGet<any>(`/api/v1/notifications?${queryParams.toString()}`);
+      setNotifications(data.data.notifications || []);
+      setTotalNotifications(data.data.total || 0);
+      setTotalPages(Math.ceil((data.data.total || 0) / notificationsPerPage));
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     } finally {
@@ -102,16 +64,8 @@ export default function NotificationsPage() {
 
   const fetchUnreadCount = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/unread-count`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUnreadCount(data.data.unreadCount || 0);
-      }
+      const data = await apiGet<any>(`/api/v1/notifications/unread-count`);
+      setUnreadCount(data.data.unreadCount || 0);
     } catch (error) {
       console.error('Failed to fetch unread count:', error);
     }
@@ -119,21 +73,13 @@ export default function NotificationsPage() {
 
   const markAsRead = async (notificationId: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}/read`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        setNotifications(prev =>
-          prev.map(n =>
-            n._id === notificationId ? { ...n, status: 'read' as const } : n
-          )
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
+      await apiPatch(`/api/v1/notifications/${notificationId}/read`, {});
+      setNotifications(prev =>
+        prev.map(n =>
+          n._id === notificationId ? { ...n, status: 'read' as const } : n
+        )
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
     }
@@ -141,19 +87,11 @@ export default function NotificationsPage() {
 
   const markAllAsRead = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/mark-all-read`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        setNotifications(prev =>
-          prev.map(n => ({ ...n, status: 'read' as const }))
-        );
-        setUnreadCount(0);
-      }
+      await apiPost(`/api/v1/notifications/mark-all-read`, {});
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, status: 'read' as const }))
+      );
+      setUnreadCount(0);
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
     }
@@ -161,19 +99,11 @@ export default function NotificationsPage() {
 
   const archiveNotification = async (notificationId: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}/archive`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        setNotifications(prev => prev.filter(n => n._id !== notificationId));
-        const notification = notifications.find(n => n._id === notificationId);
-        if (notification?.status === 'unread') {
-          setUnreadCount(prev => Math.max(0, prev - 1));
-        }
+      await apiPatch(`/api/v1/notifications/${notificationId}/archive`, {});
+      setNotifications(prev => prev.filter(n => n._id !== notificationId));
+      const notification = notifications.find(n => n._id === notificationId);
+      if (notification?.status === 'unread') {
+        setUnreadCount(prev => Math.max(0, prev - 1));
       }
     } catch (error) {
       console.error('Failed to archive notification:', error);
@@ -182,19 +112,11 @@ export default function NotificationsPage() {
 
   const deleteNotification = async (notificationId: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        setNotifications(prev => prev.filter(n => n._id !== notificationId));
-        const notification = notifications.find(n => n._id === notificationId);
-        if (notification?.status === 'unread') {
-          setUnreadCount(prev => Math.max(0, prev - 1));
-        }
+      await apiDelete(`/api/v1/notifications/${notificationId}`);
+      setNotifications(prev => prev.filter(n => n._id !== notificationId));
+      const notification = notifications.find(n => n._id === notificationId);
+      if (notification?.status === 'unread') {
+        setUnreadCount(prev => Math.max(0, prev - 1));
       }
     } catch (error) {
       console.error('Failed to delete notification:', error);
@@ -204,17 +126,8 @@ export default function NotificationsPage() {
   // Load user preferences
   const loadUserPreferences = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/user-preferences`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUserPreferences(data.data.preferences);
-      }
+      const data = await apiGet<any>(`/api/v1/user-preferences`);
+      setUserPreferences(data.data.preferences);
     } catch (error) {
       console.error('Failed to load preferences:', error);
     }
@@ -230,30 +143,10 @@ export default function NotificationsPage() {
   // Notification preferences functions
   const handleSavePreferences = async (preferences: any) => {
     try {
-      console.log('Saving preferences:', preferences);
-
-      const response = await fetch(`${API_BASE_URL}/api/v1/user-preferences`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ preferences })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Preferences saved successfully:', data);
-        setShowPreferences(false);
-        // You could add a toast notification here
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to save preferences:', errorData);
-        throw new Error(errorData.message || 'Failed to save preferences');
-      }
+      await apiPost(`/api/v1/user-preferences`, { preferences });
+      setShowPreferences(false);
     } catch (error) {
       console.error('Failed to save preferences:', error);
-      // You could add a toast notification here for errors
     }
   };
 

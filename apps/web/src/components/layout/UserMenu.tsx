@@ -25,7 +25,7 @@ import {
 import { logout } from "@/utils/auth";
 import { toast } from "@/components/common/Toast";
 import { getCountryNames } from "@/utils/countryData";
-import { API_BASE_URL, getUserStorage, saveUserStorage } from "@/utils/api";
+import { API_BASE_URL, getUserStorage, saveUserStorage, apiGet, apiPut } from "@/utils/api";
 import Modal from "@/components/common/Modal";
 
 import { getStoredLocale, setStoredLocale, Locale, languageNames, locales, translate } from "@/utils/i18n";
@@ -337,11 +337,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
     persistPreferences({ theme });
   };
 
-  const authHeader = () => {
-    // Use the centralized getAuthHeader to ensure we send the JWT, not the ID
-    const { getAuthHeader } = require("@/utils/api");
-    return getAuthHeader();
-  };
+  // authHeader removed as it is handled by apiPut/apiGet
 
   const persistPreferences = async (patch: Record<string, any>) => {
     try {
@@ -349,11 +345,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
       const current = raw ? JSON.parse(raw) : {};
       const merged = { ...current, ...patch };
       localStorage.setItem("glotrade:prefs", JSON.stringify(merged));
-      await fetch(new URL(`/api/v1/users/me`, API_BASE_URL).toString(), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", ...authHeader() },
-        body: JSON.stringify({ preferences: merged }),
-      });
+      await apiPut(`/api/v1/users/me`, { preferences: merged });
     } catch { }
   };
 
@@ -881,15 +873,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                   return;
                 }
                 try {
-                  const res = await fetch(
-                    new URL(
-                      `/api/v1/orders/resolve/${encodeURIComponent(key)}`,
-                      API_BASE_URL
-                    ).toString(),
-                    { cache: "no-store" }
-                  );
-                  if (!res.ok) throw new Error(await res.text());
-                  const json = await res.json();
+                  const json = await apiGet<any>(`/api/v1/orders/resolve/${encodeURIComponent(key)}`);
                   const fullId = json?.data?.orderId;
                   if (!fullId) throw new Error(translate(language, "usermenu.orderNotFound"));
                   setShowTrack(false);

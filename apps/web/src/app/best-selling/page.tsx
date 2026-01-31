@@ -91,9 +91,7 @@ type Category = { _id: string; name: string; slug: string; parentId?: string };
 
 async function fetchCategories(): Promise<string[]> {
   try {
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const res = await fetch(new URL(`/api/v1/market/categories`, base).toString(), { cache: "no-store" });
-    const json: { status: string; data: Category[] } = await res.json();
+    const json = await apiGet<{ status: string; data: Category[] }>("/api/v1/market/categories");
     if (Array.isArray(json.data)) return json.data.map((c: Category) => c.name);
   } catch { }
   return [];

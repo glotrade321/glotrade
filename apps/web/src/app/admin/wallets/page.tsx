@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { apiGet, apiPost, getAuthHeader } from "@/utils/api";
+import { apiGet, apiPost, getAuthHeader, apiGetBlob } from "@/utils/api";
 import WalletDetailsModal from "@/components/admin/WalletDetailsModal";
 import {
   Search,
@@ -239,36 +239,29 @@ export default function AdminWalletsPage() {
 
   const handleExportTransactions = async () => {
     try {
-      const params = new URLSearchParams({
+      const query = {
         format: exportFormat,
         ...(exportStartDate && { startDate: exportStartDate }),
         ...(exportEndDate && { endDate: exportEndDate }),
         ...(exportType !== "all" && { type: exportType }),
         ...(exportCurrency !== "all" && { currency: exportCurrency })
-      });
+      };
 
-      const response = await fetch(`/api/v1/wallets/admin/export/transactions?${params}`, {
-        headers: {
-          ...getAuthHeader()
-        }
-      });
+      const blob = await apiGetBlob(`/api/v1/wallets/admin/export/transactions`, { query });
 
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `all-wallet-transactions-${new Date().toISOString().split('T')[0]}.${exportFormat}`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        setShowExportModal(false);
-      } else {
-        console.error("Failed to export transactions");
-      }
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `all-wallet-transactions-${new Date().toISOString().split('T')[0]}.${exportFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      setShowExportModal(false);
     } catch (error) {
       console.error("Export error:", error);
+      const toast = (await import('@/components/common/Toast')).toast;
+      toast("Failed to export transactions", "error");
     }
   };
 

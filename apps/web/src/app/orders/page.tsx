@@ -7,7 +7,7 @@ function formatDisplay(v?: string) {
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { API_BASE_URL, getAuthHeader } from "@/utils/api";
+import { API_BASE_URL, apiGet } from "@/utils/api";
 import { ShoppingBag, CircleDollarSign, CheckCircle, BarChart2, Search, ChevronRight, CalendarDays, ChevronLeft, ChevronRight as ChevronRightIcon, ArrowLeft } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -98,9 +98,8 @@ export default function OrdersPage() {
       if (q) params.set("q", q);
       if (range.from) params.set("from", range.from);
       if (range.to) params.set("to", range.to);
-      const url = new URL(`/api/v1/orders?${params.toString()}`, API_BASE_URL).toString();
-      const res = await fetch(url, { headers: { ...getAuthHeader() }, cache: "no-store" });
-      const json = await res.json();
+
+      const json = await apiGet<any>(`/api/v1/orders?${params.toString()}`);
       setOrders(json?.data?.orders || []);
       setTotal(json?.data?.total || 0);
     } catch { }
@@ -113,9 +112,8 @@ export default function OrdersPage() {
       const params = new URLSearchParams({ buyerId: uid });
       if (range.from) params.set("from", range.from);
       if (range.to) params.set("to", range.to);
-      const url = new URL(`/api/v1/orders/analytics/overview?${params.toString()}`, API_BASE_URL).toString();
-      const res = await fetch(url, { headers: { ...getAuthHeader() }, cache: "no-store" });
-      const json = await res.json();
+
+      const json = await apiGet<any>(`/api/v1/orders/analytics/overview?${params.toString()}`);
       const d = json?.data || {};
       setKpi({ totalOrders: d.totalOrders || 0, delivered: d.delivered || 0, spendTotal: d.spendTotal || 0, avgOrderValue: d.avgOrderValue || 0 });
       setAnalytics({ timeSeries: Array.isArray(d.timeSeries) ? d.timeSeries : [], statusBreakdown: d.statusBreakdown || {} });
@@ -141,9 +139,7 @@ export default function OrdersPage() {
       for (const pid of pids) {
         try {
           loadingMetaRef.current.add(pid);
-          const url = new URL(`/api/v1/market/products/${pid}`, API_BASE_URL).toString();
-          const res = await fetch(url, { cache: "no-store" });
-          const json = await res.json();
+          const json = await apiGet<any>(`/api/v1/market/products/${pid}`);
           const data = json?.data || json?.product || {};
           const title = data?.title || "Product";
           const image = Array.isArray(data?.images) && data.images[0] ? data.images[0] : undefined;

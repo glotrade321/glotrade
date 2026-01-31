@@ -17,7 +17,7 @@ import {
   X,
   Tag,
 } from "lucide-react";
-import { API_BASE_URL, apiGet, apiDelete } from "@/utils/api";
+import { apiGet, apiDelete, apiPost } from "@/utils/api";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 import { initiatePayment, createOrder } from "./initiate";
 
@@ -26,7 +26,6 @@ import VoucherInput from "@/components/checkout/VoucherInput";
 import InsufficientBalanceModal from "@/components/wallet/InsufficientBalanceModal";
 import { AppliedVoucher } from "@/utils/voucherApi";
 import { getUserId } from "@/utils/auth";
-import { apiPost } from "@/utils/api";
 
 type ApiProduct = {
   _id: string;
@@ -253,19 +252,6 @@ export default function CheckoutPage() {
     },
   });
 
-  // Configuration is set with default values - no need to fetch from API
-  // const fetchConfig = async () => {
-  //     try {
-  //         const response = await fetch(`${API_BASE_URL}/api/v1/config/checkout`);
-  //         const configData = await response.json();
-  //         if (configData.status === 'success') {
-  //             setConfig(prevConfig => ({ ...prevConfig, ...configData.data }));
-  //         }
-  //     } catch (error) {
-  //         console.log('Using default config:', error);
-  //     }
-  // };
-
   // Real voucher system
   const [appliedVouchers, setAppliedVouchers] = useState<AppliedVoucher[]>([]);
 
@@ -287,7 +273,6 @@ export default function CheckoutPage() {
     let aborted = false;
     async function run() {
       // Configuration is already set with default values
-
       const map = readCart();
       const ids = Object.keys(map);
       console.log("Cart data:", { map, ids, count: ids.length });
@@ -296,11 +281,7 @@ export default function CheckoutPage() {
         const results = await Promise.all(
           ids.map(async (id) => {
             console.log("Fetching product:", id);
-            const res = await fetch(
-              new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(),
-              { cache: "no-store" }
-            );
-            const json: ProductResponse = await res.json();
+            const json: ProductResponse = await apiGet(`/api/v1/market/products/${id}`);
             console.log("Product response:", json);
             return json.data;
           })
@@ -313,175 +294,54 @@ export default function CheckoutPage() {
       } catch (error) {
         console.error("Error fetching products:", error);
       }
+
       try {
         // First try to get address from user's database if logged in
         let userAddress = null;
         try {
           const raw = localStorage.getItem("afritrade:user");
-          console.log(
-            "Checkout: User data from localStorage:",
-            raw ? "exists" : "missing"
-          );
-
           if (raw) {
             const user = JSON.parse(raw);
             setUserData(user);
-            console.log("Checkout: Parsed user:", {
-              id: user?.id,
-              _id: user?._id,
-              username: user?.username,
-            });
-
             if (user?.id || user?._id) {
-              // Get the actual JWT token from localStorage
               const authToken = localStorage.getItem("afritrade:auth");
-              console.log("Checkout: Auth token exists:", !!authToken);
-
-              let freshUser = user; // Default to localStorage user
+              let freshUser = user;
 
               if (authToken) {
-                // Fetch fresh user data from database using JWT token
-                console.log(
-                  "Checkout: Fetching fresh user data from database..."
-                );
-                const userRes = await fetch(
-                  new URL(`/api/v1/users/me`, API_BASE_URL).toString(),
-                  {
-                    headers: { Authorization: `Bearer ${authToken}` },
-                    cache: "no-store",
-                  }
-                );
-
-                if (userRes.ok) {
-                  const userData = await userRes.json();
+                try {
+                  const userData = await apiGet<{ data: any }>(`/api/v1/users/me`);
                   freshUser = userData.data;
                   setUserData(freshUser);
-                  console.log("Checkout: Fresh user data received:", freshUser);
-
-                  // Update localStorage with fresh user data
-                  try {
-                    const updatedUser = {
-                      ...user,
-                      firstName: freshUser.firstName,
-                      lastName: freshUser.lastName,
-                    };
-                    localStorage.setItem(
-                      "afritrade:user",
-                      JSON.stringify(updatedUser)
-                    );
-                    console.log(
-                      "Checkout: Updated localStorage with fresh user data:",
-                      updatedUser
-                    );
-                  } catch (error) {
-                    console.error(
-                      "Failed to update localStorage user data:",
-                      error
-                    );
-                  }
-                } else {
-                  console.log(
-                    "Checkout: Failed to fetch fresh user data, status:",
-                    userRes.status
-                  );
+                } catch (userError) {
+                  console.log("Error fetching fresh user data:", userError);
                 }
-              } else {
-                console.log(
-                  "Checkout: No auth token found - authentication issue detected"
-                );
-                console.log(
-                  "Checkout: User appears to be logged in but missing auth token"
-                );
-                console.log(
-                  "Checkout: This suggests a login/authentication flow issue"
-                );
-
-                // Check if we can find any auth-related tokens
-                const allKeys = Object.keys(localStorage);
-                const authKeys = allKeys.filter(
-                  (key) => key.includes("auth") || key.includes("token")
-                );
-                console.log("Checkout: Available auth-related keys:", authKeys);
-
-                // For now, use the existing localStorage user data
-                // The real fix is to ensure proper authentication during login
-                console.log(
-                  "Checkout: Using existing localStorage user data as fallback"
-                );
               }
 
-              // Fetch user's addresses from database using JWT token
-              console.log("Checkout: Fetching addresses from database...");
-              const addressRes = await fetch(
-                new URL(`/api/v1/users/me/addresses`, API_BASE_URL).toString(),
-                {
-                  headers: {
-                    Authorization: `Bearer ${authToken || user.id || user._id}`,
-                  },
-                  cache: "no-store",
-                }
-              );
-
-              console.log(
-                "Checkout: Address API response status:",
-                addressRes.status
-              );
-
-              if (addressRes.ok) {
-                const addressData = await addressRes.json();
-                console.log("Checkout: Address data received:", addressData);
-
+              try {
+                const addressData = await apiGet<{ data: any[] }>(`/api/v1/users/me/addresses`);
                 if (addressData.data && addressData.data.length > 0) {
-                  // Use first address or default address
-                  const defaultAddr =
-                    addressData.data.find((a: any) => a.isDefault) ||
-                    addressData.data[0];
-
-                  // Map database fields to expected format
+                  const defaultAddr = addressData.data.find((a: any) => a.isDefault) || addressData.data[0];
                   userAddress = {
                     ...defaultAddr,
-                    address: defaultAddr.street, // Map street to address
-                    // Use fresh user's firstName/lastName, fallback to username
-                    displayName: `${freshUser?.firstName || freshUser?.username || "User"
-                      } ${freshUser?.lastName || ""}`.trim(),
+                    address: defaultAddr.street,
+                    displayName: `${freshUser?.firstName || freshUser?.username || "User"} ${freshUser?.lastName || ""}`.trim(),
                   };
-
-                  console.log("Checkout: User data from localStorage:", {
-                    id: user?.id,
-                    username: user?.username,
-                    firstName: user?.firstName,
-                    lastName: user?.lastName,
-                    hasFirstName: !!user?.firstName,
-                    hasLastName: !!user?.lastName,
-                  });
-                  console.log("Checkout: Fresh user data:", {
-                    id: freshUser?.id,
-                    username: freshUser?.username,
-                    firstName: freshUser?.firstName,
-                    lastName: freshUser?.lastName,
-                    hasFirstName: !!freshUser?.firstName,
-                    hasLastName: !!freshUser?.lastName,
-                  });
-                  console.log(
-                    "Checkout: Constructed displayName:",
-                    userAddress.displayName
-                  );
-                  console.log("Checkout: Using address:", userAddress);
                 }
-              } else if (addressRes.status === 401) {
-                // Token expired or invalid, clear user data
-                console.log("Authentication failed, clearing user data");
-                localStorage.removeItem("afritrade:user");
-                localStorage.removeItem("shippingAddress");
-                window.dispatchEvent(new CustomEvent("auth:logout"));
+              } catch (addrError: any) {
+                console.log("Error fetching addresses:", addrError);
+                if (addrError.status === 401) {
+                  console.log("Authentication failed, clearing user data");
+                  localStorage.removeItem("afritrade:user");
+                  localStorage.removeItem("shippingAddress");
+                  window.dispatchEvent(new CustomEvent("auth:logout"));
+                }
               }
             }
           }
         } catch (error) {
-          console.log("Could not fetch user address from database:", error);
+          console.log("Could not resolve user address from database:", error);
         }
 
-        // If no database address, fall back to localStorage
         if (!userAddress) {
           const raw = localStorage.getItem("shippingAddress");
           if (raw) {
@@ -490,29 +350,10 @@ export default function CheckoutPage() {
         }
 
         if (!aborted) {
-          console.log("Address resolution result:", {
-            userAddress,
-            hasLocalStorage: !!localStorage.getItem("shippingAddress"),
-            localStorageAddress: localStorage.getItem("shippingAddress"),
-          });
-
           if (userAddress) {
-            console.log(
-              "Checkout: About to set address state with:",
-              userAddress
-            );
             setAddress(userAddress);
-            // Always sync localStorage with database address to keep it fresh
-            localStorage.setItem(
-              "shippingAddress",
-              JSON.stringify(userAddress)
-            );
-            console.log(
-              "Checkout: Synced address to localStorage:",
-              userAddress
-            );
+            localStorage.setItem("shippingAddress", JSON.stringify(userAddress));
           } else {
-            // No address found anywhere, clear any stale localStorage data
             setAddress(null);
             localStorage.removeItem("shippingAddress");
           }
@@ -521,10 +362,6 @@ export default function CheckoutPage() {
         console.error("Error loading address:", error);
       }
     }
-    run();
-    return () => {
-      aborted = true;
-    };
     run();
     return () => {
       aborted = true;

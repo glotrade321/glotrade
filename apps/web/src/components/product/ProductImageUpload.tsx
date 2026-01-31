@@ -2,7 +2,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Upload, Image as ImageIcon, Trash2, Move, Loader2 } from "lucide-react";
 import { toast } from "@/components/common/Toast";
-import { API_BASE_URL } from "@/utils/api";
+import { apiPost, apiDelete } from "@/utils/api";
 import { authHeader } from "@/utils/auth";
 
 interface ProductImageUploadProps {
@@ -20,11 +20,11 @@ interface UploadingImage {
   error?: string;
 }
 
-export default function ProductImageUpload({ 
-  productId, 
-  currentImages, 
-  onImagesChange, 
-  maxImages = 10 
+export default function ProductImageUpload({
+  productId,
+  currentImages,
+  onImagesChange,
+  maxImages = 10
 }: ProductImageUploadProps) {
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -35,28 +35,16 @@ export default function ProductImageUpload({
       const formData = new FormData();
       formData.append('images', file);
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/product-images/upload/${productId}`,
-        {
-          method: 'POST',
-          headers: {
-            ...authHeader(),
-          },
-          body: formData,
-        }
+      const result = await apiPost<{ status: string; data: { images: { url: string }[] }; message?: string }>(
+        `/api/v1/product-images/upload/${productId}`,
+        formData
       );
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const result = await response.json();
-      
       if (result.status === 'success' && result.data.images?.length > 0) {
         // Update uploading state
-        setUploadingImages(prev => 
-          prev.map(img => 
-            img.id === uploadId 
+        setUploadingImages(prev =>
+          prev.map(img =>
+            img.id === uploadId
               ? { ...img, status: 'success', progress: 100 }
               : img
           )
@@ -73,14 +61,14 @@ export default function ProductImageUpload({
           setUploadingImages(prev => prev.filter(img => img.id !== uploadId));
         }, 2000);
       }
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-      
-      setUploadingImages(prev => 
-        prev.map(img => 
-          img.id === uploadId 
+
+      const errorMessage = error.message || 'Upload failed';
+
+      setUploadingImages(prev =>
+        prev.map(img =>
+          img.id === uploadId
             ? { ...img, status: 'error', error: errorMessage }
             : img
         )
@@ -91,7 +79,7 @@ export default function ProductImageUpload({
   };
 
   const handleFileSelect = useCallback((files: FileList) => {
-    const imageFiles = Array.from(files).filter(file => 
+    const imageFiles = Array.from(files).filter(file =>
       file.type.startsWith('image/')
     );
 
@@ -123,33 +111,21 @@ export default function ProductImageUpload({
 
   const deleteImage = async (imageUrl: string) => {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/product-images/delete`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            ...authHeader(),
-          },
-          body: JSON.stringify({
-            productId,
-            imageUrl,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      await apiDelete(`/api/v1/product-images/delete`, {
+        body: JSON.stringify({
+          productId,
+          imageUrl,
+        })
+      });
 
       // Remove image from current images
       const updatedImages = currentImages.filter(img => img !== imageUrl);
       onImagesChange(updatedImages);
 
       toast('Image deleted successfully', 'success');
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Delete error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to delete image';
+      const errorMessage = error.message || 'Failed to delete image';
       toast(errorMessage, 'error');
     }
   };
@@ -160,30 +136,16 @@ export default function ProductImageUpload({
       const [movedImage] = newImages.splice(fromIndex, 1);
       newImages.splice(toIndex, 0, movedImage);
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/product-images/reorder`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...authHeader(),
-          },
-          body: JSON.stringify({
-            productId,
-            imageUrls: newImages,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      await apiPost(`/api/v1/product-images/reorder`, {
+        productId,
+        imageUrls: newImages,
+      });
 
       onImagesChange(newImages);
       toast('Image order updated', 'success');
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Reorder error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to reorder images';
+      const errorMessage = error.message || 'Failed to reorder images';
       toast(errorMessage, 'error');
     }
   };
@@ -201,7 +163,7 @@ export default function ProductImageUpload({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       handleFileSelect(files);
@@ -226,11 +188,10 @@ export default function ProductImageUpload({
 
       {/* Upload Area */}
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-          isDragging
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
-            : 'border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600'
-        }`}
+        className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging
+          ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
+          : 'border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600'
+          }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -321,7 +282,7 @@ export default function ProductImageUpload({
                   alt={`Product image ${index + 1}`}
                   className="w-full h-24 object-cover rounded-lg border border-neutral-200 dark:border-neutral-700"
                 />
-                
+
                 {/* Overlay with actions */}
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <div className="flex gap-2">
@@ -374,4 +335,4 @@ export default function ProductImageUpload({
       </div>
     </div>
   );
-} 
+}

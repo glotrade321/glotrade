@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight, Store, Upload, X, Check } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import { RequireAuth } from "@/components/auth/Guards";
-import { API_BASE_URL, getAuthHeader, apiGet, apiPut } from "@/utils/api";
+import { API_BASE_URL, getAuthHeader, apiGet, apiPut, apiPost } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import AdminGuard from "@/components/auth/AdminGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -76,42 +76,19 @@ export default function AdminStoreSettingsPage() {
             }
 
             // Upload to generic file upload endpoint
-            const response = await fetch(new URL('/api/v1/files/upload', API_BASE_URL).toString(), {
-                method: 'POST',
-                headers: {
-                    ...getAuthHeader()
-                },
-                body: formData
-            });
+            const data = await apiPost<any>('/api/v1/files/upload', formData);
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.status === 'success' && data.data?.file?.url) {
-                    // Update the seller profile with the new logo URL
-                    const logoUrl = data.data.file.url;
+            if (data.status === 'success' && data.data?.file?.url) {
+                // Update the seller profile with the new logo URL
+                const logoUrl = data.data.file.url;
 
-                    // Update seller profile using the seller endpoint
-                    const sellerResponse = await fetch(new URL('/api/v1/sellers/me/profile', API_BASE_URL).toString(), {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...getAuthHeader()
-                        },
-                        body: JSON.stringify({ logoUrl })
-                    });
+                // Update seller profile using the seller endpoint
+                await apiPut('/api/v1/sellers/me/profile', { logoUrl });
 
-                    if (sellerResponse.ok) {
-                        setProfile((p: any) => ({ ...(p || {}), logoUrl }));
-                        toast('Store logo uploaded successfully!', 'success');
-                    } else {
-                        throw new Error('Failed to update store profile');
-                    }
-                } else {
-                    throw new Error(data.message || 'Upload failed');
-                }
+                setProfile((p: any) => ({ ...(p || {}), logoUrl }));
+                toast('Store logo uploaded successfully!', 'success');
             } else {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Upload failed');
+                throw new Error(data.message || 'Upload failed');
             }
         } catch (error) {
             console.error('Logo upload error:', error);

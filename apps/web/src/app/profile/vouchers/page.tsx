@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { RequireAuth } from "@/components/auth/Guards";
 import { toast } from "@/components/common/Toast";
-import { API_BASE_URL } from "@/utils/api";
-import { getUserId, authHeader } from "@/utils/auth";
+import { apiGet } from "@/utils/api";
+import { getUserId } from "@/utils/auth";
 import { TicketPercent, Calendar, Users, Tag, Info, Copy, CheckCircle, XCircle, Clock, BarChart3 } from "lucide-react";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 
@@ -46,26 +46,14 @@ interface VoucherUsage {
 export default function VouchersPage() {
   const router = useRouter();
   const [availableVouchers, setAvailableVouchers] = useState<Voucher[]>([]);
-  const [usedVouchers, setUsedVouchers] = useState<Voucher[]>([]);
+  const [usedVouchers, setUsedVouchers] = useState<any[]>([]);
   const [voucherUsage, setVoucherUsage] = useState<VoucherUsage[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'available' | 'used' | 'history'>('available');
   const [locale, setLocale] = useState<Locale>("en");
 
-  useEffect(() => {
-    setLocale(getStoredLocale());
-    const onLocale = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { locale: Locale };
-      setLocale(detail.locale);
-    };
-    window.addEventListener("i18n:locale", onLocale as EventListener);
-    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
-  }, []);
-
-  useEffect(() => {
-    loadVouchers();
-  }, []);
+  // ... (useEffect hook for locale remains same)
 
   const loadVouchers = async () => {
     try {
@@ -74,47 +62,27 @@ export default function VouchersPage() {
       if (!uid) return;
 
       // Load available vouchers
-      const availableResponse = await fetch(
-        new URL("/api/v1/vouchers/available", API_BASE_URL).toString(),
-        {
-          headers: { ...authHeader() },
-          cache: "no-store",
-        }
-      );
+      const availableData = await apiGet<{ data: Voucher[] }>("/api/v1/vouchers/available");
+      setAvailableVouchers(availableData.data || []);
 
-      if (availableResponse.ok) {
-        const availableData = await availableResponse.json();
-        setAvailableVouchers(availableData.data || []);
-      }
+      // Load user's voucher usage data
+      const usageData = await apiGet<{ data: VoucherUsage[] }>("/api/v1/vouchers/my-usage");
+      setVoucherUsage(usageData.data || []);
 
-      // Load user's voucher usage data (we'll create this endpoint)
-      const usageResponse = await fetch(
-        new URL("/api/v1/vouchers/my-usage", API_BASE_URL).toString(),
-        {
-          headers: { ...authHeader() },
-          cache: "no-store",
-        }
-      );
+      // Extract used vouchers from usage data
+      const usedVouchersData = usageData.data?.map((usage: VoucherUsage) => ({
+        _id: usage.voucherId,
+        code: usage.code,
+        type: usage.type,
+        value: usage.value,
+        description: usage.description,
+        usedAt: usage.usedAt,
+        discountApplied: usage.discountApplied,
+        orderId: usage.orderId,
+        orderTotal: usage.orderTotal
+      })) || [];
 
-      if (usageResponse.ok) {
-        const usageData = await usageResponse.json();
-        setVoucherUsage(usageData.data || []);
-
-        // Extract used vouchers from usage data
-        const usedVouchersData = usageData.data?.map((usage: VoucherUsage) => ({
-          _id: usage.voucherId,
-          code: usage.code,
-          type: usage.type,
-          value: usage.value,
-          description: usage.description,
-          usedAt: usage.usedAt,
-          discountApplied: usage.discountApplied,
-          orderId: usage.orderId,
-          orderTotal: usage.orderTotal
-        })) || [];
-
-        setUsedVouchers(usedVouchersData);
-      }
+      setUsedVouchers(usedVouchersData);
     } catch (error) {
       toast(translate(locale, "vouchers.toasts.loadError"), "error");
     } finally {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
+import { apiGet } from "@/utils/api";
 import EmptyState from "../common/EmptyState";
 import { ShoppingBag } from "lucide-react";
 
@@ -52,24 +53,20 @@ export default function FeaturedRail() {
     let aborted = false;
     async function run() {
       setLoading(true);
-      const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-      const urls: URL[] = [];
-      // 1) True featured by backend flag
-      urls.push(new URL(`/api/v1/market/products/featured?limit=12`, base));
-      // 2) Popular by views (different signal) with category/brand hints to diversify
-      const u2 = new URL(`/api/v1/market/products`, base);
-      u2.searchParams.set("limit", "24");
-      u2.searchParams.set("sort", "-views");
-      if (hints.recentBrands.length) u2.searchParams.set("brand", hints.recentBrands[0]);
-      urls.push(u2);
-      // 3) Discounted picks (deal-focused)
-      const u3 = new URL(`/api/v1/market/products`, base);
-      u3.searchParams.set("limit", "24");
-      u3.searchParams.set("discountMin", "5");
-      urls.push(u3);
-
       try {
-        const resps = await Promise.all(urls.map((u) => fetch(u.toString(), { cache: "no-store" }).then(r => r.json()).catch(() => null)));
+        const [r1, r2, r3] = await Promise.all([
+          apiGet<any>(`/api/v1/market/products/featured`, { query: { limit: 12 } }).catch(() => null),
+          apiGet<any>(`/api/v1/market/products`, {
+            query: {
+              limit: 24,
+              sort: "-views",
+              ...(hints.recentBrands.length && { brand: hints.recentBrands[0] })
+            }
+          }).catch(() => null),
+          apiGet<any>(`/api/v1/market/products`, { query: { limit: 24, discountMin: 5 } }).catch(() => null)
+        ]);
+
+        const resps = [r1, r2, r3];
         const all: Product[] = [];
         for (const r of resps) {
           if (!r) continue;
@@ -91,6 +88,8 @@ export default function FeaturedRail() {
           if (diversified.length >= 12) break;
         }
         if (!aborted) setItems(diversified);
+      } catch (error) {
+        console.error("FeaturedRail error:", error);
       } finally {
         if (!aborted) setLoading(false);
       }

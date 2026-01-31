@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Camera, Upload, X, Loader2 } from "lucide-react";
 import { toast } from "@/components/common/Toast";
-import { API_BASE_URL } from "@/utils/api";
+import { apiPost, apiDelete } from "@/utils/api";
 import { authHeader } from "@/utils/auth";
 import { translate, Locale } from "@/utils/i18n";
 
@@ -24,19 +24,8 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
   // Generate presigned URL for avatar display
   const getPresignedUrl = async (avatarUrl: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/avatars/presigned-url`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...authHeader(),
-        },
-        body: JSON.stringify({ avatarUrl }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        return result.data.presignedUrl;
-      }
+      const result = await apiPost<{ data: { presignedUrl: string } }>("/api/v1/avatars/presigned-url", { avatarUrl });
+      return result.data.presignedUrl;
     } catch (error) {
       console.error('Failed to get presigned URL:', error);
     }
@@ -88,19 +77,7 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
       const formData = new FormData();
       formData.append('avatar', file);
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/avatars/upload`, {
-        method: 'POST',
-        headers: {
-          ...authHeader(),
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const result = await response.json();
+      const result = await apiPost<{ status: string; data: { avatar: { url: string } }; message?: string }>("/api/v1/avatars/upload", formData);
 
       if (result.status === 'success') {
         onAvatarChange(result.data.avatar.url);
@@ -127,18 +104,7 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
     setShowDeleteConfirm(false);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/avatars/delete`, {
-        method: 'DELETE',
-        headers: {
-          ...authHeader(),
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Delete failed');
-      }
-
-      const result = await response.json();
+      const result = await apiDelete<{ status: string; message?: string }>("/api/v1/avatars/delete");
 
       if (result.status === 'success') {
         onAvatarChange('');

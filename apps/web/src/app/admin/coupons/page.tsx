@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { RequireAuth } from "@/components/auth/Guards";
 import { toast } from "@/components/common/Toast";
-import { API_BASE_URL } from "@/utils/api";
-import { getUserId, authHeader } from "@/utils/auth";
+import { apiGet, apiPost, apiPatch, apiDelete } from "@/utils/api";
+import { getUserId } from "@/utils/auth";
 import AdminGuard from "@/components/auth/AdminGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
@@ -87,20 +87,8 @@ export default function AdminCouponsPage() {
             const uid = getUserId();
             if (!uid) return;
 
-            const response = await fetch(
-                new URL("/api/v1/vouchers/my-vouchers", API_BASE_URL).toString(),
-                {
-                    headers: { ...authHeader() },
-                    cache: "no-store",
-                }
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                setCoupons(data.data || []);
-            } else {
-                toast("Failed to load coupons", "error");
-            }
+            const response = await apiGet<{ data: Coupon[] }>("/api/v1/vouchers/my-vouchers");
+            setCoupons(response.data || []);
         } catch (error) {
             toast("Error loading coupons", "error");
         } finally {
@@ -114,21 +102,9 @@ export default function AdminCouponsPage() {
             const uid = getUserId();
             if (!uid) return;
 
-            const response = await fetch(
-                new URL("/api/v1/vouchers/generate-code", API_BASE_URL).toString(),
-                {
-                    method: "POST",
-                    headers: { ...authHeader() },
-                }
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                setFormData(prev => ({ ...prev, code: data.data.code }));
-                toast("Unique code generated!", "success");
-            } else {
-                toast("Failed to generate code", "error");
-            }
+            const response = await apiPost<{ data: { code: string } }>("/api/v1/vouchers/generate-code");
+            setFormData(prev => ({ ...prev, code: response.data.code }));
+            toast("Unique code generated!", "success");
         } catch (error) {
             toast("Error generating code", "error");
         } finally {
@@ -162,36 +138,20 @@ export default function AdminCouponsPage() {
                 return;
             }
 
-            const response = await fetch(
-                new URL("/api/v1/vouchers/create", API_BASE_URL).toString(),
-                {
-                    method: "POST",
-                    headers: {
-                        ...authHeader(),
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(formData),
-                }
-            );
-
-            if (response.ok) {
-                toast("Coupon created successfully!", "success");
-                setShowCreateForm(false);
-                setFormData({
-                    code: "",
-                    type: "percentage",
-                    value: 10,
-                    minOrderAmount: 0,
-                    maxUsage: 100,
-                    validFrom: new Date().toISOString().split('T')[0],
-                    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    userUsageLimit: 1,
-                });
-                loadCoupons();
-            } else {
-                const errorData = await response.json();
-                toast(errorData.message || "Failed to create coupon", "error");
-            }
+            await apiPost("/api/v1/vouchers/create", formData);
+            toast("Coupon created successfully!", "success");
+            setShowCreateForm(false);
+            setFormData({
+                code: "",
+                type: "percentage",
+                value: 10,
+                minOrderAmount: 0,
+                maxUsage: 100,
+                validFrom: new Date().toISOString().split('T')[0],
+                validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                userUsageLimit: 1,
+            });
+            loadCoupons();
         } catch (error) {
             toast("Error creating coupon", "error");
         }
@@ -202,20 +162,9 @@ export default function AdminCouponsPage() {
             const uid = getUserId();
             if (!uid) return;
 
-            const response = await fetch(
-                new URL(`/api/v1/vouchers/${couponId}`, API_BASE_URL).toString(),
-                {
-                    method: "DELETE",
-                    headers: { ...authHeader() },
-                }
-            );
-
-            if (response.ok) {
-                toast("Coupon deactivated successfully!", "success");
-                loadCoupons();
-            } else {
-                toast("Failed to deactivate coupon", "error");
-            }
+            await apiDelete(`/api/v1/vouchers/${couponId}`);
+            toast("Coupon deactivated successfully!", "success");
+            loadCoupons();
         } catch (error) {
             toast("Error deactivating coupon", "error");
         }
@@ -226,20 +175,9 @@ export default function AdminCouponsPage() {
             const uid = getUserId();
             if (!uid) return;
 
-            const response = await fetch(
-                new URL(`/api/v1/vouchers/${couponId}/activate`, API_BASE_URL).toString(),
-                {
-                    method: "PATCH",
-                    headers: { ...authHeader() },
-                }
-            );
-
-            if (response.ok) {
-                toast("Coupon activated successfully!", "success");
-                loadCoupons();
-            } else {
-                toast("Failed to activate coupon", "error");
-            }
+            await apiPatch(`/api/v1/vouchers/${couponId}/activate`);
+            toast("Coupon activated successfully!", "success");
+            loadCoupons();
         } catch (error) {
             toast("Error activating coupon", "error");
         }

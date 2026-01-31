@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Star, ArrowLeft, PackageSearch } from "lucide-react";
-import { API_BASE_URL } from "@/utils/api";
+import { apiGet } from "@/utils/api";
 
 interface Review {
   _id: string;
@@ -25,21 +25,11 @@ export default function ProfileReviewsPage() {
     const fetchReviews = async () => {
       try {
         setLoading(true);
-        const res = await fetch(new URL(`/api/v1/market/reviews?limit=100`, API_BASE_URL).toString(), { 
-          headers: { 
-            Authorization: `Bearer ${localStorage.getItem('afritrade:auth') || ''}` 
-          }, 
-          cache: "no-store" 
-        });
-        
-        if (res.ok) {
-          const json = await res.json();
-          const reviewsData = json?.data || {};
-          const reviewsArray = reviewsData.reviews || [];
-          setReviews(reviewsArray);
-        } else {
-          setError("Failed to load reviews");
-        }
+        const json = await apiGet<any>(`/api/v1/market/reviews?limit=100`);
+
+        const reviewsData = json?.data || {};
+        const reviewsArray = reviewsData.reviews || [];
+        setReviews(reviewsArray);
       } catch (error) {
         setError("Error loading reviews");
       } finally {
@@ -170,11 +160,10 @@ export default function ProfileReviewsPage() {
                         <Star
                           key={i}
                           size={14}
-                          className={`sm:w-4 sm:h-4 ${
-                            i < review.rating 
-                              ? "text-neutral-900 fill-current dark:text-neutral-100" 
-                              : "text-neutral-300 dark:text-neutral-600"
-                          }`}
+                          className={`sm:w-4 sm:h-4 ${i < review.rating
+                            ? "text-neutral-900 fill-current dark:text-neutral-100"
+                            : "text-neutral-300 dark:text-neutral-600"
+                            }`}
                         />
                       ))}
                       <span className="ml-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
@@ -197,7 +186,7 @@ export default function ProfileReviewsPage() {
                         day: 'numeric'
                       })}
                     </span>
-                    <Link 
+                    <Link
                       href={`/marketplace/${review.product._id}`}
                       className="rounded-full border border-neutral-300 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800 text-center"
                     >
