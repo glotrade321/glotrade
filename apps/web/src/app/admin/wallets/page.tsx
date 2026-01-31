@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { apiGet, apiPost } from "@/utils/api";
+import { apiGet, apiPost, getAuthHeader } from "@/utils/api";
 import WalletDetailsModal from "@/components/admin/WalletDetailsModal";
 import {
   Search,
@@ -249,7 +249,7 @@ export default function AdminWalletsPage() {
 
       const response = await fetch(`/api/v1/wallets/admin/export/transactions?${params}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          ...getAuthHeader()
         }
       });
 

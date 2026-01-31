@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RequireAuth } from "@/components/auth/Guards";
 import { toast } from "@/components/common/Toast";
-import { API_BASE_URL, getAuthHeader } from "@/utils/api";
+import { API_BASE_URL, apiGet, apiPut, apiDelete, getAuthHeader } from "@/utils/api";
 import ProductImageUpload from "@/components/product/ProductImageUpload";
 import { X } from "lucide-react";
 import { getCountryNames } from "@/utils/countryData";
@@ -70,9 +70,8 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(new URL(`/api/v1/market/categories`, API_BASE_URL).toString(), { cache: "no-store" });
-        const json = await res.json();
-        setCats(Array.isArray(json?.data) ? json.data : []);
+        const response = await apiGet('/api/v1/market/categories') as any;
+        setCats(Array.isArray(response.data) ? response.data : []);
       } catch { }
     })();
   }, []);
@@ -89,9 +88,8 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     (async () => {
       try {
-        const r = await fetch(new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(), { headers: { ...getAuthHeader() }, cache: "no-store" });
-        const j = await r.json();
-        const p = j?.data || null;
+        const response = await apiGet(`/api/v1/market/products/${id}`) as any;
+        const p = response?.data || null;
         setProduct(p);
         if (p) {
           setForm({
@@ -178,16 +176,10 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
         }));
       }
 
-      const r = await fetch(new URL(`/api/v1/vendors/products/${id}`, API_BASE_URL).toString(), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify(payload)
-      });
-      if (!r.ok) throw new Error(await r.text());
+      await apiPut(`/api/v1/vendors/products/${id}`, payload);
 
       // Refresh product data after save
-      const refreshRes = await fetch(new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(), { headers: { ...getAuthHeader() }, cache: "no-store" });
-      const refreshData = await refreshRes.json();
+      const refreshData = await apiGet(`/api/v1/market/products/${id}`) as any;
       setProduct(refreshData?.data || null);
       setHasUnsavedChanges(false);
       toast('Product updated successfully', 'success');
@@ -202,12 +194,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
   const handleImagesChange = async (newImages: string[]) => {
     try {
       setLoading(true);
-      const r = await fetch(new URL(`/api/v1/vendors/products/${id}`, API_BASE_URL).toString(), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify({ images: newImages })
-      });
-      if (!r.ok) throw new Error(await r.text());
+      await apiPut(`/api/v1/vendors/products/${id}`, { images: newImages });
 
       // Update local product state
       setProduct((prev: any) => prev ? { ...prev, images: newImages } : null);
@@ -515,7 +502,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
                   <button onClick={() => { if (hasUnsavedChanges) setShowCancelConfirm(true); else router.back(); }} className="px-6 py-2.5 border border-neutral-300 dark:border-neutral-700 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm font-medium order-2 sm:order-1">
                     Discard Changes
                   </button>
-                  <button onClick={async () => { if (!confirm('Archive this product?')) return; try { await fetch(new URL(`/api/v1/vendors/products/${id}`, API_BASE_URL).toString(), { method: 'DELETE', headers: { ...getAuthHeader() } }); router.replace('/admin/products'); } catch { } }} className="px-6 py-2.5 border border-rose-300 text-rose-600 rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm font-medium order-3">Archive Product</button>
+                  <button onClick={async () => { if (!confirm('Archive this product?')) return; try { await apiDelete(`/api/v1/vendors/products/${id}`); router.replace('/admin/products'); } catch { } }} className="px-6 py-2.5 border border-rose-300 text-rose-600 rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm font-medium order-3">Archive Product</button>
                 </div>
               </div>
             )}

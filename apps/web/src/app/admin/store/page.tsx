@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight, Store, Upload, X, Check } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import { RequireAuth } from "@/components/auth/Guards";
-import { API_BASE_URL, getAuthHeader } from "@/utils/api";
+import { API_BASE_URL, getAuthHeader, apiGet, apiPut } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import AdminGuard from "@/components/auth/AdminGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -20,12 +20,8 @@ export default function AdminStoreSettingsPage() {
     useEffect(() => {
         (async () => {
             try {
-                const r = await fetch(new URL('/api/v1/sellers/me/profile', API_BASE_URL).toString(), {
-                    headers: { ...getAuthHeader() },
-                    cache: 'no-store'
-                });
-                const j = await r.json();
-                setProfile(j?.data || {});
+                const response = await apiGet('/api/v1/sellers/me/profile') as any;
+                setProfile(response.data || {});
             } catch { }
             finally { setLoading(false); }
         })();
@@ -35,11 +31,7 @@ export default function AdminStoreSettingsPage() {
         const next = { ...(profile || {}), ...(updates || {}) };
         setProfile(next);
         try {
-            await fetch(new URL('/api/v1/sellers/me/profile', API_BASE_URL).toString(), {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-                body: JSON.stringify(next)
-            });
+            await apiPut('/api/v1/sellers/me/profile', next);
             toast('Settings saved successfully!', 'success');
         } catch {
             toast('Failed to save settings', 'error');
@@ -87,7 +79,7 @@ export default function AdminStoreSettingsPage() {
             const response = await fetch(new URL('/api/v1/files/upload', API_BASE_URL).toString(), {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${userId}`
+                    ...getAuthHeader()
                 },
                 body: formData
             });
@@ -103,7 +95,7 @@ export default function AdminStoreSettingsPage() {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${userId}`
+                            ...getAuthHeader()
                         },
                         body: JSON.stringify({ logoUrl })
                     });

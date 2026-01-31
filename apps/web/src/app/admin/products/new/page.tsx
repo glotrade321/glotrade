@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RequireAuth } from "@/components/auth/Guards";
 import { toast } from "@/components/common/Toast";
-import { API_BASE_URL, getAuthHeader } from "@/utils/api";
+import { API_BASE_URL, apiGet, apiPost, apiPut, getAuthHeader } from "@/utils/api";
 import ProductImageUpload from "@/components/product/ProductImageUpload";
 import AdminGuard from "@/components/auth/AdminGuard";
 import { X } from "lucide-react";
@@ -53,9 +53,8 @@ export default function NewProductPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(new URL(`/api/v1/market/categories`, API_BASE_URL).toString(), { cache: "no-store" });
-        const json = await res.json();
-        setCats(Array.isArray(json?.data) ? json.data : []);
+        const response = await apiGet('/api/v1/market/categories') as any;
+        setCats(Array.isArray(response.data) ? response.data : []);
       } catch { }
     })();
   }, []);
@@ -142,10 +141,8 @@ export default function NewProductPage() {
           attributes: v.attributes,
         })) : undefined,
       };
-      const res = await fetch(new URL(`/api/v1/vendors/products`, API_BASE_URL).toString(), { method: 'POST', headers: { 'Content-Type': 'application/json', ...getAuthHeader() }, body: JSON.stringify(payload) });
-      if (!res.ok) throw new Error(await res.text());
+      const result = await apiPost(`/api/v1/vendors/products`, payload) as any;
 
-      const result = await res.json();
       if (result.status === 'success' && result.data?.product?._id) {
         setProductId(result.data.product._id);
         setStep('images');
@@ -169,13 +166,7 @@ export default function NewProductPage() {
     try {
       setLoading(true);
       // Update product with final image URLs
-      const res = await fetch(new URL(`/api/v1/vendors/products/${productId}`, API_BASE_URL).toString(), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify({ images: form.images })
-      });
-
-      if (!res.ok) throw new Error(await res.text());
+      await apiPut(`/api/v1/vendors/products/${productId}`, { images: form.images });
 
       toast('Product created successfully with images!', 'success');
       router.replace('/admin/products');
