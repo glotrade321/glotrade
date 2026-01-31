@@ -135,4 +135,35 @@ export const roleBasedAdminAuth = (allowedRoles: string[], requireSuperAdmin: bo
       next(error);
     }
   };
-}; 
+};
+
+/**
+ * Product Manager Authentication Middleware
+ * 
+ * This middleware allows both admin and product_manager roles to access product management endpoints.
+ * Product Managers have restricted access to only product-related operations.
+ * 
+ * Usage: Apply this middleware on product management routes
+ * 
+ * @example
+ * router.get('/vendors/products', auth(userService), productManagerAuth, vendorController.getProducts);
+ */
+export const productManagerAuth = (req: any, res: any, next: any) => {
+  try {
+    // Ensure user is authenticated
+    if (!req.user) {
+      throw new ForbiddenError("Authentication required");
+    }
+
+    // Allow both admin and product_manager roles
+    const hasAccess = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin === true;
+
+    if (!hasAccess) {
+      throw new ForbiddenError("Product management access required. Insufficient privileges.");
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,7 +1,7 @@
 // apps/api/src/types/user.types.ts
 import { Document, Model } from "mongoose";
 
-export type UserRole = "buyer" | "seller" | "admin";
+export type UserRole = "buyer" | "seller" | "admin" | "product_manager";
 
 export interface IUserBase {
   address?: string;
@@ -61,6 +61,11 @@ export interface IUserBase {
   adminDeletionReason?: string; // Admin reason for deletion
   canRestore?: boolean; // Whether user can be restored
   permanentDeletionDate?: Date; // Date when user will be permanently deleted
+
+  // Product Manager / Admin-created account fields
+  createdBy?: string; // Admin who created this account
+  accountCreatedByAdmin?: boolean; // Flag for admin-created accounts
+  mustChangePassword?: boolean; // Force password change on first login
 
   // CBN Compliance - Wallet System Fields
   walletId?: string;           // "WAL-1234-ABCD" - User-friendly wallet identifier

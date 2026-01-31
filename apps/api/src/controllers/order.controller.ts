@@ -357,14 +357,20 @@ export class OrderController {
         const notificationType = this.getNotificationTypeForStatus(status);
 
         if (notificationType) {
+          const firstItem = order.lineItems?.[0];
+          const otherItemsCount = (order.lineItems?.length || 1) - 1;
+          const displayTitle = firstItem
+            ? (otherItemsCount > 0 ? `${firstItem.productTitle} and ${otherItemsCount} others` : firstItem.productTitle)
+            : 'Order';
+
           await notificationService.createOrderNotification(notificationType as any, {
             orderId: orderId,
             orderNumber: orderId.slice(-6),
             totalAmount: 0, // We don't have this info in status update
             currency: 'NGN',
             buyerId: (order.buyer as any).toString(),
-            sellerId: '', // We don't have this info in status update
-            productTitle: 'Order',
+            sellerId: firstItem?.vendorId?.toString() || '',
+            productTitle: displayTitle,
             quantity: 1
           });
         }

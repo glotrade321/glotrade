@@ -39,6 +39,8 @@ import adminCommissionRoutes from "./routes/admin/commission.routes";
 import gdipRoutes from "./routes/gdip.routes";
 import insuranceRoutes from "./routes/insurance.routes";
 import imageRoutes from "./routes/image.routes";
+import supportRoutes from "./routes/support.routes";
+import productManagerRoutes from "./routes/productManager.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 import { initScheduledJobs } from "./jobs/scheduler";
@@ -217,6 +219,8 @@ app.use("/api/v1/admin/commissions", adminCommissionRoutes);
 app.use("/api/v1/gdip", gdipRoutes);
 app.use("/api/v1/insurance", insuranceRoutes);
 app.use("/api/v1/images", imageRoutes);
+app.use("/api/v1/support", supportRoutes);
+app.use("/api/v1/admin/product-managers", productManagerRoutes);
 
 
 

@@ -11,7 +11,7 @@ import { isEmail } from "../utils/validators";
 
 type AllowedUpdateKeys = "username" | "profileImage" | "country" | "city" | "phone" | "email";
 
-export type UserRole = "buyer" | "seller" | "admin";
+export type UserRole = "buyer" | "seller" | "admin" | "product_manager";
 
 export class UserService extends BaseService<IUser> {
   constructor() {
@@ -65,7 +65,7 @@ export class UserService extends BaseService<IUser> {
     // Validate role if provided
     if (
       userData.role &&
-      !["buyer", "seller", "admin"].includes(userData.role)
+      !["buyer", "seller", "admin", "product_manager"].includes(userData.role)
     ) {
       throw new ValidationError("Invalid role");
     }

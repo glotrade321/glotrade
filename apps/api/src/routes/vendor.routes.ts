@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { VendorController } from "../controllers/vendor.controller";
 import { auth } from "../middleware/auth";
-import { adminAuth } from "../middleware/adminAuth";
+import { adminAuth, productManagerAuth } from "../middleware/adminAuth";
 import { requireApprovedVendor, requireVendorApplication } from "../middleware/vendorAuth";
 import { UserService } from "../services/UserService";
 import { PaystackProvider } from "../services/providers/PaystackProvider";
@@ -32,11 +32,35 @@ router.get("/orders", requireApprovedVendor(), controller.listOrders);
 router.patch("/orders/:id/status", requireApprovedVendor(), controller.updateOrderStatus);
 router.get("/analytics", requireApprovedVendor(), controller.analytics);
 
-// Products CRUD (requires approved vendor)
-router.get("/products", requireApprovedVendor(), controller.listProducts);
-router.post("/products", requireApprovedVendor(), controller.createProduct);
-router.put("/products/:id", requireApprovedVendor(), controller.updateProduct);
-router.delete("/products/:id", requireApprovedVendor(), controller.deleteProduct);
+// Products CRUD (accessible by approved vendors and product managers)
+router.get("/products", (req: any, res: any, next: any) => {
+  // Allow both vendors and product managers
+  if (req.user.role === 'product_manager' || req.user.role === 'admin' || req.user.isSuperAdmin) {
+    return next();
+  }
+  return requireApprovedVendor()(req, res, next);
+}, controller.listProducts);
+
+router.post("/products", (req: any, res: any, next: any) => {
+  if (req.user.role === 'product_manager' || req.user.role === 'admin' || req.user.isSuperAdmin) {
+    return next();
+  }
+  return requireApprovedVendor()(req, res, next);
+}, controller.createProduct);
+
+router.put("/products/:id", (req: any, res: any, next: any) => {
+  if (req.user.role === 'product_manager' || req.user.role === 'admin' || req.user.isSuperAdmin) {
+    return next();
+  }
+  return requireApprovedVendor()(req, res, next);
+}, controller.updateProduct);
+
+router.delete("/products/:id", (req: any, res: any, next: any) => {
+  if (req.user.role === 'product_manager' || req.user.role === 'admin' || req.user.isSuperAdmin) {
+    return next();
+  }
+  return requireApprovedVendor()(req, res, next);
+}, controller.deleteProduct);
 
 // Payouts (requires approved vendor)
 // DISABLED FOR SINGLE-VENDOR PLATFORM - Uncomment to re-enable payout functionality

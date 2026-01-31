@@ -31,6 +31,7 @@ export class ImageController {
             // Cache for 1 year (immutable) since keys should change if content changes
             res.set("Cache-Control", "public, max-age=31536000, immutable");
             res.set("Content-Type", contentType);
+            res.set("Cross-Origin-Resource-Policy", "cross-origin");
 
             res.send(buffer);
         } catch (error) {

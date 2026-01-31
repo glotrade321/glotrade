@@ -84,6 +84,16 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Check if user is product_manager and redirect to products page
+        const userData = localStorage.getItem('afritrade:user');
+        if (userData) {
+          const user = JSON.parse(userData);
+          if (user.role === 'product_manager') {
+            router.push('/admin/products');
+            return;
+          }
+        }
+
         // Fetch recent activity
         const activityResponse = await apiGet('/api/v1/admin/dashboard') as { data?: { recentActivity?: RecentActivity[] } };
         if (activityResponse.data?.recentActivity) {
@@ -135,7 +145,7 @@ export default function AdminDashboardPage() {
     const interval = setInterval(fetchData, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [router]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {

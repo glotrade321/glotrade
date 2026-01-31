@@ -13,47 +13,47 @@ export class NotificationTemplates {
     // 1. ORDER LIFECYCLE TEMPLATES (HIGHEST PRIORITY)
     this.templates.set('order_placed', {
       type: 'order_placed',
-      title: 'Order Placed Successfully',
-      message: 'Your order #{orderNumber} has been placed successfully. Total: {currency} {totalAmount}',
+      title: 'Order Placed successfully',
+      message: 'Your order for "{productTitle}" (ID: #{orderNumber}) has been placed successfully. Amount: {currency} {totalAmount}',
       priority: 'high',
       defaultChannels: ['in_app', 'email'],
-      variables: ['orderNumber', 'currency', 'totalAmount']
+      variables: ['orderNumber', 'currency', 'totalAmount', 'productTitle']
     });
 
     this.templates.set('order_confirmed', {
       type: 'order_confirmed',
       title: 'Order Confirmed',
-      message: 'Order #{orderNumber} has been confirmed and is being processed',
+      message: 'Order #{orderNumber} for "{productTitle}" has been confirmed and is being processed',
       priority: 'medium',
       defaultChannels: ['in_app', 'email'],
-      variables: ['orderNumber']
+      variables: ['orderNumber', 'productTitle']
     });
 
     this.templates.set('order_processing', {
       type: 'order_processing',
       title: 'Order Processing',
-      message: 'Order #{orderNumber} is now being processed and prepared for shipping',
+      message: 'Order #{orderNumber} ("{productTitle}") is now being prepared for shipping',
       priority: 'medium',
       defaultChannels: ['in_app'],
-      variables: ['orderNumber']
+      variables: ['orderNumber', 'productTitle']
     });
 
     this.templates.set('order_shipped', {
       type: 'order_shipped',
       title: 'Order Shipped!',
-      message: 'Great news! Order #{orderNumber} has been shipped and is on its way to you',
+      message: 'Great news! Order #{orderNumber} for "{productTitle}" has been shipped and is on its way!',
       priority: 'high',
       defaultChannels: ['in_app', 'email', 'push'],
-      variables: ['orderNumber']
+      variables: ['orderNumber', 'productTitle']
     });
 
     this.templates.set('order_delivered', {
       type: 'order_delivered',
       title: 'Order Delivered',
-      message: 'Order #{orderNumber} has been delivered successfully. Enjoy your purchase!',
+      message: 'Order #{orderNumber} for "{productTitle}" has been delivered. Enjoy!',
       priority: 'medium',
       defaultChannels: ['in_app', 'email'],
-      variables: ['orderNumber']
+      variables: ['orderNumber', 'productTitle']
     });
 
     this.templates.set('order_cancelled', {
@@ -96,10 +96,10 @@ export class NotificationTemplates {
     this.templates.set('payment_confirmed', {
       type: 'payment_confirmed',
       title: 'Payment Confirmed',
-      message: 'Payment of {currency} {amount} for order #{orderNumber} has been confirmed',
+      message: 'Payment of {currency} {amount} for order for "{productTitle}" (#{orderNumber}) has been confirmed',
       priority: 'high',
       defaultChannels: ['in_app', 'email'],
-      variables: ['currency', 'amount', 'orderNumber']
+      variables: ['currency', 'amount', 'orderNumber', 'productTitle']
     });
 
     this.templates.set('payment_failed', {
@@ -373,10 +373,10 @@ export class NotificationTemplates {
     this.templates.set('new_order', {
       type: 'new_order',
       title: 'New Order Received',
-      message: 'You received a new order #{orderNumber} for {currency} {totalAmount}',
+      message: 'You received a new order for "{productTitle}" (#{orderNumber}) for {currency} {totalAmount}',
       priority: 'high',
       defaultChannels: ['in_app', 'email', 'push'],
-      variables: ['orderNumber', 'currency', 'totalAmount']
+      variables: ['orderNumber', 'currency', 'totalAmount', 'productTitle']
     });
 
     this.templates.set('low_stock', {

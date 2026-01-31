@@ -16,7 +16,7 @@ npm run create-admin
 
 ### 3. Follow the prompts
 The script will guide you through creating the super admin account:
-- **Email**: harunjibs@gmail.com (pre-configured)
+- **Email**: admint@glotrade.online (pre-configured)
 - **Username**: Enter your desired username (default: superadmin)
 - **Password**: Enter a secure password (minimum 8 characters)
 - **First Name**: Optional

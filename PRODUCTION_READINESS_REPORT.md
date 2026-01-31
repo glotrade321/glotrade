@@ -49,7 +49,7 @@ STORAGE_PROVIDER=r2
 **Status:** ✅ **ACTIVE & VERIFIED**
 
 - **Service:** SendGrid API with Branded Master Template System
-- **Verified Sender:** `glotrade321@gmail.com`
+- **Verified Sender:** `no-reply@glotrade.online`
 - **Features:**
   - Professional HTML layout (Glotrade Blue #2EA5FF + Orange #F9A407)
   - 20+ automated notification types
@@ -69,7 +69,7 @@ STORAGE_PROVIDER=r2
 EMAIL_PROVIDER=sendgrid
 SENDGRID_API_KEY=configured
 EMAIL_ENABLED=true
-SMTP_FROM="Glotrade <glotrade321@gmail.com>"
+SMTP_FROM="Glotrade <no-reply@glotrade.online>"
 ```
 
 ---
@@ -285,7 +285,7 @@ mongodb+srv://username:password@cluster.mongodb.net/glotrade?retryWrites=true&w=
    EMAIL_PROVIDER=sendgrid
    EMAIL_ENABLED=true
    SENDGRID_API_KEY=<YOUR_VALUE>
-   SMTP_FROM="Glotrade <glotrade321@gmail.com>"
+   SMTP_FROM="Glotrade <no-reply@glotrade.online>"
    
    # Redis (Upstash)
    REDIS_ENABLED=true

@@ -33,18 +33,29 @@ interface MenuItem {
   href: string;
   icon: React.ReactNode;
   children?: MenuItem[];
+  adminOnly?: boolean; // Only show to admin/super admin
+  superAdminOnly?: boolean; // Only show to super admin
+  productManagerOnly?: boolean; // Only show to product managers
 }
 
 const adminMenuItems: MenuItem[] = [
   {
     label: "Dashboard",
     href: "/admin",
-    icon: <LayoutDashboard size={20} />
+    icon: <LayoutDashboard size={20} />,
+    adminOnly: true
   },
   {
     label: "User Management",
     href: "/admin/users",
-    icon: <Users size={20} />
+    icon: <Users size={20} />,
+    adminOnly: true // Only show to admins, not product managers
+  },
+  {
+    label: "Product Managers",
+    href: "/admin/product-managers",
+    icon: <Users size={20} />,
+    superAdminOnly: true // Only show to super admins
   },
   {
     label: "Product Management",
@@ -54,67 +65,80 @@ const adminMenuItems: MenuItem[] = [
   {
     label: "Order Management",
     href: "/admin/orders",
-    icon: <ShoppingCart size={20} />
+    icon: <ShoppingCart size={20} />,
+    adminOnly: true
   },
   {
     label: "Withdrawals",
     href: "/admin/withdrawals",
-    icon: <Wallet size={20} />
+    icon: <Wallet size={20} />,
+    adminOnly: true
   },
   {
     label: "Wallets",
     href: "/admin/wallets",
-    icon: <Wallet size={20} />
+    icon: <Wallet size={20} />,
+    adminOnly: true
   },
   {
     label: "Sales Agents",
     href: "/admin/sales-agents",
-    icon: <Users size={20} />
+    icon: <Users size={20} />,
+    adminOnly: true
   },
   {
     label: "Credit Requests",
     href: "/admin/credit-requests",
-    icon: <CreditCard size={20} />
+    icon: <CreditCard size={20} />,
+    adminOnly: true
   },
   {
     label: "Insured Partners",
     href: "/admin/gdip",
-    icon: <Shield size={20} />
+    icon: <Shield size={20} />,
+    adminOnly: true
   },
   {
     label: "Analytics",
     href: "/admin/analytics",
-    icon: <BarChart3 size={20} />
+    icon: <BarChart3 size={20} />,
+    adminOnly: true
   },
   {
     label: "Security Reports",
     href: "/admin/security",
-    icon: <Shield size={20} />
+    icon: <Shield size={20} />,
+    adminOnly: true
   },
   {
     label: "Platform Settings",
     href: "/admin/settings",
-    icon: <Settings size={20} />
+    icon: <Settings size={20} />,
+    adminOnly: true
   },
   {
     label: "Banners",
     href: "/admin/banners",
-    icon: <Store size={20} />
+    icon: <Store size={20} />,
+    adminOnly: true
   },
   {
     label: "Reports",
     href: "/admin/reports",
-    icon: <FileText size={20} />
+    icon: <FileText size={20} />,
+    adminOnly: true
   },
   {
     label: "Coupons",
     href: "/admin/coupons",
-    icon: <TicketPercent size={20} />
+    icon: <TicketPercent size={20} />,
+    adminOnly: true
   },
   {
     label: "Store Settings",
     href: "/admin/store",
-    icon: <Store size={20} />
+    icon: <Store size={20} />,
+    adminOnly: true
   }
 ];
 
@@ -161,7 +185,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           const user = JSON.parse(userData);
           setUser(user);
 
-          if (user.role !== "admin" && !user.isSuperAdmin) {
+          // Allow admin, super admin, and product_manager roles
+          if (user.role !== "admin" && !user.isSuperAdmin && user.role !== "product_manager") {
             router.push("/dashboard");
             return;
           }
@@ -279,7 +304,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               ref={navRef}
               className="flex-1 px-4 py-6 space-y-2 overflow-y-auto bg-white scrollbar-hide"
             >
-              {adminMenuItems.map(renderMenuItem)}
+              {adminMenuItems
+                .filter(item => {
+                  // Filter menu items based on user role
+                  if (item.superAdminOnly && !user.isSuperAdmin) return false;
+                  if (item.adminOnly && user.role === 'product_manager') return false;
+                  if (item.productManagerOnly && user.role !== 'product_manager') return false;
+                  return true;
+                })
+                .map(renderMenuItem)}
             </nav>
 
             {/* Scroll Indicator */}
@@ -296,22 +329,26 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {/* Footer */}
           <div className="p-4 border-t border-gray-200 bg-white">
             <div className="space-y-2">
-              <Link
-                href="/"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <Home size={20} />
-                <span className="font-medium">Back to Homepage</span>
-              </Link>
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <LayoutDashboard size={20} />
-                <span className="font-medium">User Dashboard</span>
-              </Link>
+              {user.role !== 'product_manager' && (
+                <>
+                  <Link
+                    href="/"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <Home size={20} />
+                    <span className="font-medium">Back to Homepage</span>
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <LayoutDashboard size={20} />
+                    <span className="font-medium">User Dashboard</span>
+                  </Link>
+                </>
+              )}
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"

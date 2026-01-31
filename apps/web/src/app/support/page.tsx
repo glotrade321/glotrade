@@ -36,17 +36,37 @@ export default function SupportPage() {
     );
   }, [query]);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       setSent(translate("support.contact.error"));
       setTimeout(() => setSent(null), 2200);
       return;
     }
-    // Simulate send
-    setSent(translate("support.contact.success"));
-    setForm({ name: "", email: "", topic: form.topic, message: "" });
-    setTimeout(() => setSent(null), 3200);
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/v1/support/inquiry`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        setSent(translate("support.contact.success"));
+        setForm({ name: "", email: "", topic: form.topic, message: "" });
+      } else {
+        setSent(data.message || "Failed to send message");
+      }
+    } catch (error) {
+      console.error("Support form submission error:", error);
+      setSent("An unexpected error occurred. Please try again.");
+    } finally {
+      setTimeout(() => setSent(null), 3200);
+    }
   };
 
   return (

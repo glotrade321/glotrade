@@ -48,6 +48,13 @@ function LoginForm() {
       } catch { }
 
       toast(translate(locale, "auth.toast.signedIn"), "success");
+
+      // Check for product manager role and redirect
+      if (json.data.role === 'product_manager') {
+        router.replace('/admin/products');
+        return;
+      }
+
       const next = search.get("next") || "/";
       router.replace(next);
     } catch (e: any) {

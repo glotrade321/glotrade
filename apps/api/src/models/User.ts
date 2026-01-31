@@ -59,7 +59,7 @@ const userSchema = new Schema<IUser, IUserModel>(
     resetTokenExpires: { type: Date },
     role: {
       type: String,
-      enum: ["buyer", "seller", "admin"],
+      enum: ["buyer", "seller", "admin", "product_manager"],
       default: "buyer",
     },
     isVerified: {
@@ -173,6 +173,17 @@ const userSchema = new Schema<IUser, IUserModel>(
     adminDeletionReason: { type: String }, // Admin reason for deletion
     canRestore: { type: Boolean, default: true }, // Whether user can be restored
     permanentDeletionDate: { type: Date }, // Date when user will be permanently deleted
+
+    // Product Manager / Admin-created account fields
+    createdBy: { type: String }, // Admin who created this account
+    accountCreatedByAdmin: {
+      type: Boolean,
+      default: false
+    }, // Flag for admin-created accounts
+    mustChangePassword: {
+      type: Boolean,
+      default: false
+    }, // Force password change on first login
 
     // Payment gateway integration for CBN compliance
     paystackCustomerId: { type: String },

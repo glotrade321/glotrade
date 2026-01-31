@@ -77,7 +77,7 @@ export class EmailService {
     /**
      * Master Branded HTML Wrapper
      */
-    private getBrandedLayout(content: string, subject: string, cta?: { label: string, url: string }): string {
+    private getBrandedLayout(content: string, subject: string, supportEmail: string, cta?: { label: string, url: string }): string {
         return `
 <!DOCTYPE html>
 <html>
@@ -115,7 +115,7 @@ export class EmailService {
       ${content}
       ${cta ? `<center><a href="${cta.url}" class="button">${cta.label}</a></center>` : ''}
       <div class="divider"></div>
-      <p style="font-size: 14px; color: #666;">If you have any questions, reply to this email or visit our help center.</p>
+      <p style="font-size: 14px; color: #666;">If you have any questions, reply to this email or contact us at <a href="mailto:${supportEmail}" style="color: ${this.PRIMARY_BLUE}; text-decoration: none;">${supportEmail}</a>.</p>
     </div>
     <div class="footer">
       <div class="social-links">
@@ -138,10 +138,11 @@ export class EmailService {
             return;
         }
 
-        const from = options.from || process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@glotrade.online";
-        
+        const from = options.from || process.env.SMTP_FROM || "no-reply@glotrade.online";
+        const supportEmail = process.env.SUPPORT_EMAIL || "support@glotrade.online";
+
         // Wrap content in branded layout if html is provided
-        const finalHtml = options.html ? this.getBrandedLayout(options.html, options.subject, options.cta) : undefined;
+        const finalHtml = options.html ? this.getBrandedLayout(options.html, options.subject, supportEmail, options.cta) : undefined;
 
         console.log(`[EmailService] Sending via ${this.provider} to ${options.to} (Subject: ${options.subject})`);
 

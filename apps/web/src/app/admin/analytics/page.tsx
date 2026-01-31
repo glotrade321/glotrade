@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
   Chart as ChartJS,
@@ -60,8 +61,22 @@ ChartJS.register(
 );
 
 export default function AnalyticsPage() {
+  const router = useRouter();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
   const [isMobile, setIsMobile] = useState(false);
+
+  // Check access for product_manager
+  useEffect(() => {
+    try {
+      const userData = localStorage.getItem('afritrade:user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user.role === 'product_manager') {
+          router.push('/admin/products');
+        }
+      }
+    } catch { }
+  }, []);
 
   // Real analytics data from API
   const [metrics, setMetrics] = useState<{

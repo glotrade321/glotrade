@@ -135,7 +135,8 @@ export class NotificationService extends BaseService<INotification> {
     }
 
     // Create seller notification for certain types
-    if (orderData.sellerId && ['order_placed', 'order_disputed', 'order_cancelled'].includes(type)) {
+    // Skip if seller is the same as buyer (avoid double notifications in single-vendor/testing)
+    if (orderData.sellerId && orderData.sellerId.toString() !== orderData.buyerId.toString() && ['order_placed', 'order_disputed', 'order_cancelled'].includes(type)) {
       notifications.sellerNotification = await this.createNotification({
         userId: orderData.sellerId,
         type: type === 'order_placed' ? 'new_order' : type,

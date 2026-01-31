@@ -5,7 +5,7 @@
  * This script creates the first super admin account for the platform.
  * Usage: npm run create-admin
  * 
- * The super admin email is: harunjibs@gmail.com
+ * The super admin email is: admint@glotrade.online
  */
 
 import dotenv from "dotenv";
@@ -31,7 +31,7 @@ async function createSuperAdmin() {
         await connectDB();
         console.log("✓ Connected to database");
 
-        const SUPER_ADMIN_EMAIL = "harunjibs@gmail.com";
+        const SUPER_ADMIN_EMAIL = "admint@glotrade.online";
 
         // Check if super admin already exists
         const existingAdmin = await User.findOne({ email: SUPER_ADMIN_EMAIL });
