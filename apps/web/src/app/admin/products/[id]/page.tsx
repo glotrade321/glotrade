@@ -183,6 +183,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
       setProduct(refreshData?.data || null);
       setHasUnsavedChanges(false);
       toast('Product updated successfully', 'success');
+      router.push('/admin/products');
     } catch (e) {
       console.warn(e);
       toast('Failed to update product', 'error');
@@ -495,15 +496,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                  <button onClick={save} disabled={loading} className="px-6 py-2.5 bg-neutral-900 text-white rounded-md hover:bg-neutral-800 dark:bg-neutral-100 dark:text-black dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 text-sm font-medium order-1 sm:order-2">
-                    {loading ? 'Saving updates...' : 'Save Product Updates'}
-                  </button>
-                  <button onClick={() => { if (hasUnsavedChanges) setShowCancelConfirm(true); else router.back(); }} className="px-6 py-2.5 border border-neutral-300 dark:border-neutral-700 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm font-medium order-2 sm:order-1">
-                    Discard Changes
-                  </button>
-                  <button onClick={async () => { if (!confirm('Archive this product?')) return; try { await apiDelete(`/api/v1/vendors/products/${id}`); router.replace('/admin/products'); } catch { } }} className="px-6 py-2.5 border border-rose-300 text-rose-600 rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm font-medium order-3">Archive Product</button>
-                </div>
+                {/* Action buttons moved below tabs */}
               </div>
             )}
 
@@ -517,6 +510,17 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
                 />
               </div>
             )}
+
+            {/* Action Buttons (Visible on both tabs) */}
+            <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pb-8">
+              <button onClick={save} disabled={loading} className="px-6 py-2.5 bg-neutral-900 text-white rounded-md hover:bg-neutral-800 dark:bg-neutral-100 dark:text-black dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 text-sm font-medium order-1 sm:order-2">
+                {loading ? 'Saving updates...' : 'Save Product Updates'}
+              </button>
+              <button onClick={() => { if (hasUnsavedChanges) setShowCancelConfirm(true); else router.back(); }} className="px-6 py-2.5 border border-neutral-300 dark:border-neutral-700 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm font-medium order-2 sm:order-1">
+                Discard Changes
+              </button>
+              <button onClick={async () => { if (!confirm('Archive this product?')) return; try { await apiDelete(`/api/v1/vendors/products/${id}`); router.replace('/admin/products'); } catch { } }} className="px-6 py-2.5 border border-rose-300 text-rose-600 rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm font-medium order-3">Archive Product</button>
+            </div>
           </div>
         </main>
       </div>
@@ -529,7 +533,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">You have unsaved changes. Are you sure you want to discard them and go back?</p>
             <div className="flex gap-3">
               <button onClick={() => setShowCancelConfirm(false)} className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg text-sm font-medium">Keep Editing</button>
-              <button onClick={() => { setHasUnsavedChanges(false); router.back(); }} className="flex-1 px-4 py-2 bg-rose-600 text-white这对 rounded-lg text-sm font-medium">Discard</button>
+              <button onClick={() => { setHasUnsavedChanges(false); router.back(); }} className="flex-1 px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium">Discard</button>
             </div>
           </div>
         </div>

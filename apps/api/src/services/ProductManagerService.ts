@@ -108,7 +108,6 @@ export class ProductManagerService {
         <ul style="margin: 10px 0; padding-left: 20px;">
           <li>Please keep your credentials secure</li>
           <li>Do not share your password with anyone</li>
-          <li>You can change your password anytime from your profile</li>
         </ul>
       </div>
       
@@ -119,7 +118,6 @@ export class ProductManagerService {
         <li>Delete products when needed</li>
         <li>Manage product inventory</li>
         <li>Upload product images</li>
-        <li>View product analytics</li>
       </ul>
       
       <p>If you have any questions, please contact your administrator.</p>
