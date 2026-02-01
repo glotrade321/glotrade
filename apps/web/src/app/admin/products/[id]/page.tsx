@@ -13,6 +13,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const { id } = use(params);
   const [loading, setLoading] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [product, setProduct] = useState<any | null>(null);
   const [form, setForm] = useState<any>({
     title: "",
@@ -122,7 +123,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
 
   const save = async () => {
     try {
-      setLoading(true);
+      setIsActionLoading(true);
       const payload: any = {
         title: form.title,
         description: form.description,
@@ -178,9 +179,6 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
 
       await apiPut(`/api/v1/vendors/products/${id}`, payload);
 
-      // Refresh product data after save
-      const refreshData = await apiGet(`/api/v1/market/products/${id}`) as any;
-      setProduct(refreshData?.data || null);
       setHasUnsavedChanges(false);
       toast('Product updated successfully', 'success');
       router.push('/admin/products');
@@ -188,13 +186,13 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
       console.warn(e);
       toast('Failed to update product', 'error');
     } finally {
-      setLoading(false);
+      setIsActionLoading(false);
     }
   };
 
   const handleImagesChange = async (newImages: string[]) => {
     try {
-      setLoading(true);
+      setIsActionLoading(true);
       await apiPut(`/api/v1/vendors/products/${id}`, { images: newImages });
 
       // Update local product state
@@ -204,7 +202,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
       console.warn(e);
       toast('Failed to update images', 'error');
     } finally {
-      setLoading(false);
+      setIsActionLoading(false);
     }
   };
 
@@ -513,13 +511,27 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
 
             {/* Action Buttons (Visible on both tabs) */}
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pb-8">
-              <button onClick={save} disabled={loading} className="px-6 py-2.5 bg-neutral-900 text-white rounded-md hover:bg-neutral-800 dark:bg-neutral-100 dark:text-black dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 text-sm font-medium order-1 sm:order-2">
-                {loading ? 'Saving updates...' : 'Save Product Updates'}
+              <button
+                onClick={save}
+                disabled={isActionLoading}
+                className="px-6 py-2.5 bg-neutral-900 text-white rounded-md hover:bg-neutral-800 dark:bg-neutral-100 dark:text-black dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 text-sm font-medium order-1 sm:order-2"
+              >
+                {isActionLoading ? 'Saving updates...' : 'Save Product Updates'}
               </button>
-              <button onClick={() => { if (hasUnsavedChanges) setShowCancelConfirm(true); else router.back(); }} className="px-6 py-2.5 border border-neutral-300 dark:border-neutral-700 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm font-medium order-2 sm:order-1">
+              <button
+                onClick={() => { if (hasUnsavedChanges) setShowCancelConfirm(true); else router.back(); }}
+                disabled={isActionLoading}
+                className="px-6 py-2.5 border border-neutral-300 dark:border-neutral-700 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm font-medium order-2 sm:order-1 disabled:opacity-50"
+              >
                 Discard Changes
               </button>
-              <button onClick={async () => { if (!confirm('Archive this product?')) return; try { await apiDelete(`/api/v1/vendors/products/${id}`); router.replace('/admin/products'); } catch { } }} className="px-6 py-2.5 border border-rose-300 text-rose-600 rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm font-medium order-3">Archive Product</button>
+              <button
+                onClick={async () => { if (!confirm('Archive this product?')) return; try { setIsActionLoading(true); await apiDelete(`/api/v1/vendors/products/${id}`); router.replace('/admin/products'); } catch { } finally { setIsActionLoading(false); } }}
+                disabled={isActionLoading}
+                className="px-6 py-2.5 border border-rose-300 text-rose-600 rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm font-medium order-3 disabled:opacity-50"
+              >
+                {isActionLoading ? 'Deleting...' : 'Archive Product'}
+              </button>
             </div>
           </div>
         </main>
