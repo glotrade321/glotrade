@@ -7,8 +7,7 @@ export default function DescriptionClamp({ text, clampLines = 2, locale }: { tex
 
   return (
     <div>
-      {/* Mobile: clamped with toggle */}
-      <div className="md:hidden">
+      <div className={expanded ? "" : "relative"}>
         {expanded ? (
           <p className="text-base text-neutral-700 dark:text-neutral-300 leading-7 whitespace-pre-line">
             {text}
@@ -24,16 +23,11 @@ export default function DescriptionClamp({ text, clampLines = 2, locale }: { tex
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="mt-2 text-sm font-semibold text-neutral-700 underline"
+          className="mt-2 text-sm font-semibold text-neutral-700 dark:text-neutral-300 underline hover:text-emerald-600 transition-colors"
         >
           {expanded ? translate(locale, "common.viewLess") : translate(locale, "common.viewMore")}
         </button>
       </div>
-
-      {/* Desktop: full text, no toggle */}
-      <p className="hidden md:block text-base text-neutral-700 dark:text-neutral-300 leading-7 whitespace-pre-line">
-        {text}
-      </p>
     </div>
   );
 }

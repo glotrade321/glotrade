@@ -332,7 +332,7 @@ export default function CartPage() {
           <div className="mt-8 hidden lg:block">
             <h2 className="text-lg font-semibold mb-3">{translate(locale, "cart.explorePicks")}</h2>
             {picks.length ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 gap-3 md:gap-4">
                 {picks.map((p) => (
                   <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
                 ))}

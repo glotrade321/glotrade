@@ -172,40 +172,36 @@ export default function AddToCartControl({ productId, variantLabel, minQty = 1, 
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-      <div className="w-auto flex items-center gap-4 sm:gap-6 rounded-full border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 select-none">
+    <div className="flex flex-row items-center gap-2 sm:gap-4 overflow-hidden">
+      <div className="flex-1 sm:flex-none flex items-center justify-between gap-1 sm:gap-6 rounded-full border border-neutral-300 dark:border-neutral-700 px-2 sm:px-3 py-1 sm:py-1.5 select-none bg-white dark:bg-neutral-900">
         <button
           aria-label="Decrease"
           onClick={() => setQuantity(Math.max(0, qty - 1))}
-          className="text-xl sm:text-2xl leading-none hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full p-1 transition-colors"
+          className="hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full p-1 transition-colors"
         >
-          <Minus size={18} className="sm:w-5 sm:h-5" />
+          <Minus size={16} className="sm:w-5 sm:h-5" />
         </button>
-        <div className="flex text-center">
-          <div className="text-xs sm:text-xs font-semibold pr-2">{qty} {translate(locale, "product.added")}</div>
-          <AutoScrollText
-            text={variantLabel || ""}
-            className="text-xs sm:text-xs text-neutral-500"
-          />
-          <div id={`variant-label-${productId}`} className="sr-only">{variantLabel || ""}</div>
+        <div className="flex flex-col items-center justify-center min-w-[40px]">
+          <div className="text-[10px] sm:text-xs font-bold leading-none">{qty}</div>
+          <div className="text-[8px] sm:text-[10px] text-neutral-500 uppercase font-medium leading-none mt-0.5">{translate(locale, "product.added")}</div>
         </div>
         <button
           aria-label="Increase"
           onClick={() => setQuantity(qty + 1)}
-          className="text-xl sm:text-2xl leading-none hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full p-1 transition-colors"
+          className="hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full p-1 transition-colors"
         >
-          <Plus size={18} className="sm:w-5 sm:h-5" />
+          <Plus size={16} className="sm:w-5 sm:h-5" />
         </button>
       </div>
       <Link
         href="/cart"
-        className="w-auto sm:flex-none inline-flex justify-center items-center rounded-full bg-orange-500 text-white px-4 py-2 text-sm sm:text-base font-semibold hover:bg-orange-600 active:bg-orange-700 transition-colors"
+        className="flex-shrink-0 inline-flex justify-center items-center rounded-full bg-orange-500 text-white px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold hover:bg-orange-600 active:bg-orange-700 transition"
       >
         {translate(locale, "product.goToCart")}
       </Link>
       {showMaxToast ? (
-        <div className="fixed left-1/2 bottom-6 -translate-x-1/2 z-50" aria-live="polite">
-          <div className="rounded-full bg-black/85 text-white px-3 py-1 text-xs shadow-md">
+        <div className="fixed left-1/2 bottom-20 -translate-x-1/2 z-50 pointer-events-none" aria-live="polite">
+          <div className="rounded-full bg-black/85 text-white px-3 py-1.5 text-xs shadow-xl backdrop-blur-sm">
             {translate(locale, "product.maxLimit")}
           </div>
         </div>

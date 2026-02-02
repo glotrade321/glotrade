@@ -366,7 +366,7 @@ export default function ProductReviews({ productId, productTitle, locale }: Prod
       {!localStorage.getItem('afritrade:auth') && (
         <div className="mt-6 text-center p-6 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
           <p className="text-neutral-600 dark:text-neutral-400 mb-2">
-            {translate(locale, "reviews.loginRequired")} <a href="/auth/login" className="text-blue-600 hover:underline">{translate(locale, "auth.login")}</a>.
+            {translate(locale, "reviews.loginRequired")} <a href="/auth/login" className="text-blue-600 hover:underline">{translate(locale, "usermenu.login")}</a>.
           </p>
         </div>
       )}

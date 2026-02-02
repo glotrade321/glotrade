@@ -350,13 +350,37 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Reviews: placed below both sections on mobile */}
-        <div className="lg:hidden mt-6 sm:mt-8">
+        <div className="lg:hidden mt-10 border-t border-neutral-100 dark:border-neutral-800 pt-8">
           <ProductReviews productId={product._id} productTitle={product.title} locale={locale} />
         </div>
 
         {/* Explore your interests */}
-        <ExploreInterests productId={product._id} seedBrand={product.brand} seedCategory={product.category} locale={locale} />
+        <div className="mt-12 border-t border-neutral-100 dark:border-neutral-800 pt-8 mb-12">
+          <ExploreInterests productId={product._id} seedBrand={product.brand} seedCategory={product.category} locale={locale} />
+        </div>
       </div>
+
+      {/* Sticky Mobile Add to Cart Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 p-3 z-40 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+        <div className="flex flex-col">
+          <span className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider">{translate(locale, "product.price")}</span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-lg font-bold text-orange-600">{formatCurrency(discounted ?? product.price)}</span>
+            <span className="text-[10px] text-neutral-400 font-medium">{product.currency}</span>
+          </div>
+        </div>
+        <div className="w-[60%]">
+          <AddToCartControl
+            productId={product._id}
+            variantLabel={colorName || undefined}
+            minQty={Math.max(1, Number(product.minOrderQuantity || 1))}
+            maxQty={Math.max(0, Number(product.quantity || 0))}
+            locale={locale}
+          />
+        </div>
+      </div>
+      {/* Spacer for sticky bar on mobile */}
+      <div className="lg:hidden h-20" />
     </div>
   );
 }
