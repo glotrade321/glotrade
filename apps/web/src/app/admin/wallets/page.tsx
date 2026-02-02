@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet, apiPost, getAuthHeader, apiGetBlob } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 import WalletDetailsModal from "@/components/admin/WalletDetailsModal";
 import {
   Search,
@@ -159,12 +160,7 @@ export default function AdminWalletsPage() {
     setCurrentPage(1);
   }, [wallets, searchTerm, statusFilter, typeFilter, currencyFilter]);
 
-  const formatCurrency = (amount: number, currency: string) => {
-    if (currency === 'NGN') {
-      return `₦${amount.toLocaleString()}`;
-    }
-    return `${amount.toLocaleString()} ${currency}`;
-  };
+  // Removed the local formatCurrency function
 
   const getStatusIcon = (status: string) => {
     switch (status) {

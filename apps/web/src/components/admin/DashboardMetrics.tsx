@@ -20,6 +20,7 @@ import {
   TicketPercent
 } from "lucide-react";
 import { apiGet } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 
 interface DashboardMetrics {
   totalUsers: number;
@@ -126,7 +127,7 @@ const ActivityItem = ({ activity }: { activity: DashboardMetrics['recentActivity
         const buyerName = orderData.buyer?.firstName && orderData.buyer?.lastName
           ? `${orderData.buyer.firstName} ${orderData.buyer.lastName}`
           : orderData.buyer?.username || 'Customer';
-        return `Order #${orderData.orderNumber || 'N/A'} - ${orderData.status || 'pending'} (${orderData.totalPrice || 0} ${orderData.currency || 'NGN'}) by ${buyerName}`;
+        return `Order #${orderData.orderNumber || 'N/A'} - ${orderData.status || 'pending'} (${formatCurrency(orderData.totalPrice || 0)} ${orderData.currency || 'NGN'}) by ${buyerName}`;
 
       case 'user':
         const userData = activity.data as { username?: string; role?: string; firstName?: string; lastName?: string; isVerified?: boolean };
@@ -139,7 +140,7 @@ const ActivityItem = ({ activity }: { activity: DashboardMetrics['recentActivity
       case 'product':
         const productData = activity.data as { title?: string; price?: number; category?: string; seller?: { username?: string; store?: { name?: string } } };
         const sellerName = productData.seller?.store?.name || productData.seller?.username || 'seller';
-        return `${productData.title || 'New Product'} (${productData.price || 0} NGN) added by ${sellerName} in ${productData.category || 'General'}`;
+        return `${productData.title || 'New Product'} (${formatCurrency(productData.price || 0)} NGN) added by ${sellerName} in ${productData.category || 'General'}`;
 
       case 'review':
         const reviewData = activity.data as { rating?: number; comment?: string; user?: { username?: string }; product?: { title?: string } };
@@ -148,7 +149,7 @@ const ActivityItem = ({ activity }: { activity: DashboardMetrics['recentActivity
       case 'payment':
         const paymentData = activity.data as { amount?: number; currency?: string; status?: string; provider?: string; order?: { totalPrice?: number; status?: string } };
         const amountInNaira = (paymentData.amount || 0) / 100; // Convert from kobo
-        return `Payment of ${amountInNaira} ${paymentData.currency || 'NGN'} via ${paymentData.provider || 'Provider'} - ${paymentData.status || 'pending'}`;
+        return `Payment of ${formatCurrency(amountInNaira)} ${paymentData.currency || 'NGN'} via ${paymentData.provider || 'Provider'} - ${paymentData.status || 'pending'}`;
 
       default:
         return 'Unknown activity';
@@ -257,14 +258,6 @@ export default function DashboardMetrics() {
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) {

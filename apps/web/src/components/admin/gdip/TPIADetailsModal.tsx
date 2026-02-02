@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Shield, TrendingUp, Calendar, Package, FileText } from "lucide-react";
 import { apiGet } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 
 interface TPIADetailsModalProps {
     tpiaId: string;
@@ -71,12 +72,6 @@ export default function TPIADetailsModal({ tpiaId, onClose }: TPIADetailsModalPr
         }
     };
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat("en-NG", {
-            style: "currency",
-            currency: "NGN",
-        }).format(amount);
-    };
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return "N/A";

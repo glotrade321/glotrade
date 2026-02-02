@@ -9,6 +9,7 @@ import type { ProductCardData } from "@/types/product";
 import { API_BASE_URL, apiGet } from "@/utils/api";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 import { getOptimizedImageUrl } from "@/utils/image";
+import { formatCurrency } from "@/utils/format";
 
 // types
 type ApiProduct = {
@@ -304,12 +305,12 @@ export default function CartPage() {
                         </div>
                       )}
                       <div className="mt-1 inline-flex items-baseline bg-orange-500 text-white rounded px-2 py-0.5">
-                        <span className="text-base sm:text-lg font-extrabold leading-none">{discounted ?? p.price}</span>
+                        <span className="text-base sm:text-lg font-extrabold leading-none">{formatCurrency(discounted ?? p.price)}</span>
                         <span className="text-[10px] font-semibold ml-1 leading-none">{p.currency}</span>
                       </div>
                       {hasDiscount ? (
                         <div className="inline-flex items-center gap-2 ml-2">
-                          <span className="text-xs sm:text-sm text-neutral-500 line-through hidden sm:inline">{p.price} {p.currency}</span>
+                          <span className="text-xs sm:text-sm text-neutral-500 line-through hidden sm:inline">{formatCurrency(p.price)} {p.currency}</span>
                           <span className="rounded bg-rose-500 text-white text-xs px-2 py-0.5">-{p.discount}%</span>
                         </div>
                       ) : null}
@@ -346,8 +347,8 @@ export default function CartPage() {
           <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-4 sm:p-5">
             <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{translate(locale, "cart.orderSummary")}</h3>
             <div className="space-y-2 sm:space-y-1">
-              <div className="flex items-center justify-between text-sm py-1"><span>{translate(locale, "cart.itemsTotal")}</span><span className="line-through">{summary.subtotal.toLocaleString()} NGN</span></div>
-              <div className="flex items-center justify-between text-sm py-1"><span>{translate(locale, "cart.itemsDiscount")}</span><span className="text-rose-600">-{summary.discount.toLocaleString()} NGN</span></div>
+              <div className="flex items-center justify-between text-sm py-1"><span>{translate(locale, "cart.itemsTotal")}</span><span className="line-through">{formatCurrency(summary.subtotal)} NGN</span></div>
+              <div className="flex items-center justify-between text-sm py-1"><span>{translate(locale, "cart.itemsDiscount")}</span><span className="text-rose-600">-{formatCurrency(summary.discount)} NGN</span></div>
               {summary.bulkSavings > 0 && (
                 <div className="flex items-center justify-between text-sm py-1 text-green-600 dark:text-green-400">
                   <span className="flex items-center gap-1">
@@ -356,11 +357,11 @@ export default function CartPage() {
                     </svg>
                     {translate(locale, "cart.bulkSavings")}
                   </span>
-                  <span className="font-semibold">-{summary.bulkSavings.toLocaleString()} NGN</span>
+                  <span className="font-semibold">-{formatCurrency(summary.bulkSavings)} NGN</span>
                 </div>
               )}
               <div className="my-2 h-px bg-neutral-200 dark:bg-neutral-800" />
-              <div className="flex items-center justify-between font-semibold text-base sm:text-lg py-1"><span>{translate(locale, "cart.total")}</span><span className="text-orange-600">{summary.total.toLocaleString()} NGN</span></div>
+              <div className="flex items-center justify-between font-semibold text-base sm:text-lg py-1"><span>{translate(locale, "cart.total")}</span><span className="text-orange-600">{formatCurrency(summary.total)} NGN</span></div>
             </div>
             <div className="mt-3 text-xs text-neutral-500">{translate(locale, "cart.youWillNotBeCharged")}</div>
             <button

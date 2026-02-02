@@ -7,6 +7,7 @@ import { toast } from "@/components/common/Toast";
 import { translate } from "@/utils/translate";
 import Modal from "@/components/common/Modal";
 import Link from "next/link";
+import { formatCurrency } from "@/utils/format";
 
 interface CommissionSummary {
     totalEarned: number;
@@ -79,12 +80,6 @@ export default function CommissionWidget() {
         }
     };
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat("en-NG", {
-            style: "currency",
-            currency: "NGN",
-        }).format(amount); // Amount is already in Naira
-    };
 
     if (isLoading || !isAgent || !summary) {
         return null; // Don't show anything if not an agent
@@ -125,7 +120,7 @@ export default function CommissionWidget() {
                         </span>
                     </div>
                     <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {formatCurrency(summary.totalEarned)}
+                        ₦{formatCurrency(summary.totalEarned)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                         {translate("wallet.commission.commissionsCount", { count: summary.totalCommissions })}
@@ -141,7 +136,7 @@ export default function CommissionWidget() {
                         </span>
                     </div>
                     <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                        {formatCurrency(summary.pending)}
+                        ₦{formatCurrency(summary.pending)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                         {translate("wallet.commission.awaiting")}
@@ -157,7 +152,7 @@ export default function CommissionWidget() {
                         </span>
                     </div>
                     <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {formatCurrency(summary.approved)}
+                        ₦{formatCurrency(summary.approved)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                         {translate("wallet.commission.ready")}
@@ -167,7 +162,7 @@ export default function CommissionWidget() {
                         <div className="mt-2 flex items-center gap-1.5 py-1 px-2 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-100 dark:border-orange-800">
                             <Clock className="w-3 h-3 text-orange-600 dark:text-orange-400" />
                             <span className="text-[10px] font-medium text-orange-700 dark:text-orange-300">
-                                {translate("wallet.commission.payoutPending", { amount: formatCurrency(summary.payoutPending) })}
+                                {translate("wallet.commission.payoutPending", { amount: `₦${formatCurrency(summary.payoutPending)}` })}
                             </span>
                         </div>
                     )}
@@ -201,7 +196,7 @@ export default function CommissionWidget() {
                             {translate("wallet.commission.registration")}
                         </p>
                         <p className="text-sm font-bold text-gray-900 dark:text-white">
-                            {formatCurrency(summary.byType.registration)}
+                            ₦{formatCurrency(summary.byType.registration)}
                         </p>
                     </div>
                     <div className="text-center">
@@ -209,7 +204,7 @@ export default function CommissionWidget() {
                             {translate("wallet.commission.purchase")}
                         </p>
                         <p className="text-sm font-bold text-gray-900 dark:text-white">
-                            {formatCurrency(summary.byType.purchase)}
+                            ₦{formatCurrency(summary.byType.purchase)}
                         </p>
                     </div>
                     <div className="text-center">
@@ -217,7 +212,7 @@ export default function CommissionWidget() {
                             {translate("wallet.commission.bonus")}
                         </p>
                         <p className="text-sm font-bold text-gray-900 dark:text-white">
-                            {formatCurrency(summary.byType.bonus)}
+                            ₦{formatCurrency(summary.byType.bonus)}
                         </p>
                     </div>
                 </div>

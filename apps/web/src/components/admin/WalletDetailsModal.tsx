@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import { apiGet, apiPost } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
+import { formatCurrency } from "@/utils/format";
 import {
     User,
     Mail,
@@ -265,12 +266,6 @@ export default function WalletDetailsModal({
         }
     };
 
-    const formatCurrency = (amount: number, currency: string) => {
-        if (currency === 'NGN') {
-            return `₦${amount.toLocaleString()}`;
-        }
-        return `${amount.toLocaleString()} ${currency}`;
-    };
 
     const formatDate = (date: string) => {
         return new Date(date).toLocaleString();

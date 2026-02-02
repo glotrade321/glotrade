@@ -18,6 +18,7 @@ import {
   Store
 } from "lucide-react";
 import { apiGet } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 
 interface RecentActivity {
   type: 'order' | 'user' | 'product' | 'review' | 'payment';
@@ -147,14 +148,6 @@ export default function AdminDashboardPage() {
     return () => clearInterval(interval);
   }, [router]);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);

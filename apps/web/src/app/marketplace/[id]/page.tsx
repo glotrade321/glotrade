@@ -13,6 +13,7 @@ import BulkPricingTiers from "@/components/product/BulkPricingTiers";
 
 import { cookies } from "next/headers";
 import { translate, Locale } from "@/utils/i18n";
+import { formatCurrency } from "@/utils/format";
 type Product = {
   _id: string;
   title: string;
@@ -221,12 +222,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {/* price area (responsive) */}
             <div className="mt-3 flex flex-row items-baseline justify-between gap-2 sm:gap-4">
               <div className="inline-flex w-auto items-baseline rounded px-3 py-1.5 text-orange-500 bg-orange-50 dark:text-range-900 dark:bg-range-900/20">
-                <span className="text-3xl md:text-4xl font-extrabold leading-none">{discounted ?? product.price}</span>
+                <span className="text-3xl md:text-4xl font-extrabold leading-none">{formatCurrency(discounted ?? product.price)}</span>
                 <span className="text-xs font-semibold ml-1 leading-none">{product.currency}</span>
               </div>
               {discounted !== undefined ? (
                 <div className="inline-flex items-baseline gap-2">
-                  <span className="line-through text-neutral-500 dark:text-neutral-200 text-xs sm:text-sm">{product.price} <span className="text-[10px] sm:text-xs">{product.currency}</span></span>
+                  <span className="line-through text-neutral-500 dark:text-neutral-200 text-xs sm:text-sm">{formatCurrency(product.price)} <span className="text-[10px] sm:text-xs">{product.currency}</span></span>
                   <span className="rounded bg-rose-500 text-white text-xs sm:text-sm px-2 py-0.5">-{product.discount}% {translate(locale, "product.off")}</span>
                 </div>
               ) : null}
@@ -241,7 +242,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300">
-                    <Truck size={14} className="sm:w-4 sm:h-4" /> From {product.currency} {Math.min(...product.shippingOptions.map(opt => opt.cost))}
+                    <Truck size={14} className="sm:w-4 sm:h-4" /> From {product.currency} {formatCurrency(Math.min(...product.shippingOptions.map(opt => opt.cost)))}
                   </span>
                 )
               ) : (
@@ -335,7 +336,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   product.shippingOptions.some(option => option.cost === 0) ? (
                     translate(locale, "product.shipping.freeAvailable")
                   ) : (
-                    `${translate(locale, "product.shipping.from")} ${product.currency} ${Math.min(...product.shippingOptions.map(opt => opt.cost))}`
+                    `${translate(locale, "product.shipping.from")} ${product.currency} ${formatCurrency(Math.min(...product.shippingOptions.map(opt => opt.cost)))}`
                   )
                 ) : (
                   translate(locale, "product.shipping.freeOnOrders")

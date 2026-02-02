@@ -20,6 +20,7 @@ import { toast } from "@/components/common/Toast";
 import Modal from "@/components/common/Modal";
 import { RequireAuth, RequireAdmin } from "@/components/auth/Guards";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { formatCurrency } from "@/utils/format";
 
 interface WithdrawalRequest {
     _id: string;
@@ -245,7 +246,7 @@ export default function AdminWithdrawalsPage() {
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <div className="text-gray-900 dark:text-white font-bold">
-                                                            ₦{request.amount.toLocaleString()}
+                                                            {formatCurrency(request.amount, 'NGN')}
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4">

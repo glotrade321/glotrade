@@ -26,6 +26,7 @@ import {
   Package
 } from "lucide-react";
 import { apiGet } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 
 // Register Chart.js components
 ChartJS.register(
@@ -141,14 +142,6 @@ export default function AnalyticsDashboard({ className = "" }: AnalyticsDashboar
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -285,7 +278,7 @@ export default function AnalyticsDashboard({ className = "" }: AnalyticsDashboar
         },
         callbacks: {
           label: function (context: any) {
-            return `Sales: ₦${context.parsed.y.toLocaleString()}`;
+            return `Sales: ₦${formatCurrency(context.parsed.y)}`;
           }
         }
       }
@@ -599,7 +592,7 @@ export default function AnalyticsDashboard({ className = "" }: AnalyticsDashboar
                           {category.category}
                         </span>
                         <span className="text-xs text-gray-500">
-                          ₦{category.sales.toLocaleString()}
+                          ₦{formatCurrency(category.sales)}
                         </span>
                       </div>
                     ))}

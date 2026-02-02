@@ -8,6 +8,7 @@ import type { ProductCardData } from "@/types/product";
 
 import { translate, Locale } from "@/utils/i18n";
 import { getOptimizedImageUrl } from "@/utils/image";
+import { formatCurrency } from "@/utils/format";
 
 export default function ProductCard({ product, locale }: { product: ProductCardData; locale: Locale }) {
   const p = product;
@@ -142,12 +143,12 @@ export default function ProductCard({ product, locale }: { product: ProductCardD
       <div className="mt-1.5 sm:mt-2 flex items-center justify-between gap-2 sm:gap-3">
         <div className="flex items-center gap-1.5 sm:gap-3">
           <div className="inline-flex items-baseline bg-orange-500 text-white rounded px-1.5 sm:px-2 py-0.5">
-            <span className="text-base sm:text-xl font-extrabold leading-none">{(discounted ?? p.price)}</span>
+            <span className="text-base sm:text-xl font-extrabold leading-none">{formatCurrency(discounted ?? p.price)}</span>
             <span className="text-[8px] sm:text-[10px] font-semibold ml-0.5 sm:ml-1 leading-none">{p.currency}</span>
           </div>
           {discounted !== undefined && (
             <div className="text-xs sm:text-sm text-neutral-500">
-              <span className="line-through hidden sm:inline">{p.price}<span className="text-[8px] sm:text-[10px]">{p.currency}</span></span>
+              <span className="line-through hidden sm:inline">{formatCurrency(p.price)}<span className="text-[8px] sm:text-[10px]">{p.currency}</span></span>
             </div>
           )}
         </div>

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Ticket, X, Check, AlertCircle } from "lucide-react";
 import { validateVoucher, recordVoucherUsage, AppliedVoucher, Voucher } from "@/utils/voucherApi";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
+import { formatCurrency } from "@/utils/format";
 
 interface VoucherInputProps {
   onVoucherApplied: (voucher: AppliedVoucher) => void;
@@ -76,7 +77,7 @@ export default function VoucherInput({
 
         onVoucherApplied(appliedVoucher);
         setVoucherCode("");
-        setSuccess(`${translate(locale, "voucher.applied")} ${discountAmount > 0 ? `$${discountAmount.toFixed(2)} ${translate(locale, "voucher.off")}` : 'Discount applied'}`);
+        setSuccess(`${translate(locale, "voucher.applied")} ${discountAmount > 0 ? `₦${formatCurrency(discountAmount)} ${translate(locale, "voucher.off")}` : 'Discount applied'}`);
 
         // Clear success message after 3 seconds
         setTimeout(() => setSuccess(""), 3000);
@@ -106,7 +107,7 @@ export default function VoucherInput({
   const getVoucherDisplayValue = (voucher: AppliedVoucher) => {
     switch (voucher.type) {
       case 'percentage': return `${voucher.value}%`;
-      case 'fixed': return `$${voucher.value}`;
+      case 'fixed': return `₦${formatCurrency(voucher.value)}`;
       case 'free_shipping': return translate(locale, "voucher.free");
       default: return voucher.value;
     }
@@ -194,7 +195,7 @@ export default function VoucherInput({
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-green-800 dark:text-green-200">
-                  -${voucher.discountAmount.toFixed(2)}
+                  -₦{formatCurrency(voucher.discountAmount)}
                 </span>
                 <button
                   onClick={() => handleRemoveVoucher(voucher.id)}

@@ -20,6 +20,7 @@ import { apiGet, apiPost } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import Modal from "@/components/common/Modal";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { formatCurrency } from "@/utils/format";
 
 interface CreditRequest {
     _id: string;
@@ -313,11 +314,11 @@ export default function CreditRequestsPage() {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                                                        ₦{request.requestedAmount.toLocaleString()}
+                                                        {formatCurrency(request.requestedAmount, 'NGN')}
                                                     </div>
                                                     {request.approvedAmount && (
                                                         <div className="text-xs text-green-600 dark:text-green-400">
-                                                            Approved: ₦{request.approvedAmount.toLocaleString()}
+                                                            Approved: {formatCurrency(request.approvedAmount, 'NGN')}
                                                         </div>
                                                     )}
                                                 </td>
@@ -449,7 +450,7 @@ export default function CreditRequestsPage() {
                                 <div>
                                     <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Requested Amount</label>
                                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        ₦{selectedRequest.requestedAmount.toLocaleString()}
+                                        {formatCurrency(selectedRequest.requestedAmount, 'NGN')}
                                     </p>
                                 </div>
                                 <div>

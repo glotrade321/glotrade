@@ -20,6 +20,7 @@ import {
 import { apiGet, apiDelete, apiPost } from "@/utils/api";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 import { initiatePayment, createOrder } from "./initiate";
+import { formatCurrency } from "@/utils/format";
 
 import AddressModal from "@/components/cart/AddressModal";
 import VoucherInput from "@/components/checkout/VoucherInput";
@@ -591,7 +592,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         Get a{" "}
-                        {config.shipping.standard.creditAmount.toLocaleString()}{" "}
+                        {formatCurrency(config.shipping.standard.creditAmount)}{" "}
                         {products[0]?.currency || "NGN"} Credit for late
                         delivery?
                       </div>
@@ -620,7 +621,7 @@ export default function CheckoutPage() {
                 </div>
                 {totalVoucherDiscount > 0 && (
                   <div className="flex items-center justify-end mt-4 font-semibold text-sm text-green-600">
-                    {totalVoucherDiscount.toLocaleString()}{" "}
+                    {formatCurrency(totalVoucherDiscount)}{" "}
                     {products[0]?.currency || "NGN"} {translate(locale, "voucher.off")} applied
                     <ChevronRight size={14} className="text-neutral-500" />
                   </div>
@@ -761,7 +762,7 @@ export default function CheckoutPage() {
                       <div className="flex items-center gap-1.5 sm:gap-3">
                         <div className="inline-flex items-baseline bg-orange-500 text-white rounded px-1.5 sm:px-2 py-0.5">
                           <span className="text-base sm:text-lg font-extrabold leading-none">
-                            {discounted ?? p.price}
+                            {formatCurrency(discounted ?? p.price)}
                           </span>
                           <span className="text-[8px] sm:text-[10px] font-semibold ml-0.5 sm:ml-1 leading-none">
                             {p.currency}
@@ -775,7 +776,7 @@ export default function CheckoutPage() {
                         {discounted !== undefined && (
                           <div className="text-xs sm:text-sm text-neutral-500">
                             <span className="line-through hidden sm:inline">
-                              {p.price}{" "}
+                              {formatCurrency(p.price)}{" "}
                               <span className="text-[8px] sm:text-[10px]">
                                 {p.currency}
                               </span>
@@ -871,22 +872,22 @@ export default function CheckoutPage() {
                         {p.title}
                       </div>
                       <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                        Qty: {q} × {(discounted ?? p.price).toLocaleString()}{" "}
+                        Qty: {q} × {formatCurrency(discounted ?? p.price)}{" "}
                         {p.currency}
                         {discounted !== undefined && (
                           <span className="ml-2 text-rose-600">
-                            (was {p.price.toLocaleString()} {p.currency})
+                            (was {formatCurrency(p.price)} {p.currency})
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="text-right ml-2">
                       <div className="font-medium text-neutral-800 dark:text-neutral-100">
-                        {itemTotal.toLocaleString()} {p.currency}
+                        {formatCurrency(itemTotal)} {p.currency}
                       </div>
                       {itemDiscount > 0 && (
                         <div className="text-xs text-rose-600">
-                          Saved: {itemDiscount.toLocaleString()} {p.currency}
+                          Saved: {formatCurrency(itemDiscount)} {p.currency}
                         </div>
                       )}
                     </div>
@@ -902,7 +903,7 @@ export default function CheckoutPage() {
                     {translate(locale, "checkout.itemTotal")}:
                   </span>
                   <span className="line-through text-neutral-500 dark:text-neutral-400">
-                    {summary.subtotal.toLocaleString()}{" "}
+                    {formatCurrency(summary.subtotal)}{" "}
                     {products[0]?.currency || "NGN"}
                   </span>
                 </div>
@@ -911,14 +912,14 @@ export default function CheckoutPage() {
                     {translate(locale, "checkout.itemDiscount")}:
                   </span>
                   <span className="text-rose-600">
-                    -{summary.discount.toLocaleString()}{" "}
+                    -{formatCurrency(summary.discount)}{" "}
                     {products[0]?.currency || "NGN"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between font-medium text-neutral-800 dark:text-neutral-100">
                   <span>{translate(locale, "checkout.subtotal")}:</span>
                   <span>
-                    {summary?.finalSubtotal?.toLocaleString() || "0"}{" "}
+                    {formatCurrency(summary?.finalSubtotal || 0)}{" "}
                     {products[0]?.currency || "NGN"}
                   </span>
                 </div>
@@ -928,7 +929,7 @@ export default function CheckoutPage() {
                       {translate(locale, "checkout.voucherDiscount")}:
                     </span>
                     <span className="text-rose-600">
-                      -{summary?.voucherApplied?.toLocaleString() || "0"}{" "}
+                      -{formatCurrency(summary?.voucherApplied || 0)}{" "}
                       {products[0]?.currency || "NGN"}
                     </span>
                   </div>
@@ -936,7 +937,7 @@ export default function CheckoutPage() {
                 <div className="flex items-center justify-between font-medium text-neutral-800 dark:text-neutral-100">
                   <span>{translate(locale, "checkout.subtotalAfterVouchers")}:</span>
                   <span>
-                    {summary?.finalAfterVouchers?.toLocaleString() || "0"}{" "}
+                    {formatCurrency(summary?.finalAfterVouchers || 0)}{" "}
                     {products[0]?.currency || "NGN"}
                   </span>
                 </div>
@@ -955,7 +956,7 @@ export default function CheckoutPage() {
               </h3>
               <div className="space-y-3 mb-4">
                 {[
-                  { id: "wallet", name: walletBalance ? translate(locale, "checkout.walletAvailable", { amount: ((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))).toLocaleString() }) : translate(locale, "checkout.wallet"), logo: "💰" },
+                  { id: "wallet", name: walletBalance ? translate(locale, "checkout.walletAvailable", { amount: formatCurrency((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))) }) : translate(locale, "checkout.wallet"), logo: "💰" },
                   // { id: "apple", name: "Apple Pay", logo: "🍎" },
                   // { id: "card", name: "Card", logo: "💳" },
                   // { id: "google", name: "Google Pay", logo: "G" },
@@ -1003,7 +1004,7 @@ export default function CheckoutPage() {
               <div className="flex items-center justify-between text-base font-semibold text-neutral-800 dark:text-neutral-100">
                 <span>{translate(locale, "checkout.orderTotal")}:</span>
                 <span>
-                  {summary?.finalTotal?.toLocaleString() || "0"}{" "}
+                  {formatCurrency(summary?.finalTotal || 0)}{" "}
                   {products[0]?.currency || "NGN"}
                 </span>
               </div>
@@ -1222,7 +1223,7 @@ export default function CheckoutPage() {
                 className="w-4 h-4 text-orange-500 mt-0.5"
               />
               <span className="text-sm text-neutral-700 dark:text-neutral-300">
-                {translate(locale, "checkout.trust.donateTree", { amount: config.donation.treeAmount.toLocaleString(), currency: products[0]?.currency || "NGN" })}
+                {translate(locale, "checkout.trust.donateTree", { amount: formatCurrency(config.donation.treeAmount), currency: products[0]?.currency || "NGN" })}
               </span>
             </label>
           </div >
@@ -1260,7 +1261,7 @@ export default function CheckoutPage() {
             <ul className="space-y-1 text-sm text-neutral-700 dark:text-neutral-300">
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                {translate(locale, "checkout.trust.delayCredit", { amount: config.shipping.standard.creditAmount.toLocaleString(), currency: products[0]?.currency || "NGN" })}
+                {translate(locale, "checkout.trust.delayCredit", { amount: formatCurrency(config.shipping.standard.creditAmount), currency: products[0]?.currency || "NGN" })}
               </li>
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
@@ -1426,7 +1427,7 @@ export default function CheckoutPage() {
                       <div className="mt-3 flex items-center gap-3">
                         <div className="inline-flex items-baseline bg-orange-500 text-white rounded px-2 py-0.5">
                           <span className="text-xl font-bold leading-none">
-                            {(discounted ?? p.price).toLocaleString()}
+                            {formatCurrency(discounted ?? p.price)}
                           </span>
                           <span className="text-[10px] font-semibold ml-1 leading-none">
                             {p.currency}
@@ -1435,7 +1436,7 @@ export default function CheckoutPage() {
                         {discounted !== undefined && (
                           <div className="text-neutral-500 dark:text-neutral-400">
                             <span className="line-through mr-2">
-                              {p.price.toLocaleString()} {p.currency}
+                              {formatCurrency(p.price)} {p.currency}
                             </span>
                             <span className="inline-block bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs font-semibold px-2 py-0.5 rounded">
                               -{p.discount}%

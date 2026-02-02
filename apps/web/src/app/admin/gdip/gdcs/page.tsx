@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 
 interface GDC {
     _id: string;
@@ -61,12 +62,6 @@ export default function AdminGDCsPage() {
         }
     };
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat("en-NG", {
-            style: "currency",
-            currency: "NGN",
-        }).format(amount);
-    };
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return "N/A";

@@ -41,6 +41,7 @@ import CreditRequestModal from "@/components/wallet/CreditRequestModal";
 import TopUpModal from "@/components/wallet/TopUpModal";
 import CommissionWidget from "@/components/wallet/CommissionWidget";
 import { translate } from "@/utils/translate";
+import { formatCurrency as globalFormatCurrency } from "@/utils/format";
 
 // Interfaces
 interface WalletBalance {
@@ -395,19 +396,17 @@ function WalletPageContent() {
   };
 
   // Format currency for wallet balance (backend already converts kobo to Naira)
-  const formatWalletBalance = (amount: number, currency: string) => {
-    if (currency === "NGN") {
-      return `₦${amount.toLocaleString()}`;
-    }
-    return `${amount.toLocaleString()} ${currency}`;
+  const formatWalletBalance = (amount: number, currencyCode: string) => {
+    const formatted = globalFormatCurrency(amount);
+    if (currencyCode === "NGN") return `₦${formatted}`;
+    return `${formatted} ${currencyCode}`;
   };
 
   // Format currency for transactions (stored in Naira)
-  const formatCurrency = (amount: number, currency: string) => {
-    if (currency === "NGN") {
-      return `₦${amount.toLocaleString()}`;
-    }
-    return `${amount.toLocaleString()} ${currency}`;
+  const formatCurrency = (amount: number, currencyCode: string) => {
+    const formatted = globalFormatCurrency(amount);
+    if (currencyCode === "NGN") return `₦${formatted}`;
+    return `${formatted} ${currencyCode}`;
   };
 
   // Get transaction icon
@@ -1094,7 +1093,7 @@ function WalletPageContent() {
                           )}
                           {request.approvedAmount && request.status === 'approved' && (
                             <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded text-sm text-green-800 dark:text-green-400">
-                              ✓ {translate("wallet.creditRequests.approvedAmount")}: ₦{request.approvedAmount.toLocaleString()}
+                              ✓ {translate("wallet.creditRequests.approvedAmount")}: ₦{globalFormatCurrency(request.approvedAmount)}
                               {request.adminNotes && <p className="text-xs mt-1">{translate("wallet.creditRequests.note")}: {request.adminNotes}</p>}
                             </div>
                           )}

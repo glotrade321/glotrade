@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 import TPIADetailsModal from "@/components/admin/gdip/TPIADetailsModal";
 
 interface TPIA {
@@ -77,12 +78,6 @@ export default function AdminTPIAManagementPage() {
         setFilteredTPIAs(filtered);
     };
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat("en-NG", {
-            style: "currency",
-            currency: "NGN",
-        }).format(amount);
-    };
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("en-NG", {

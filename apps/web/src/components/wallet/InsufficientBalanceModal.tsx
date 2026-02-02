@@ -3,6 +3,7 @@
 import React from 'react';
 import { X, AlertTriangle, Wallet, CreditCard } from 'lucide-react';
 import { translate } from '@/utils/translate';
+import { formatCurrency } from '@/utils/format';
 
 interface InsufficientBalanceModalProps {
   isOpen: boolean;
@@ -59,7 +60,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
                     {translate("wallet.modals.insufficientBalance.required")}
                   </span>
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    ₦{requiredAmount.toLocaleString()}
+                    ₦{formatCurrency(requiredAmount)}
                   </span>
                 </div>
 
@@ -68,7 +69,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
                     {translate("wallet.modals.insufficientBalance.available")}
                   </span>
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    ₦{availableAmount.toLocaleString()}
+                    ₦{formatCurrency(availableAmount)}
                   </span>
                 </div>
 
@@ -78,7 +79,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
                       {translate("wallet.modals.insufficientBalance.shortfall")}
                     </span>
                     <span className="text-lg font-semibold text-red-600 dark:text-red-400">
-                      ₦{shortfall.toLocaleString()}
+                      ₦{formatCurrency(shortfall)}
                     </span>
                   </div>
                 </div>

@@ -21,6 +21,7 @@ import {
   CalendarDays
 } from "lucide-react";
 import { apiGet, apiPost, apiPut } from "@/utils/api";
+import { formatCurrency } from "@/utils/format";
 import { getCountryPhoneCode } from "@/utils/countryData";
 
 interface Order {
@@ -269,12 +270,6 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const formatCurrency = (amount: number, currency: string = "NGN") => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: currency || 'NGN'
-    }).format(amount);
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -624,7 +619,7 @@ export default function AdminOrdersPage() {
                         </td>
                         <td className="px-6 py-4">
                           <p className="text-sm font-medium text-gray-900">
-                            {formatCurrency(order.totalPrice, order.currency)}
+                            ₦{formatCurrency(order.totalPrice)}
                           </p>
                         </td>
                         <td className="px-6 py-4">
@@ -719,7 +714,7 @@ export default function AdminOrdersPage() {
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Total:</span>
                           <span className="text-gray-900 font-semibold">
-                            {formatCurrency(order.totalPrice, order.currency)}
+                            ₦{formatCurrency(order.totalPrice)}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">

@@ -1,303 +1,160 @@
-❯ npm run dev
+2026-02-02T15:59:33.115906348Z ::1 - - [02/Feb/2026:15:59:33 +0000] "GET /api/v1/market/products?category=Eye+Makeup&minPrice=100&maxPrice=250&condition=new&freeShipping=true&discountMin=30&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:33.41497138Z ::1 - - [02/Feb/2026:15:59:33 +0000] "GET /api/v1/market/products?category=Exercise+Equipment&minPrice=100&maxPrice=250&ratingMin=4.5&etaMaxDays=2&attr_storage=256GB&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:33.416542638Z ::1 - - [02/Feb/2026:15:59:33 +0000] "GET /api/v1/market/products?category=Luxury+%26+Sports+Cars&minPrice=50&maxPrice=100&condition=refurbished&sort=-price&ratingMin=4&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:33.610604356Z ::1 - - [02/Feb/2026:15:59:33 +0000] "GET /api/v1/market/products?category=Belts&minPrice=100&maxPrice=250&attr_size=14%22&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:34.310116222Z ::1 - - [02/Feb/2026:15:59:34 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:35.012802043Z ::1 - - [02/Feb/2026:15:59:35 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:35.515200537Z ::1 - - [02/Feb/2026:15:59:35 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:37.211533409Z ::1 - - [02/Feb/2026:15:59:37 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:37.220250122Z ::1 - - [02/Feb/2026:15:59:37 +0000] "GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2VhODMyMWRmNmUzYjhlM2ZmODAwZiIsImVtYWlsIjoiZ3N0YXJiYWJlOTMxQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiZ3N0YXJiYWJlOTMxXzA0NyIsInJvbGUiOiJwcm9kdWN0X21hbmFnZXIiLCJpYXQiOjE3NzAwMjM4MDIsImV4cCI6MTc3MDYyODYwMn0.HMiDU9lidW8KVqpNuTPOGUbKtqXIx2DiGQKzRDHqTXc HTTP/1.1" 200 - "https://www.glotrade.online/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+2026-02-02T15:59:37.220574728Z ::1 - - [02/Feb/2026:15:59:37 +0000] "GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2VhODMyMWRmNmUzYjhlM2ZmODAwZiIsImVtYWlsIjoiZ3N0YXJiYWJlOTMxQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiZ3N0YXJiYWJlOTMxXzA0NyIsInJvbGUiOiJwcm9kdWN0X21hbmFnZXIiLCJpYXQiOjE3NzAwMjM4MDIsImV4cCI6MTc3MDYyODYwMn0.HMiDU9lidW8KVqpNuTPOGUbKtqXIx2DiGQKzRDHqTXc HTTP/1.1" 200 - "https://www.glotrade.online/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+2026-02-02T15:59:37.221147378Z [DEBUG] No category sales data found
+2026-02-02T15:59:37.221716518Z ::1 - - [02/Feb/2026:15:59:37 +0000] "GET /api/v1/admin/dashboard/categories HTTP/1.1" 200 30 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15"
+2026-02-02T15:59:37.516373823Z ::1 - - [02/Feb/2026:15:59:37 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:37.619503315Z ::1 - - [02/Feb/2026:15:59:37 +0000] "GET /api/v1/market/products?category=Hair+Care+Products&minPrice=50&maxPrice=100&sort=-views&ratingMin=4&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:38.419319351Z ::1 - - [02/Feb/2026:15:59:38 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:38.710658778Z ::1 - - [02/Feb/2026:15:59:38 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:39.31773947Z ::1 - - [02/Feb/2026:15:59:39 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:39.5130152Z ::1 - - [02/Feb/2026:15:59:39 +0000] "GET /api/v1/market/products?category=Hiking+Backpacks&sort=price&ratingMin=5&freeShipping=true&discountMin=50&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:40.610585796Z ::1 - - [02/Feb/2026:15:59:40 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:41.823327585Z ::1 - - [02/Feb/2026:15:59:41 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:42.018971131Z ::1 - - [02/Feb/2026:15:59:42 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:42.215162406Z ::1 - - [02/Feb/2026:15:59:42 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:42.217611209Z ::1 - - [02/Feb/2026:15:59:42 +0000] "GET /api/v1/market/products?category=Fruit+Seeds&minPrice=20&maxPrice=50&condition=used&attr_ram=4GB&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:42.421932848Z ::1 - - [02/Feb/2026:15:59:42 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:42.915006507Z ::1 - - [02/Feb/2026:15:59:42 +0000] "GET /api/v1/market/products?category=Checked+Luggage&minPrice=100&maxPrice=250&condition=new&discountMin=30&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:43.117050395Z ::1 - - [02/Feb/2026:15:59:43 +0000] "GET /api/v1/market/products?category=Anti-Aging&minPrice=100&maxPrice=250&sort=price&ratingMin=5&discountMin=10&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:43.314249799Z ::1 - - [02/Feb/2026:15:59:43 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:43.420348072Z ::1 - - [02/Feb/2026:15:59:43 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:44.110561364Z ::1 - - [02/Feb/2026:15:59:44 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:44.311692396Z ::1 - - [02/Feb/2026:15:59:44 +0000] "GET /api/v1/market/products?category=Men%27s+Accessories&minPrice=50&maxPrice=100&sort=-price&ratingMin=4&discountMin=20&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:46.013748719Z ::1 - - [02/Feb/2026:15:59:46 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:46.210524345Z ::1 - - [02/Feb/2026:15:59:46 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:46.320449325Z ::1 - - [02/Feb/2026:15:59:46 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:46.521068769Z ::1 - - [02/Feb/2026:15:59:46 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:46.922816174Z ::1 - - [02/Feb/2026:15:59:46 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:47.31317148Z ::1 - - [02/Feb/2026:15:59:47 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:47.723507916Z ::1 - - [02/Feb/2026:15:59:47 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:47.928308333Z ::1 - - [02/Feb/2026:15:59:47 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:49.31866859Z ::1 - - [02/Feb/2026:15:59:49 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:50.514161495Z ::1 - - [02/Feb/2026:15:59:50 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:51.113525161Z ::1 - - [02/Feb/2026:15:59:51 +0000] "GET /api/v1/market/products?category=Computer+Components&condition=refurbished&attr_color=White&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:51.114850205Z ::1 - - [02/Feb/2026:15:59:51 +0000] "GET /api/v1/market/products?category=Action+Cameras&minPrice=100&maxPrice=250&sort=price&ratingMin=4.5&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:51.30986173Z ::1 - - [02/Feb/2026:15:59:51 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:51.42035177Z ::1 - - [02/Feb/2026:15:59:51 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:51.425815296Z ::1 - - [02/Feb/2026:15:59:51 +0000] "GET /api/v1/market/products?category=Flower+Seeds&minPrice=100&maxPrice=250&sort=-price&ratingMin=5&freeShipping=true&discountMin=10&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:51.920806629Z ::1 - - [02/Feb/2026:15:59:51 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:52.010000715Z ::1 - - [02/Feb/2026:15:59:52 +0000] "GET /api/v1/market/products?category=Soundbars&condition=new&etaMaxDays=7&attr_storage=64GB&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T15:59:52.515433451Z ::1 - - [02/Feb/2026:15:59:52 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T15:59:52.717851826Z ::1 - - [02/Feb/2026:15:59:52 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
 
-> dev
-> turbo run dev
 
-• turbo 2.7.1
-• Packages in scope: @afritrade/api, web
-• Running dev in 2 packages
-• Remote caching disabled
-@afritrade/api:dev: cache bypass, force executing 4c1844c6cc2863e0
-web:dev: cache bypass, force executing 42b3a89fed7c68bb
-yarn run v1.22.22
-yarn run v1.22.22
-$ nodemon
-$ next dev
-@afritrade/api:dev: [nodemon] 3.1.11
-@afritrade/api:dev: [nodemon] to restart at any time, enter `rs`
-@afritrade/api:dev: [nodemon] watching path(s): src/**/*
-@afritrade/api:dev: [nodemon] watching extensions: ts,js
-@afritrade/api:dev: [nodemon] starting `ts-node ./src/app.ts`
-web:dev:    ▲ Next.js 15.5.9
-web:dev:    - Local:        http://localhost:3000
-web:dev:    - Network:      http://192.168.1.176:3000
-web:dev:    - Environments: .env.local
-web:dev:    - Experiments (use with caution):
-web:dev:      · optimizePackageImports
-web:dev: 
-web:dev:  ✓ Starting...
-web:dev:  ✓ Ready in 3.5s
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: Orange Money credentials not fully configured. Set ORANGE_MONEY_CLIENT_ID, ORANGE_MONEY_CLIENT_SECRET, and ORANGE_MONEY_MERCHANT_CODE
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: 🔒 CORS Allowed Origins: [ 'http://localhost:3000' ]
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"name":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (Use `node --trace-warnings ...` to show where the warning was created)
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"orderId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"userId":1,"status":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"tpiaId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"profitDistributed":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"userId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"code":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"reference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"externalReference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:74155) [MONGOOSE] Warning: Duplicate schema index on {"reference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: 🚀 MongoDB connected successfully
-@afritrade/api:dev: Initializing scheduled jobs...
-@afritrade/api:dev: Scheduled jobs initialized.
-@afritrade/api:dev: 🌐 Server running in development mode on port 8080
-@afritrade/api:dev: 📚 API Documentation: http://localhost:8080/api-docs
-@afritrade/api:dev: 🔒 Security: Helmet enabled
-@afritrade/api:dev: 📝 Logging: Morgan dev mode
-@afritrade/api:dev: 🚀 Redis connected successfully
-web:dev:  ○ Compiling / ...
-web:dev:  ✓ Compiled / in 6.9s (967 modules)
-@afritrade/api:dev: GET /api/v1/market/products?limit=24 200 50.233 ms - 2153
-@afritrade/api:dev: GET /api/v1/banners?active=true 200 4.033 ms - 54
-web:dev:  ✓ Compiled in 2.5s (375 modules)
-web:dev:  GET / 200 in 9495ms
-web:dev:  │ GET http://localhost:8080/api/v1/market/products?limit=24
-web:dev:  │ │ ⚠ Specified "cache: no-store" and "revalidate: 3600", only one should be specified.
-web:dev:  │ GET http://localhost:8080/api/v1/banners?active=true
-web:dev:  │ │ ⚠ Specified "cache: no-store" and "revalidate: 3600", only one should be specified.
-@afritrade/api:dev: GET /api/v1/market/products?limit=24 200 16.201 ms - 2153
-@afritrade/api:dev: GET /api/v1/banners?active=true 200 3.325 ms - 54
-web:dev:  GET / 200 in 272ms
-web:dev:  │ GET http://localhost:8080/api/v1/market/products?limit=24
-web:dev:  │ │ ⚠ Specified "cache: no-store" and "revalidate: 3600", only one should be specified.
-web:dev:  │ GET http://localhost:8080/api/v1/banners?active=true
-web:dev:  │ │ ⚠ Specified "cache: no-store" and "revalidate: 3600", only one should be specified.
-@afritrade/api:dev: GET /api/v1/market/products/featured?limit=12 200 32.032 ms - 2073
-@afritrade/api:dev: GET /api/v1/market/categories 200 99.182 ms - 102531
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&discountMin=5 200 98.690 ms - 2153
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&sort=-views&brand=MyPro 200 108.017 ms - 2153
-@afritrade/api:dev: GET /api/v1/market/categories 200 130.079 ms - 102531
-web:dev:  ○ Compiling /auth/login ...
-web:dev:  ✓ Compiled /auth/login in 1021ms (974 modules)
-web:dev:  GET /auth/login 200 in 1267ms
-@afritrade/api:dev: Ensured walletId WAL-9541-MQTP for user harunjibs@gmail.com
-@afritrade/api:dev: POST /api/v1/auth/login 200 151.596 ms - 1167
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/users/me/storage 200 23.792 ms - 53
-@afritrade/api:dev: GET /api/v1/users/me/storage 200 17.410 ms - 53
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 23.169 ms - 53
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 20.367 ms - 53
-@afritrade/api:dev: GET /api/v1/market/products?limit=24 200 8.593 ms - 2153
-@afritrade/api:dev: GET /api/v1/banners?active=true 200 3.410 ms - 54
-web:dev:  GET / 200 in 166ms
-web:dev:  │ GET http://localhost:8080/api/v1/market/products?limit=24
-web:dev:  │ │ ⚠ Specified "cache: no-store" and "revalidate: 3600", only one should be specified.
-web:dev:  │ GET http://localhost:8080/api/v1/banners?active=true
-web:dev:  │ │ ⚠ Specified "cache: no-store" and "revalidate: 3600", only one should be specified.
-@afritrade/api:dev: GET /api/v1/market/products/featured?limit=12 200 15.123 ms - 2073
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&sort=-views&brand=MyPro 200 17.781 ms - 2153
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&discountMin=5 200 24.637 ms - 2153
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&discountMin=5 200 25.582 ms - 2153
-@afritrade/api:dev: GET /api/v1/market/categories 200 75.521 ms - 102531
-@afritrade/api:dev: GET /api/v1/market/categories 200 129.059 ms - 102531
-@afritrade/api:dev: GET /api/v1/market/products/featured?limit=12 200 126.954 ms - 2073
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&sort=-views&brand=MyPro 200 108.020 ms - 2153
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 12.114 ms - 53
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 16.258 ms - 53
-web:dev:  ○ Compiling /marketplace/[id] ...
-web:dev:  ✓ Compiled /marketplace/[id] in 1937ms (1049 modules)
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123 200 19.640 ms - 2089
-@afritrade/api:dev: GET /api/v1/market/categories 200 50.594 ms - 102531
-web:dev:  GET /marketplace/6976a483227ae3eb5b3e2123 200 in 3561ms
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 49.322 ms - 76
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 46.321 ms - 76
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 50.753 ms - 76
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 44.357 ms - 76
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/recommendations?limit=12&recentBrands=MyPro%2CMaxmuscle%2CTechPad%2CEssence%2CSpeedster&recentCategories=Water+Bottles%2CFitness+Supplements%2CTablets+%26+iPads%2CPerfumes%2CCycling 200 106.831 ms - 30
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 30.112 ms - 76
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 21.335 ms - 76
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/recommendations?limit=12&recentBrands=MyPro%2CMaxmuscle%2CTechPad%2CEssence%2CSpeedster&recentCategories=Water+Bottles%2CFitness+Supplements%2CTablets+%26+iPads%2CPerfumes%2CCycling 200 118.560 ms - 30
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 20.817 ms - 76
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123/reviews?page=1&limit=100 200 34.600 ms - 76
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/orders?userId=69763a53f3b55fdea37eceb2 200 19.618 ms - 928
-@afritrade/api:dev: GET /api/v1/orders?userId=69763a53f3b55fdea37eceb2 200 16.899 ms - 928
-@afritrade/api:dev: GET /api/v1/orders?userId=69763a53f3b55fdea37eceb2 200 18.406 ms - 928
-@afritrade/api:dev: GET /api/v1/orders?userId=69763a53f3b55fdea37eceb2 200 13.278 ms - 928
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 14.842 ms - 101
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 10.736 ms - 101
-web:dev:  ○ Compiling /cart ...
-web:dev:  ✓ Compiled /cart in 826ms (1064 modules)
-web:dev:  GET /cart 200 in 1048ms
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123 200 19.209 ms - 2089
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123 200 19.685 ms - 2089
-@afritrade/api:dev: GET /api/v1/market/products?sort=-views&limit=8 200 11.054 ms - 2153
-@afritrade/api:dev: GET /api/v1/market/products?sort=-views&limit=8 200 16.428 ms - 2153
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/users/me/addresses 200 15.244 ms - 219
-@afritrade/api:dev: GET /api/v1/users/me/addresses 200 15.346 ms - 219
-web:dev:  ○ Compiling /checkout ...
-web:dev:  ✓ Compiled /checkout in 1774ms (1093 modules)
-web:dev:  GET /checkout 200 in 2023ms
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123 200 25.951 ms - 2089
-@afritrade/api:dev: GET /api/v1/market/products/6976a483227ae3eb5b3e2123 200 27.900 ms - 2089
-@afritrade/api:dev: GET /api/v1/wallets/summary?userId=69763a53f3b55fdea37eceb2 200 24.439 ms - 153
-@afritrade/api:dev: GET /api/v1/wallets/summary?userId=69763a53f3b55fdea37eceb2 200 19.554 ms - 153
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/users/me 200 18.942 ms - 772
-@afritrade/api:dev: GET /api/v1/users/me 200 18.592 ms - 772
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/users/me/addresses 200 12.074 ms - 219
-@afritrade/api:dev: GET /api/v1/users/me/addresses 200 11.116 ms - 219
-@afritrade/api:dev: Order creation - lineItems received: [
-@afritrade/api:dev:   {
-@afritrade/api:dev:     productId: '6976a483227ae3eb5b3e2123',
-@afritrade/api:dev:     vendorId: {
-@afritrade/api:dev:       _id: '69763c1b0315c6ac7d7fd9cf',
-@afritrade/api:dev:       username: 'codewithharz',
-@afritrade/api:dev:       isVerified: true,
-@afritrade/api:dev:       reputation: 0
-@afritrade/api:dev:     },
-@afritrade/api:dev:     qty: 5,
-@afritrade/api:dev:     unitPrice: 9500,
-@afritrade/api:dev:     currency: 'NGN'
-@afritrade/api:dev:   }
-@afritrade/api:dev: ]
-@afritrade/api:dev: Checking product 6976a483227ae3eb5b3e2123 with quantity 5
-@afritrade/api:dev: Product "Stainless Steel Insulated Water Bottle for Kids" - Available: 1645, Requested: 5
-@afritrade/api:dev: Stock movement recorded: {
-@afritrade/api:dev:   productId: '6976a483227ae3eb5b3e2123',
-@afritrade/api:dev:   quantity: 5,
-@afritrade/api:dev:   type: 'reserved',
-@afritrade/api:dev:   reason: 'Reserved for order 697767640e01b4de583794aa',
-@afritrade/api:dev:   reference: '697767640e01b4de583794aa',
-@afritrade/api:dev:   timestamp: 2026-01-26T13:08:52.663Z
-@afritrade/api:dev: }
-@afritrade/api:dev: POST /api/v1/orders 200 102.030 ms - 66
-@afritrade/api:dev: POST /api/v1/payments/init 200 1044.740 ms - 108
-web:dev:  ○ Compiling /checkout/callback ...
-web:dev:  ✓ Compiled /checkout/callback in 758ms (1100 modules)
-web:dev:  GET /checkout/callback?provider=paystack&orderId=697767640e01b4de583794aa&trxref=frr5t30nw6&reference=frr5t30nw6 200 in 1616ms
-@afritrade/api:dev: GET /api/v1/market/categories 200 83.303 ms - 102531
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/user-preferences 200 31.701 ms - 439
-@afritrade/api:dev: GET /api/v1/notifications/unread-count 200 46.326 ms - 45
-@afritrade/api:dev: GET /api/v1/user-preferences 200 43.609 ms - 439
-@afritrade/api:dev: GET /api/v1/notifications/unread-count 200 51.944 ms - 45
-@afritrade/api:dev: GET /api/v1/notifications?limit=20 200 65.736 ms - 2900
-@afritrade/api:dev: GET /api/v1/notifications?limit=20 200 88.870 ms - 2900
-web:dev:  ○ Compiling /icon.png ...
-@afritrade/api:dev: [EmailService] Sending via sendgrid to harunjibs@gmail.com (Subject: Payment Confirmed)
-@afritrade/api:dev: Stock movement recorded: {
-@afritrade/api:dev:   productId: '6976a483227ae3eb5b3e2123',
-@afritrade/api:dev:   quantity: 5,
-@afritrade/api:dev:   type: 'out',
-@afritrade/api:dev:   reason: 'Order 697767640e01b4de583794aa confirmed and shipped',
-@afritrade/api:dev:   reference: '697767640e01b4de583794aa',
-@afritrade/api:dev:   timestamp: 2026-01-26T13:09:05.820Z
-@afritrade/api:dev: }
-@afritrade/api:dev: GET /api/v1/payments/verify?provider=paystack&reference=frr5t30nw6&orderId=697767640e01b4de583794aa 200 771.172 ms - 39
-@afritrade/api:dev: [EmailService] Sending via sendgrid to harunjibs@gmail.com (Subject: Order Placed Successfully)
-@afritrade/api:dev: [EmailService] Sending via sendgrid to codewithharz@gmail.com (Subject: New Order Received)
-web:dev:  ✓ Compiled /icon.png in 1133ms (700 modules)
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.756 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.770 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 6.280 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.842 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM - - ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.478 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 3.956 ms - -
-web:dev:  GET /icon.png 200 in 1401ms
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 12.573 ms - 53
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 11.046 ms - 53
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.959 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 4.818 ms - -
-web:dev:  ○ Compiling /checkout/success ...
-web:dev:  ✓ Compiled /checkout/success in 736ms (1128 modules)
-web:dev:  GET /checkout/success?orderId=697767640e01b4de583794aa 200 in 980ms
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.209 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.544 ms - -
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 13.317 ms - 53
-@afritrade/api:dev: POST /api/v1/users/me/storage 200 11.793 ms - 53
-web:dev:  ○ Compiling /orders/[id] ...
-web:dev:  ✓ Compiled /orders/[id] in 946ms (1145 modules)
-web:dev:  GET /orders/697767640e01b4de583794aa 200 in 2664ms
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 11.809 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.528 ms - -
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM
-@afritrade/api:dev: GET /api/v1/orders/697767640e01b4de583794aa 200 127.283 ms - 999
-@afritrade/api:dev: GET /api/v1/orders/697767640e01b4de583794aa 200 121.101 ms - 999
-@afritrade/api:dev: GET /api/v1/images/glotrade%2Fproducts%2F6976a483227ae3eb5b3e2123%2F1769383058719_0.JPG?w=150&q=75 200 816.754 ms - 4020
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.002 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 6.806 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 9.702 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.049 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 6.722 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 3.970 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.394 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 10.153 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.830 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.957 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 11.533 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.840 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.900 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.334 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 3.865 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.907 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.988 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.813 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.085 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 10.002 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 10.940 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.890 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 6.702 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 4.152 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 4.056 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 4.702 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 6.668 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 7.381 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.626 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.297 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 8.654 ms - -
-@afritrade/api:dev: GET /api/v1/realtime/notifications/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYTUzZjNiNTVmZGVhMzdlY2ViMiIsImVtYWlsIjoiaGFydW5qaWJzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiaGFydW5qaWJzIiwicm9sZSI6ImJ1eWVyIiwiaWF0IjoxNzY5NDMyOTEzLCJleHAiOjE3NzAwMzc3MTN9.CTVTHsoTujcd4MKYJSF051Bn1ESSJrh0LQCrFvHyuZM 200 5.060 ms - -
+
+
+
+
+
+
+
+
+
+2026-02-02T16:13:37.255032631Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Face+Makeup&minPrice=20&maxPrice=50&condition=refurbished&attr_color=White&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.255465699Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Men%27s+Activewear&condition=used&discountMin=10&attr_ram=4GB&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.257011576Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Wigs+%26+Extensions&minPrice=250&maxPrice=5000&sort=-price&ratingMin=4&discountMin=10&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.450695566Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Jeans&minPrice=100&maxPrice=250&ratingMin=4.5&attr_size=14%22&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.45261587Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Animal+Health+Products&minPrice=100&maxPrice=250&condition=new&ratingMin=5&discountMin=30&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.454512343Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Blenders&minPrice=100&maxPrice=250&sort=-price&ratingMin=3&discountMin=10&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.457641988Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Men%27s+Necklaces&condition=new&ratingMin=4.5&etaMaxDays=7&attr_storage=64GB&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.460808303Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Car+Seats&minPrice=100&maxPrice=250&sort=-views&attr_size=14%22&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.461264071Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Vans+%26+Commercial+Vehicles&minPrice=100&maxPrice=250&sort=-price&ratingMin=5&discountMin=50&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.551870297Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Lights+%26+Bulbs&minPrice=100&maxPrice=250&condition=new&etaMaxDays=2&discountMin=10&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.553426105Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Luxury+%26+Sports+Cars&minPrice=50&maxPrice=100&sort=-price&ratingMin=5&discountMin=10&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.554813249Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Headphones&minPrice=100&maxPrice=250&ratingMin=4.5&attr_storage=256GB&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.619457481Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Shoulder+Bags&sort=-price&ratingMin=4&freeShipping=true&etaMaxDays=7&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.620784954Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Coffee+Makers&minPrice=100&maxPrice=250&condition=new&discountMin=30&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.651517012Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=DVDs+%26+Blu-rays&sort=-price&ratingMin=4&freeShipping=true&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.68625918Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Water+Heaters&minPrice=20&maxPrice=50&sort=price&ratingMin=4.5&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.687367809Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Televisions&sort=-price&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.751725256Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/market/products?category=Microwaves&sort=-price&ratingMin=4&freeShipping=true&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:37.951816819Z ::1 - - [02/Feb/2026:16:13:37 +0000] "GET /api/v1/admin/users?page=1&limit=10 HTTP/1.1" 304 - "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15"
+2026-02-02T16:13:38.160479012Z ::1 - - [02/Feb/2026:16:13:38 +0000] "GET /api/v1/admin/dashboard/health HTTP/1.1" 200 201 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15"
+2026-02-02T16:13:38.653861638Z ::1 - - [02/Feb/2026:16:13:38 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T16:13:39.258172517Z ::1 - - [02/Feb/2026:16:13:39 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T16:13:39.258186667Z ::1 - - [02/Feb/2026:16:13:39 +0000] "GET /api/v1/market/products?category=BBQ+%26+Grills&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:40.35856563Z ::1 - - [02/Feb/2026:16:13:40 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T16:13:40.853002475Z ::1 - - [02/Feb/2026:16:13:40 +0000] "GET /api/v1/market/products?category=Women%27s+Sportswear&condition=refurbished&attr_color=White&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:13:40.951191784Z ::1 - - [02/Feb/2026:16:13:40 +0000] "GET /api/v1/market/products?category=Blenders&sort=-createdAt&etaMaxDays=2&discountMin=50&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:14:32.058253266Z ::1 - - [02/Feb/2026:16:14:32 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T16:14:32.059828063Z ::1 - - [02/Feb/2026:16:14:32 +0000] "GET /api/v1/market/products?category=Smart+Watches&sort=-rating&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:14:44.451113265Z Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYzFiMDMxNWM2YWM3ZDdmZDljZiIsImVtYWlsIjoiY29kZXdpdGhoYXJ6QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiY29kZXdpdGhoYXJ6Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzcwMDQ3NTcxLCJleHAiOjE3NzA2NTIzNzF9.2C9OVV7dN6hpRNe_OAPMCdWkqOhgIFrPpsG5sjdQBuk
+2026-02-02T16:14:44.71252714Z ::1 - - [02/Feb/2026:16:14:44 +0000] "PUT /api/v1/admin/users/6980c84bc08c37346daf33b5 HTTP/1.1" 200 58 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15"
+2026-02-02T16:14:45.52330447Z Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYzFiMDMxNWM2YWM3ZDdmZDljZiIsImVtYWlsIjoiY29kZXdpdGhoYXJ6QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiY29kZXdpdGhoYXJ6Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzcwMDQ3NTcxLCJleHAiOjE3NzA2NTIzNzF9.2C9OVV7dN6hpRNe_OAPMCdWkqOhgIFrPpsG5sjdQBuk
+2026-02-02T16:14:45.688808516Z ::1 - - [02/Feb/2026:16:14:45 +0000] "PUT /api/v1/admin/users/6980c84bc08c37346daf33b5/role HTTP/1.1" 200 1541 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15"
+2026-02-02T16:14:47.430936546Z Auth middleware received token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzYzYzFiMDMxNWM2YWM3ZDdmZDljZiIsImVtYWlsIjoiY29kZXdpdGhoYXJ6QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiY29kZXdpdGhoYXJ6Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzcwMDQ3NTcxLCJleHAiOjE3NzA2NTIzNzF9.2C9OVV7dN6hpRNe_OAPMCdWkqOhgIFrPpsG5sjdQBuk
+2026-02-02T16:14:47.690392807Z ::1 - - [02/Feb/2026:16:14:47 +0000] "GET /api/v1/admin/users?page=1&limit=10 HTTP/1.1" 200 11363 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15"
+2026-02-02T16:15:38.755152013Z ::1 - - [02/Feb/2026:16:15:38 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T16:15:39.050434249Z ::1 - - [02/Feb/2026:16:15:39 +0000] "GET /api/v1/market/products?category=Cutlery&condition=used&sort=-createdAt&etaMaxDays=2&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-02-02T16:17:35.288998428Z ⚠️ CORS Blocked: Origin 'http://glotrade.online' not in allowed list: [ 'https://glotrade.online', 'https://www.glotrade.online' ]
+2026-02-02T16:17:35.29144779Z ERROR 💥 Error: CORS: Origin http://glotrade.online not allowed
+2026-02-02T16:17:35.291464941Z     at origin (/app/dist/app.js:108:25)
+2026-02-02T16:17:35.291470641Z     at /app/node_modules/cors/lib/index.js:219:13
+2026-02-02T16:17:35.291475211Z     at optionsCallback (/app/node_modules/cors/lib/index.js:199:9)
+2026-02-02T16:17:35.291479791Z     at corsMiddleware (/app/node_modules/cors/lib/index.js:204:7)
+2026-02-02T16:17:35.291485041Z     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+2026-02-02T16:17:35.291489351Z     at trim_prefix (/app/node_modules/express/lib/router/index.js:328:13)
+2026-02-02T16:17:35.291579373Z     at /app/node_modules/express/lib/router/index.js:286:9
+2026-02-02T16:17:35.291583693Z     at Function.process_params (/app/node_modules/express/lib/router/index.js:346:12)
+2026-02-02T16:17:35.291586743Z     at next (/app/node_modules/express/lib/router/index.js:280:10)
+2026-02-02T16:17:35.291590063Z     at /app/dist/app.js:57:5
+2026-02-02T16:17:35.29257822Z ⚠️ CORS Blocked: Origin 'http://glotrade.online' not in allowed list: [ 'https://glotrade.online', 'https://www.glotrade.online' ]
+2026-02-02T16:17:35.293621299Z ERROR 💥 Error: CORS: Origin http://glotrade.online not allowed
+2026-02-02T16:17:35.293631449Z     at origin (/app/dist/app.js:108:25)
+2026-02-02T16:17:35.293634759Z     at /app/node_modules/cors/lib/index.js:219:13
+2026-02-02T16:17:35.293637519Z     at optionsCallback (/app/node_modules/cors/lib/index.js:199:9)
+2026-02-02T16:17:35.293640359Z     at corsMiddleware (/app/node_modules/cors/lib/index.js:204:7)
+2026-02-02T16:17:35.293647139Z     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+2026-02-02T16:17:35.293649829Z     at trim_prefix (/app/node_modules/express/lib/router/index.js:328:13)
+2026-02-02T16:17:35.293652639Z     at /app/node_modules/express/lib/router/index.js:286:9
+2026-02-02T16:17:35.293655259Z     at Function.process_params (/app/node_modules/express/lib/router/index.js:346:12)
+2026-02-02T16:17:35.293657659Z     at next (/app/node_modules/express/lib/router/index.js:280:10)
+2026-02-02T16:17:35.29368845Z     at /app/dist/app.js:57:5
+2026-02-02T16:17:35.329403854Z ⚠️ CORS Blocked: Origin 'http://glotrade.online' not in allowed list: [ 'https://glotrade.online', 'https://www.glotrade.online' ]
+2026-02-02T16:17:35.32970396Z ERROR 💥 Error: CORS: Origin http://glotrade.online not allowed
+2026-02-02T16:17:35.32971278Z     at origin (/app/dist/app.js:108:25)
+2026-02-02T16:17:35.32971636Z     at /app/node_modules/cors/lib/index.js:219:13
+2026-02-02T16:17:35.32971938Z     at optionsCallback (/app/node_modules/cors/lib/index.js:199:9)
+2026-02-02T16:17:35.32972187Z     at corsMiddleware (/app/node_modules/cors/lib/index.js:204:7)
+2026-02-02T16:17:35.32972514Z     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+2026-02-02T16:17:35.32972748Z     at trim_prefix (/app/node_modules/express/lib/router/index.js:328:13)
+2026-02-02T16:17:35.32972999Z     at /app/node_modules/express/lib/router/index.js:286:9
+2026-02-02T16:17:35.32973265Z     at Function.process_params (/app/node_modules/express/lib/router/index.js:346:12)
+2026-02-02T16:17:35.32973516Z     at next (/app/node_modules/express/lib/router/index.js:280:10)
+2026-02-02T16:17:35.32973808Z     at /app/dist/app.js:57:5
+2026-02-02T16:17:35.681782328Z ⚠️ CORS Blocked: Origin 'http://glotrade.online' not in allowed list: [ 'https://glotrade.online', 'https://www.glotrade.online' ]
+2026-02-02T16:17:35.682078053Z ERROR 💥 Error: CORS: Origin http://glotrade.online not allowed
+2026-02-02T16:17:35.682098683Z     at origin (/app/dist/app.js:108:25)
+2026-02-02T16:17:35.682105994Z     at /app/node_modules/cors/lib/index.js:219:13
+2026-02-02T16:17:35.682109094Z     at optionsCallback (/app/node_modules/cors/lib/index.js:199:9)
+2026-02-02T16:17:35.682111624Z     at corsMiddleware (/app/node_modules/cors/lib/index.js:204:7)
+2026-02-02T16:17:35.682114884Z     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+2026-02-02T16:17:35.682117244Z     at trim_prefix (/app/node_modules/express/lib/router/index.js:328:13)
+2026-02-02T16:17:35.682119564Z     at /app/node_modules/express/lib/router/index.js:286:9
+2026-02-02T16:17:35.682122054Z     at Function.process_params (/app/node_modules/express/lib/router/index.js:346:12)
+2026-02-02T16:17:35.682135954Z     at next (/app/node_modules/express/lib/router/index.js:280:10)
+2026-02-02T16:17:35.682138944Z     at /app/dist/app.js:57:5
+2026-02-02T16:17:35.74422665Z ⚠️ CORS Blocked: Origin 'http://glotrade.online' not in allowed list: [ 'https://glotrade.online', 'https://www.glotrade.online' ]
+2026-02-02T16:17:35.744512525Z ERROR 💥 Error: CORS: Origin http://glotrade.online not allowed
+2026-02-02T16:17:35.744521525Z     at origin (/app/dist/app.js:108:25)
+2026-02-02T16:17:35.744525566Z     at /app/node_modules/cors/lib/index.js:219:13
+2026-02-02T16:17:35.744528126Z     at optionsCallback (/app/node_modules/cors/lib/index.js:199:9)
+2026-02-02T16:17:35.744530775Z     at corsMiddleware (/app/node_modules/cors/lib/index.js:204:7)
+2026-02-02T16:17:35.744534426Z     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+2026-02-02T16:17:35.744537016Z     at trim_prefix (/app/node_modules/express/lib/router/index.js:328:13)
+2026-02-02T16:17:35.744539636Z     at /app/node_modules/express/lib/router/index.js:286:9
+2026-02-02T16:17:35.744542176Z     at Function.process_params (/app/node_modules/express/lib/router/index.js:346:12)
+2026-02-02T16:17:35.744544666Z     at next (/app/node_modules/express/lib/router/index.js:280:10)
+2026-02-02T16:17:35.744548316Z     at /app/dist/app.js:57:5
+2026-02-02T16:18:05.194737118Z ::1 - - [02/Feb/2026:16:18:05 +0000] "GET /api/v1/market/products/6980b6efc08c37346daf13e6 HTTP/1.1" 200 2108 "-" "node"
+2026-02-02T16:18:06.854863053Z ::1 - - [02/Feb/2026:16:18:06 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T16:19:57.65267534Z ::1 - - [02/Feb/2026:16:19:57 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "-" "node"
+2026-02-02T16:19:57.655264205Z ::1 - - [02/Feb/2026:16:19:57 +0000] "GET /api/v1/market/products?category=Nuts+%26+Dried+Fruits&condition=used&sort=price&limit=30 HTTP/1.1" 200 77 "-" "node"

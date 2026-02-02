@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
 import { translate, Locale } from "@/utils/i18n";
+import { formatCurrency } from "@/utils/format";
 
 type BulkPricingTier = {
     minQuantity: number;
@@ -92,11 +93,11 @@ export default function BulkPricingTiers({ productId, price, currency, tiers, lo
                         if (tier.pricePerUnit !== undefined && tier.pricePerUnit >= 0) {
                             const savings = price - tier.pricePerUnit;
                             const savingsPercent = ((savings / price) * 100).toFixed(0);
-                            priceDisplay = `${currency} ${tier.pricePerUnit.toFixed(2)} ${translate(locale, "bulk.each")}`;
+                            priceDisplay = `${currency} ${formatCurrency(tier.pricePerUnit)} ${translate(locale, "bulk.each")}`;
                             savingsDisplay = `${translate(locale, "bulk.save")} ${savingsPercent}%`;
                         } else if (tier.discountPercent !== undefined && tier.discountPercent > 0) {
                             const effectivePrice = price * (1 - tier.discountPercent / 100);
-                            priceDisplay = `${currency} ${effectivePrice.toFixed(2)} ${translate(locale, "bulk.each")}`;
+                            priceDisplay = `${currency} ${formatCurrency(effectivePrice)} ${translate(locale, "bulk.each")}`;
                             savingsDisplay = `${tier.discountPercent}% ${translate(locale, "product.off")}`;
                         }
 
