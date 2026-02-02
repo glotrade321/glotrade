@@ -422,7 +422,18 @@ export class VendorController {
   };
 
   listProducts = async (req: any, res: any, next: any) => {
-    try { if (!req.user) throw new ValidationError("Authentication required"); const vendorId = req.user.id as any; const products = await Product.find({ seller: vendorId }).sort({ createdAt: -1 }); res.json({ status: "success", data: products }); } catch (e) { next(e as any); }
+    try {
+      if (!req.user) throw new ValidationError("Authentication required");
+
+      const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
+        ? {}
+        : { seller: req.user.id };
+
+      const products = await Product.find(query).sort({ createdAt: -1 });
+      res.json({ status: "success", data: products });
+    } catch (e) {
+      next(e as any);
+    }
   };
   createProduct = async (req: any, res: any, next: any) => {
     try {
@@ -477,8 +488,8 @@ export class VendorController {
       const id = req.params.id;
       const body = req.body || {};
 
-      // Allow admins to update any product, regular users can only update their own
-      const query = req.user.role === 'admin' || req.user.isSuperAdmin
+      // Allow admins and product managers to update any product, regular users can only update their own
+      const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
         ? { _id: id }
         : { _id: id, seller: req.user.id };
 
@@ -494,8 +505,8 @@ export class VendorController {
       if (!req.user) throw new ValidationError("Authentication required");
       const id = req.params.id;
 
-      // Allow admins to delete any product, regular users can only delete their own
-      const query = req.user.role === 'admin' || req.user.isSuperAdmin
+      // Allow admins and product managers to delete any product, regular users can only delete their own
+      const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
         ? { _id: id }
         : { _id: id, seller: req.user.id };
 
@@ -547,8 +558,12 @@ export class VendorController {
         throw new ValidationError("productId, adjustment, and reason are required");
       }
 
-      // Verify product belongs to vendor
-      const product = await Product.findOne({ _id: productId, seller: vendorId });
+      // Verify product belongs to vendor, or user is an admin/product manager
+      const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
+        ? { _id: productId }
+        : { _id: productId, seller: vendorId };
+
+      const product = await Product.findOne(query);
       if (!product) {
         throw new ValidationError("Product not found or access denied");
       }
@@ -569,8 +584,12 @@ export class VendorController {
       const vendorId = req.user.id as any;
       const { productId } = req.params;
 
-      // Verify product belongs to vendor
-      const product = await Product.findOne({ _id: productId, seller: vendorId });
+      // Verify product belongs to vendor, or user is an admin/product manager
+      const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
+        ? { _id: productId }
+        : { _id: productId, seller: vendorId };
+
+      const product = await Product.findOne(query);
       if (!product) {
         throw new ValidationError("Product not found or access denied");
       }
@@ -600,8 +619,12 @@ export class VendorController {
         }
 
         try {
-          // Verify product belongs to vendor
-          const product = await Product.findOne({ _id: productId, seller: vendorId });
+          // Verify product belongs to vendor, or user is an admin/product manager
+          const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
+            ? { _id: productId }
+            : { _id: productId, seller: vendorId };
+
+          const product = await Product.findOne(query);
           if (!product) {
             results.push({ productId, success: false, error: "Product not found or access denied" });
             continue;
