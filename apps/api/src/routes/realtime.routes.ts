@@ -21,7 +21,7 @@ router.options('/notifications/stream', (req: any, res: any) => {
 router.get('/notifications/stream', async (req: any, res: any) => {
   try {
     // console.log('SSE connection attempt:', req.query);
-    
+
     // Get token from query parameter
     const token = req.query.token as string;
     if (!token) {
@@ -33,7 +33,7 @@ router.get('/notifications/stream', async (req: any, res: any) => {
 
     // Handle different token types (JWT or MongoDB ObjectId)
     let userId: string;
-    
+
     if (/^[a-f\d]{24}$/i.test(token)) {
       // MongoDB ObjectId - use directly as userId
       userId = token;
@@ -65,44 +65,9 @@ router.get('/notifications/stream', async (req: any, res: any) => {
     }
     // console.log('User found:', { id: user.id, email: user.email, role: user.role });
 
-    // Set headers for SSE
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Cache-Control');
-
-    // Establish SSE connection
+    // Establish SSE connection via service
+    // The service handles headers, initial message, and centralized heartbeats
     realTimeNotificationService.establishConnection(user.id, req, res);
-
-    // Send initial connection message
-    res.write(`data: ${JSON.stringify({
-      type: 'connection',
-      data: { 
-        message: 'Connected to notification stream',
-        userId: user.id,
-        timestamp: new Date().toISOString()
-      }
-    })}\n\n`);
-
-    // Keep connection alive with heartbeat
-    const heartbeat = setInterval(() => {
-      res.write(`data: ${JSON.stringify({
-        type: 'heartbeat',
-        data: { timestamp: new Date().toISOString() }
-      })}\n\n`);
-    }, 30000); // 30 seconds
-
-    // Clean up on disconnect
-    (req as any).on('close', () => {
-      clearInterval(heartbeat);
-      // The service will handle connection cleanup automatically
-    });
-
-    (req as any).on('error', () => {
-      clearInterval(heartbeat);
-      // The service will handle connection cleanup automatically
-    });
 
   } catch (error) {
     console.error('SSE connection error:', error);
@@ -117,7 +82,7 @@ router.use(auth(userService));
 router.get('/notifications/health', (req: any, res: any) => {
   const activeConnections = realTimeNotificationService.getActiveConnectionsCount();
   const activeUsers = realTimeNotificationService.getActiveUserIds();
-  
+
   res.json({
     status: 'healthy',
     activeConnections,
@@ -133,7 +98,7 @@ router.get('/notifications/status', (req: any, res) => {
   }
 
   const isConnected = realTimeNotificationService.isUserConnected(req.user.id);
-  
+
   res.json({
     connected: isConnected,
     userId: req.user.id,

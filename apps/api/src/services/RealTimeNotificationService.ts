@@ -71,24 +71,6 @@ export class RealTimeNotificationService extends EventEmitter {
     (req as any).on('error', () => {
       this.removeConnection(userId);
     });
-
-    // Send heartbeat to keep connection alive
-    const heartbeat = setInterval(() => {
-      if (connection.isActive) {
-        this.sendEvent(res, {
-          type: 'heartbeat',
-          data: { timestamp: new Date().toISOString() },
-          timestamp: new Date()
-        });
-      } else {
-        clearInterval(heartbeat);
-      }
-    }, 30000); // 30 seconds
-
-    // Clean up interval on disconnect
-    (req as any).on('close', () => {
-      clearInterval(heartbeat);
-    });
   }
 
   /**
@@ -227,7 +209,7 @@ export class RealTimeNotificationService extends EventEmitter {
     if (connection) {
       connection.isActive = false;
       this.clientConnections.delete(userId);
-      
+
       // Emit disconnect event
       this.emit('client_disconnected', userId);
     }
@@ -237,8 +219,14 @@ export class RealTimeNotificationService extends EventEmitter {
    * Send SSE event to client
    */
   private sendEvent(res: any, event: NotificationEvent): void {
-    const eventData = `data: ${JSON.stringify(event)}\n\n`;
-    res.write(eventData);
+    try {
+      const eventData = `data: ${JSON.stringify(event)}\n\n`;
+      res.write(eventData);
+    } catch (error) {
+      // res.write can throw if the socket is closed or in a bad state
+      // We don't want this to crash the process. 
+      // Individual connections are cleaned up by heartbeat or close events.
+    }
   }
 
   /**
@@ -284,7 +272,7 @@ export class RealTimeNotificationService extends EventEmitter {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
     }
-    
+
     // Close all connections
     this.clientConnections.forEach((connection) => {
       try {
@@ -293,7 +281,7 @@ export class RealTimeNotificationService extends EventEmitter {
         // Ignore errors when closing
       }
     });
-    
+
     this.clientConnections.clear();
   }
 

@@ -14,6 +14,7 @@ import Category from "../models/Category";
 import ProductReview from "../models/ProductReview";
 import { ValidationError } from "../utils/errors";
 import mongoose from "mongoose";
+import { cacheService } from "./CacheService";
 
 export class MarketService extends BaseService<IProduct> {
   protected model: Model<IProduct>;
@@ -244,8 +245,17 @@ export class MarketService extends BaseService<IProduct> {
   }
 
   async getCategories(): Promise<ICategory[]> {
+    const CACHE_KEY = "market:categories";
+    const cached = await cacheService.get<ICategory[]>(CACHE_KEY);
+    if (cached) return cached;
+
     const categories = await Category.find({ isActive: true }).sort("name");
-    return categories as unknown as ICategory[];
+    const result = categories as unknown as ICategory[];
+    
+    // Cache for 5 minutes
+    await cacheService.set(CACHE_KEY, result, 300);
+    
+    return result;
   }
 
   async createCategory(categoryData: Partial<ICategory>): Promise<ICategory> {

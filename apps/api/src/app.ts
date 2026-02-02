@@ -89,10 +89,12 @@ const allowedOrigins = rawAllowedOrigins
     const isWww = domain.startsWith("www.");
     const baseDomain = isWww ? domain.slice(4) : domain;
 
-    // Return both www and non-www variants
+    // Return both http and https, www and non-www variants
     return [
-      `${protocol}://${baseDomain}`,
-      `${protocol}://www.${baseDomain}`
+      `http://${baseDomain}`,
+      `https://${baseDomain}`,
+      `http://www.${baseDomain}`,
+      `https://www.${baseDomain}`
     ];
   });
 
