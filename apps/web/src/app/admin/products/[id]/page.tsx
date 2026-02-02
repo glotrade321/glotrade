@@ -111,7 +111,10 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
             tags: Array.isArray(p.tags) ? p.tags.join(', ') : "",
             discount: p.discount || 0,
             featured: !!p.featured,
-            attributes: p.attributes ? Object.entries(p.attributes).map(([key, value]) => ({ key, value })) : [{ key: "", value: "" }],
+            attributes: p.attributes ? Object.entries(p.attributes).map(([key, value]) => ({
+              key,
+              value: Array.isArray(value) ? value.join(', ') : String(value || "")
+            })) : [{ key: "", value: "" }],
             variants: p.variants || [],
             bulkPricing: p.bulkPricing || [],
             shippingOptions: p.shippingOptions || [],
@@ -146,19 +149,22 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
           cost: Number(o.cost || 0),
           estimatedDays: Number(o.estimatedDays || 1)
         })),
-        attributes: Object.fromEntries(
-          (form.attributes || [])
-            .filter((r: any) => r.key && (r.value ?? "") !== "")
-            .map((r: any) => [
-              r.key,
-              String(r.value)
-                .split(",")
-                .map((v) => v.trim())
-                .filter(Boolean).length > 1
-                ? String(r.value).split(",").map((v) => v.trim()).filter(Boolean)
-                : String(r.value).trim()
-            ])
-        ),
+        attributes: (form.attributes || [])
+          .filter((r: any) => r.key && (r.value ?? "") !== "")
+          .reduce((acc: any, r: any) => {
+            const values = String(r.value)
+              .split(",")
+              .map((v) => v.trim())
+              .filter(Boolean);
+
+            const existing = acc[r.key]
+              ? (Array.isArray(acc[r.key]) ? acc[r.key] : [acc[r.key]])
+              : [];
+
+            const combined = Array.from(new Set([...existing, ...values]));
+            acc[r.key] = combined.length > 1 ? combined : combined[0];
+            return acc;
+          }, {}),
         bulkPricing: Array.isArray(form.bulkPricing) ? form.bulkPricing.filter((tier: any) =>
           tier.minQuantity && tier.minQuantity > 0 && (tier.pricePerUnit !== undefined || tier.discountPercent !== undefined)
         ).map((tier: any) => ({
@@ -468,14 +474,21 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
                     type="button"
                     className="text-xs text-neutral-500 hover:underline"
                     onClick={() => {
-                      const pairs = (form.attributes || []).filter((r: any) => r.key && r.value).map((r: any) => ({ key: r.key, values: String(r.value).split(',').map((v: string) => v.trim()).filter(Boolean) }));
+                      const rawAttributes = (form.attributes || []).filter((r: any) => r.key && r.value);
+                      const mergedMap = rawAttributes.reduce((acc: any, r: any) => {
+                        const vals = String(r.value).split(',').map((v: string) => v.trim()).filter(Boolean);
+                        acc[r.key] = [...(acc[r.key] || []), ...vals];
+                        return acc;
+                      }, {});
+                      const pairs = Object.entries(mergedMap).map(([key, values]) => ({ key, values: values as string[] }));
+
                       if (!pairs.length) return toast("Add attributes first", "info");
                       const combinations: Array<Record<string, string>> = [];
                       const backtrack = (i: number, curr: Record<string, string>) => {
                         if (i === pairs.length) { combinations.push({ ...curr }); return; }
                         const { key, values } = pairs[i];
                         values.forEach((val: string) => { curr[key] = val; backtrack(i + 1, curr); });
-                        delete curr[key];
+                        // No need to delete key if we are careful, but standard backtrack practice:
                       };
                       backtrack(0, {});
                       handleFormChange((s: any) => ({ ...s, variants: combinations.map((attrs) => ({ sku: '', price: undefined, quantity: 0, attributes: attrs })) }));

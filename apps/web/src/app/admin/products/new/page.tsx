@@ -112,20 +112,22 @@ export default function NewProductPage() {
         tags: String(form.tags || '').split(',').map((t: string) => t.trim()).filter(Boolean),
         discount: discountPct,
         featured: Boolean(form.featured),
-        attributes: Object.fromEntries(
-          (form.attributes || [])
-            .filter((r: any) => r.key && (r.value ?? "") !== "")
-            .map((r: any) => [
-              r.key,
-              // support comma-separated lists → array; otherwise string
-              String(r.value)
-                .split(",")
-                .map((v) => v.trim())
-                .filter(Boolean).length > 1
-                ? String(r.value).split(",").map((v) => v.trim()).filter(Boolean)
-                : String(r.value).trim()
-            ])
-        ),
+        attributes: (form.attributes || [])
+          .filter((r: any) => r.key && (r.value ?? "") !== "")
+          .reduce((acc: any, r: any) => {
+            const values = String(r.value)
+              .split(",")
+              .map((v) => v.trim())
+              .filter(Boolean);
+
+            const existing = acc[r.key]
+              ? (Array.isArray(acc[r.key]) ? acc[r.key] : [acc[r.key]])
+              : [];
+
+            const combined = Array.from(new Set([...existing, ...values]));
+            acc[r.key] = combined.length > 1 ? combined : combined[0];
+            return acc;
+          }, {}),
         shippingOptions: [{ method: 'standard', cost: form.freeShipping ? 0 : Number((form.shippingOptions?.[0]?.cost) || 0), estimatedDays: Number(form.shippingDays || 0) }],
         bulkPricing: Array.isArray(form.bulkPricing) ? form.bulkPricing.filter((tier: any) =>
           tier.minQuantity && tier.minQuantity > 0 && (tier.pricePerUnit !== undefined || tier.discountPercent !== undefined)
@@ -494,7 +496,14 @@ export default function NewProductPage() {
                     type="button"
                     className="w-full rounded-full border border-dashed border-neutral-300 dark:border-neutral-600 px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-neutral-600 dark:text-neutral-400"
                     onClick={() => {
-                      const pairs = (form.attributes || []).filter((r: any) => r.key && r.value).map((r: any) => ({ key: r.key, values: String(r.value).split(',').map((v: string) => v.trim()).filter(Boolean) }));
+                      const rawAttributes = (form.attributes || []).filter((r: any) => r.key && r.value);
+                      const mergedMap = rawAttributes.reduce((acc: any, r: any) => {
+                        const vals = String(r.value).split(',').map((v: string) => v.trim()).filter(Boolean);
+                        acc[r.key] = [...(acc[r.key] || []), ...vals];
+                        return acc;
+                      }, {});
+                      const pairs = Object.entries(mergedMap).map(([key, values]) => ({ key, values: values as string[] }));
+
                       if (!pairs.length) {
                         toast("Please add attributes first to generate variants", "info");
                         return;
