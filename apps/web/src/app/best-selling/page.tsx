@@ -29,7 +29,10 @@ export default async function BestSellingPage({ searchParams }: { searchParams: 
     const query: Record<string, string | number> = { limit: 48, sort: "-views" };
     if (params?.days) query.createdSinceDays = Number(params.days);
     if (params?.category && params.category !== "Recommended") query.category = params.category;
-    const res = await apiGet<SearchResponse>("/api/v1/market/products", { query });
+    const res = await apiGet<SearchResponse>("/api/v1/market/products", { 
+      query,
+      next: { revalidate: 300 } // Revalidate every 5 minutes
+    });
     items = Array.isArray(res.data?.products) ? res.data.products : [];
   } catch { }
 
@@ -91,7 +94,9 @@ type Category = { _id: string; name: string; slug: string; parentId?: string };
 
 async function fetchCategories(): Promise<string[]> {
   try {
-    const json = await apiGet<{ status: string; data: Category[] }>("/api/v1/market/categories");
+    const json = await apiGet<{ status: string; data: Category[] }>("/api/v1/market/categories", {
+      next: { revalidate: 3600 } // Revalidate every 1 hour
+    });
     if (Array.isArray(json.data)) return json.data.map((c: Category) => c.name);
   } catch { }
   return [];

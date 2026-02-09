@@ -56,8 +56,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const locale = (cookieStore.get("locale")?.value || "en") as Locale;
 
   const [productRes, categoriesRes] = await Promise.all([
-    apiGet<ProductResponse>(`/api/v1/market/products/${id}`),
-    apiGet<CategoriesResponse>(`/api/v1/market/categories`).catch(() => ({ status: "success", data: [] } as CategoriesResponse)),
+    apiGet<ProductResponse>(`/api/v1/market/products/${id}`, {
+      next: { revalidate: 300 } // Revalidate every 5 minutes
+    }),
+    apiGet<CategoriesResponse>(`/api/v1/market/categories`, {
+      next: { revalidate: 3600 } // Revalidate every 1 hour
+    }).catch(() => ({ status: "success", data: [] } as CategoriesResponse)),
   ]);
   const product = productRes.data;
   const categories = categoriesRes.data || [];
