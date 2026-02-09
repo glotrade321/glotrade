@@ -232,10 +232,28 @@ export default function DashboardMetrics() {
 
     fetchDashboardData();
 
-    // Set up auto-refresh every 5 minutes
-    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    // Set up auto-refresh every 40 minutes (reduced from 5 minutes)
+    // With backend caching, 40 minutes is sufficient and reduces load
+    const interval = setInterval(fetchDashboardData, 40 * 60 * 1000);
 
-    return () => clearInterval(interval);
+    // Pause polling when tab is hidden to save resources
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        clearInterval(interval);
+      } else {
+        // Resume polling when tab becomes visible
+        fetchDashboardData();
+        const newInterval = setInterval(fetchDashboardData, 40 * 60 * 1000);
+        return () => clearInterval(newInterval);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   if (error && !metrics) {

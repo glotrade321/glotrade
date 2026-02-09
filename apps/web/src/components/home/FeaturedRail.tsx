@@ -52,6 +52,26 @@ export default function FeaturedRail() {
   useEffect(() => {
     let aborted = false;
     async function run() {
+      // Check cache first (5 minute TTL)
+      const CACHE_KEY = 'featured_rail_products';
+      const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+      
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached);
+          const age = Date.now() - timestamp;
+          if (age < CACHE_TTL) {
+            // Use cached data
+            setItems(data);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (e) {
+        // Cache read failed, continue to fetch
+      }
+
       setLoading(true);
       try {
         const [r1, r2, r3] = await Promise.all([
@@ -87,7 +107,18 @@ export default function FeaturedRail() {
           diversified.push(p);
           if (diversified.length >= 12) break;
         }
-        if (!aborted) setItems(diversified);
+        if (!aborted) {
+          setItems(diversified);
+          // Cache the result
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              data: diversified,
+              timestamp: Date.now()
+            }));
+          } catch (e) {
+            // Cache write failed, ignore
+          }
+        }
       } catch (error) {
         console.error("FeaturedRail error:", error);
       } finally {

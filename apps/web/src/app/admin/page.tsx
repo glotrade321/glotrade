@@ -142,10 +142,27 @@ export default function AdminDashboardPage() {
 
     fetchData();
 
-    // Set up auto-refresh every 5 minutes
-    const interval = setInterval(fetchData, 5 * 60 * 1000);
+    // Set up auto-refresh every 15 minutes (reduced from 5 minutes)
+    // With backend caching, 40 minutes is sufficient and reduces load
+    let interval = setInterval(fetchData, 40 * 60 * 1000);
 
-    return () => clearInterval(interval);
+    // Pause polling when tab is hidden to save resources
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        clearInterval(interval);
+      } else {
+        // Resume polling when tab becomes visible
+        fetchData();
+        interval = setInterval(fetchData, 40 * 60 * 1000);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [router]);
 
 

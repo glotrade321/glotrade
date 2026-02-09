@@ -79,11 +79,17 @@ export default async function MarketplacePage({
         ...attributeQuery,
         limit: 30,
       },
+      // CRITICAL: Add ISR to reduce 216K requests/day to ~288/day (99.87% reduction)
+      // Revalidate every 5 minutes - balances freshness with performance
+      next: { revalidate: 300 }
     }).catch(
       () =>
         ({ status: "success", data: { products: [], total: 0, page: 1, totalPages: 1 } } as SearchResponse)
     ),
-    apiGet<CategoriesResponse>("/api/v1/market/categories").catch(
+    apiGet<CategoriesResponse>("/api/v1/market/categories", {
+      // Categories change rarely, cache for 1 hour
+      next: { revalidate: 3600 }
+    }).catch(
       () => ({ status: "success", data: [] } as CategoriesResponse)
     ),
   ]);

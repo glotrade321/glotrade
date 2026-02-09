@@ -73,6 +73,30 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  // Add edge caching headers for marketplace route to reduce data transfer
+  async headers() {
+    return [
+      {
+        source: '/marketplace',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=300, stale-while-revalidate=600',
+          },
+        ],
+      },
+      {
+        source: '/marketplace/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=300, stale-while-revalidate=600',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
