@@ -347,7 +347,7 @@
       "businessTypeLabel": "企业类型",
       "businessTypes": {
         "wholesaler": "批发商",
-        "distributor": "分销商",
+        "distributor": "分销商/承保合作伙伴",
         "salesAgent": "销售代理"
       },
       "industryLabel": "行业",

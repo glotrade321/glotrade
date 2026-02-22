@@ -60,6 +60,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
       try {
         // Try to read a user profile
         const tryKeys = [
+          "afritrade:user",
           "glotrade:user",
           "user",
           "profile",
@@ -140,6 +141,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
     const syncLocalToServer = async () => {
       try {
         const rawUser =
+          localStorage.getItem("afritrade:user") ||
           localStorage.getItem("glotrade:user") ||
           localStorage.getItem("user");
         if (!rawUser) return; // only sync when logged in
@@ -210,7 +212,9 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
 
           // Only sync cart/wishlist on actual auth changes (login/logout), not profile updates
           // Check if this is a significant auth change by comparing with previous user data
-          const prevUser = localStorage.getItem("glotrade:user");
+          const prevUser =
+            localStorage.getItem("afritrade:user") ||
+            localStorage.getItem("glotrade:user");
           if (prevUser) {
             try {
               const prev = JSON.parse(prevUser);

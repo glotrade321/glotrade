@@ -65,8 +65,6 @@ function AddressCard({
   address: any;
   onEdit: () => void;
 }) {
-  console.log("AddressCard: Received address prop:", address);
-  console.log("AddressCard: displayName value:", address?.displayName);
   const [locale, setLocale] = useState<Locale>("en");
 
   useEffect(() => {
@@ -86,7 +84,7 @@ function AddressCard({
   return (
     <div className="relative rounded-r">
       {/* Custom left border with red and blue dashed lines */}
-      <div className="absolute left-0 top-0 top-0 bottom-0 w-1">
+      <div className="absolute left-0 top-0 bottom-0 w-1">
         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-orange-500 border-l border-dashed border-orange-500"></div>
       </div>
 
@@ -146,6 +144,7 @@ export default function CheckoutPage() {
   const [walletBalance, setWalletBalance] = useState<{ available: number, creditLimit: number, creditUsed: number } | null>(null);
   const [guestEmail, setGuestEmail] = useState("");
   const [userData, setUserData] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [locale, setLocale] = useState<Locale>("en");
   const router = useRouter();
@@ -158,6 +157,10 @@ export default function CheckoutPage() {
     };
     window.addEventListener("i18n:locale", onLocale as EventListener);
     return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
+  }, []);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("afritrade:auth"));
   }, []);
 
 
@@ -228,7 +231,7 @@ export default function CheckoutPage() {
   };
 
   // Configuration object for dynamic values
-  const [config, setConfig] = useState({
+  const config = {
     coupon: {
       discount: 25, // Can be fetched from API or made configurable
       minDiscountThreshold: 20, // Minimum discount % to show badge
@@ -251,7 +254,7 @@ export default function CheckoutPage() {
       gridCols: { mobile: 1, tablet: 2, desktop: 2 },
       imageDimensions: { width: 200, height: 200 },
     },
-  });
+  };
 
   // Real voucher system
   const [appliedVouchers, setAppliedVouchers] = useState<AppliedVoucher[]>([]);
@@ -278,28 +281,40 @@ export default function CheckoutPage() {
       const ids = Object.keys(map);
       console.log("Cart data:", { map, ids, count: ids.length });
 
-      try {
-        const results = await Promise.all(
-          ids.map(async (id) => {
-            console.log("Fetching product:", id);
-            const json: ProductResponse = await apiGet(`/api/v1/market/products/${id}`);
-            console.log("Product response:", json);
-            return json.data;
-          })
-        );
-        if (!aborted) {
-          console.log("Setting products:", results);
-          setIdToQty(map);
-          setProducts(results);
+      const loadProducts = async () => {
+        try {
+          const results = await Promise.all(
+            ids.map(async (id) => {
+              console.log("Fetching product:", id);
+              const json: ProductResponse = await apiGet(`/api/v1/market/products/${id}`);
+              console.log("Product response:", json);
+              return json.data;
+            })
+          );
+          if (!aborted) {
+            console.log("Setting products:", results);
+            setIdToQty(map);
+            setProducts(results);
+          }
+        } catch (error) {
+          console.error("Error fetching products:", error);
         }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
+      };
 
-      try {
+      const loadAddress = async () => {
         // First try to get address from user's database if logged in
         let userAddress = null;
         try {
+          const cachedAddress = localStorage.getItem("shippingAddress");
+          if (cachedAddress && !aborted) {
+            try {
+              const parsedCachedAddress = JSON.parse(cachedAddress);
+              setAddress(parsedCachedAddress);
+            } catch {
+              localStorage.removeItem("shippingAddress");
+            }
+          }
+
           const raw = localStorage.getItem("afritrade:user");
           if (raw) {
             const user = JSON.parse(raw);
@@ -359,9 +374,9 @@ export default function CheckoutPage() {
             localStorage.removeItem("shippingAddress");
           }
         }
-      } catch (error) {
-        console.error("Error loading address:", error);
-      }
+      };
+
+      await Promise.all([loadProducts(), loadAddress()]);
     }
     run();
     return () => {
@@ -463,12 +478,6 @@ export default function CheckoutPage() {
       </main>
     );
   }
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("afritrade:auth"));
-  }, []);
 
   return (
     <main className="mx-auto md:w-[95%] w-full px-2 md:px-6 py-5">

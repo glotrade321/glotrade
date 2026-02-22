@@ -2,6 +2,10 @@
 User-agent: *
 Allow: /
 
+# Disallow auth and API paths
+Disallow: /auth/
+Disallow: /api/
+
 # Disallow admin pages
 Disallow: /admin/
 Disallow: /agent/
@@ -13,9 +17,10 @@ Disallow: /cart/
 # Disallow user profile pages
 Disallow: /profile/
 
-# Allow product and category pages
-Allow: /products/
-Allow: /categories/
+# Allow marketplace routes
+Allow: /marketplace/
+Allow: /best-selling/
+Allow: /support/
 
 # Sitemap
 Sitemap: https://glotrade.online/sitemap.xml

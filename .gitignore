@@ -20,3 +20,16 @@ yarn.lock
 !.env.example
 !apps/**/.env.example
 !**/env.example
+
+# Exclude auxiliary reports and logs
+*.md
+!README.md
+!README_GDIP.md
+!docs/**/*.md
+*.csv
+*.pdf
+.turbo
+.next
+node_modules
+.DS_Store
+*.log

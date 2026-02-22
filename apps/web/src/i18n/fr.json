@@ -347,7 +347,7 @@
       "businessTypeLabel": "Type d'entreprise",
       "businessTypes": {
         "wholesaler": "Grossiste",
-        "distributor": "Distributeur",
+        "distributor": "Distributeur/Partenaires Assurés",
         "salesAgent": "Agent commercial"
       },
       "industryLabel": "Secteur d'activité",

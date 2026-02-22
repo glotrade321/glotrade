@@ -603,7 +603,7 @@
       "businessTypeLabel": "نوع العمل",
       "businessTypes": {
         "wholesaler": "تاجر جملة",
-        "distributor": "موزع",
+        "distributor": "موزع/شركاء مؤمّنون",
         "salesAgent": "وكيل مبيعات"
       },
       "industryLabel": "الصناعة",

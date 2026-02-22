@@ -1117,7 +1117,7 @@
       "businessTypeLabel": "Business Type",
       "businessTypes": {
         "wholesaler": "Wholesaler",
-        "distributor": "Distributor",
+        "distributor": "Distributor/Insured Partners",
         "salesAgent": "Sales Agent"
       },
       "industryLabel": "Industry",

@@ -1,6 +1,5 @@
 import ProductCard from "@/app/marketplace/ProductCard";
-import { cookies } from "next/headers";
-import { Locale } from "@/utils/i18n";
+import { defaultLocale, Locale } from "@/utils/i18n";
 import type { ProductCardData } from "@/types/product";
 import { apiGet } from "@/utils/api";
 import ProductFilters from "@/components/filters/ProductFilters";
@@ -33,8 +32,7 @@ type CategoriesResponse = { status: string; data: Category[] };
 export default async function StorefrontPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string>> }) {
   const { slug } = await params;
   const sp = await searchParams;
-  const cookieStore = await cookies();
-  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
+  const locale = defaultLocale as Locale;
 
   const selectedCategory = sp?.category;
   const minPrice = sp?.minPrice;
@@ -114,4 +112,3 @@ export default async function StorefrontPage({ params, searchParams }: { params:
     </div>
   );
 }
-

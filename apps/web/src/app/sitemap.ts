@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
 import { apiGet } from '@/utils/api';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 3600; // Optional: revalidate every hour
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
@@ -17,25 +16,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 1,
         },
         {
-            url: `${baseUrl}/about`,
+            url: `${baseUrl}/marketplace`,
             lastModified: new Date(),
-            changeFrequency: 'monthly',
+            changeFrequency: 'daily',
             priority: 0.8,
         },
         {
-            url: `${baseUrl}/contact`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/wishlist`,
+            url: `${baseUrl}/best-selling`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.7,
         },
         {
-            url: `${baseUrl}/orders`,
+            url: `${baseUrl}/support`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.7,
@@ -52,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         if (productsRes.status === 'success' && Array.isArray(productsRes.data?.products)) {
             productRoutes = productsRes.data.products.map((product: any) => ({
-                url: `${baseUrl}/products/${product._id}`,
+                url: `${baseUrl}/marketplace/${product._id}`,
                 lastModified: new Date(product.updatedAt || product.createdAt || Date.now()),
                 changeFrequency: 'weekly' as const,
                 priority: 0.9,
@@ -65,13 +58,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Fetch categories for dynamic routes
     let categoryRoutes: MetadataRoute.Sitemap = [];
     try {
-        const categoriesRes = await apiGet<{ status: string; data: { categories: any[] } }>(
-            '/api/v1/categories'
+        const categoriesRes = await apiGet<{ status: string; data: any }>(
+            '/api/v1/market/categories'
         );
 
-        if (categoriesRes.status === 'success' && Array.isArray(categoriesRes.data?.categories)) {
-            categoryRoutes = categoriesRes.data.categories.map((category: any) => ({
-                url: `${baseUrl}/categories/${category._id}`,
+        const categories = Array.isArray(categoriesRes.data)
+            ? categoriesRes.data
+            : Array.isArray(categoriesRes.data?.categories)
+                ? categoriesRes.data.categories
+                : [];
+
+        if (categoriesRes.status === 'success' && Array.isArray(categories)) {
+            categoryRoutes = categories.map((category: any) => ({
+                url: `${baseUrl}/marketplace?category=${encodeURIComponent(category.name || category.slug || '')}`,
                 lastModified: new Date(),
                 changeFrequency: 'weekly' as const,
                 priority: 0.8,

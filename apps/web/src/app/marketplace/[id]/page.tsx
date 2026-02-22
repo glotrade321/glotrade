@@ -10,9 +10,7 @@ import AddToCartControl from "@/components/product/AddToCartControl";
 import AttributePicker from "@/components/product/AttributePicker";
 import QtySelectControl from "@/components/product/QtySelectControl";
 import BulkPricingTiers from "@/components/product/BulkPricingTiers";
-
-import { cookies } from "next/headers";
-import { translate, Locale } from "@/utils/i18n";
+import { defaultLocale, translate, Locale } from "@/utils/i18n";
 import { formatCurrency } from "@/utils/format";
 type Product = {
   _id: string;
@@ -52,8 +50,7 @@ type CategoriesResponse = { status: string; data: Category[] };
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const cookieStore = await cookies();
-  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
+  const locale = defaultLocale as Locale;
 
   const [productRes, categoriesRes] = await Promise.all([
     apiGet<ProductResponse>(`/api/v1/market/products/${id}`, {

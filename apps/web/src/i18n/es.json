@@ -347,7 +347,7 @@
       "businessTypeLabel": "Tipo de empresa",
       "businessTypes": {
         "wholesaler": "Mayorista",
-        "distributor": "Distribuidor",
+        "distributor": "Distribuidor/Socios Asegurados",
         "salesAgent": "Agente de ventas"
       },
       "industryLabel": "Industria",

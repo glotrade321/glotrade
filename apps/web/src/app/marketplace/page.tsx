@@ -1,5 +1,4 @@
 // import Link from "next/link";
-import { cookies } from "next/headers";
 import ProductCard from "./ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { apiGet } from "@/utils/api";
@@ -8,7 +7,7 @@ import DesktopCategoryTree from "./DesktopCategoryTree";
 import ProductFilters from "@/components/filters/ProductFilters";
 import MobileQuickChips from "./MobileQuickChips";
 import DesktopQuickChips from "./DesktopQuickChips";
-import { translate, Locale } from "@/utils/i18n";
+import { defaultLocale, translate, Locale } from "@/utils/i18n";
 import EmptyState from "@/components/common/EmptyState";
 
 type Product = {
@@ -46,8 +45,7 @@ export default async function MarketplacePage({
   searchParams: Promise<Record<string, string>>;
 }) {
   const params = await searchParams;
-  const cookieStore = await cookies();
-  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
+  const locale = defaultLocale as Locale;
 
   const selectedCategory = params?.category;
   const minPrice = params?.minPrice;
@@ -159,4 +157,3 @@ export default async function MarketplacePage({
     </div>
   );
 }
-

@@ -1,109 +1,528 @@
-"ChargePeriodStartTimestamp","ChargePeriodStartDate","Metric","ProjectId","ProjectName","Charges (USD)","Usage","Formatted Usage"
-"2026-02-01T08:00:00.000Z","2026-02-01","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.4085060555662222,38.5383071289,"38.54 GB Hrs"
-"2026-02-01T08:00:00.000Z","2026-02-01","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,7.318912912999999,"7.32 GB"
-"2026-02-01T08:00:00.000Z","2026-02-01","Image Optimization Cache Writes","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.000008,2,"2 Writes"
-"2026-02-01T08:00:00.000Z","2026-02-01","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.00023299999999999997,0.0006333332999999999,"2.28 seconds"
-"2026-02-01T08:00:00.000Z","2026-02-01","Image Optimization Transformation","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0001379,2,"2 Transformations"
-"2026-02-01T08:00:00.000Z","2026-02-01","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000036,9,"9 Reads"
-"2026-02-01T08:00:00.000Z","2026-02-01","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.1416487822222222,1.1066311111,"1 hours"
-"2026-02-01T08:00:00.000Z","2026-02-01","Pro","","",0.7142857142857143,1,""
-"2026-02-01T08:00:00.000Z","2026-02-01","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.6,42187,"42,187 Invocations"
-"2026-02-01T08:00:00.000Z","2026-02-01","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.19365336197,3.2258665169999996,"3.23 GB"
-"2026-02-01T08:00:00.000Z","2026-02-01","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.00006,150,"150 Reads"
-"2026-02-01T08:00:00.000Z","2026-02-01","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,44201,"44,201 Requests"
-"2026-02-02T08:00:00.000Z","2026-02-02","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.3735201776071111,35.2377526044,"35.24 GB Hrs"
-"2026-02-02T08:00:00.000Z","2026-02-02","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,14.982482487999999,"14.98 GB"
-"2026-02-02T08:00:00.000Z","2026-02-02","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.00027983333333333327,0.0008305556,"2.99 seconds"
-"2026-02-02T08:00:00.000Z","2026-02-02","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000028,7,"7 Reads"
-"2026-02-02T08:00:00.000Z","2026-02-02","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.15959651555555557,1.2468477778,"1 hours"
-"2026-02-02T08:00:00.000Z","2026-02-02","Pro","","",0.7142857142857143,0,""
-"2026-02-02T08:00:00.000Z","2026-02-02","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,59785,"59,785 Invocations"
-"2026-02-02T08:00:00.000Z","2026-02-02","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.28405263556000004,4.724018982000001,"4.72 GB"
-"2026-02-02T08:00:00.000Z","2026-02-02","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.000232,580,"580 Reads"
-"2026-02-02T08:00:00.000Z","2026-02-02","Build Minutes","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",1.638,13,"13 minutes"
-"2026-02-02T08:00:00.000Z","2026-02-02","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,62336,"62,336 Requests"
-"2026-02-03T08:00:00.000Z","2026-02-03","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.15041201982577776,14.1898131911,"14.19 GB Hrs"
-"2026-02-03T08:00:00.000Z","2026-02-03","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,1.3144435140000004,"1.31 GB"
-"2026-02-03T08:00:00.000Z","2026-02-03","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.00013916666666666667,0.0003611112,"1.3 seconds"
-"2026-02-03T08:00:00.000Z","2026-02-03","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000036,9,"9 Reads"
-"2026-02-03T08:00:00.000Z","2026-02-03","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.056296533333333336,0.4398166667,"26 minutes"
-"2026-02-03T08:00:00.000Z","2026-02-03","Pro","","",0.7142857142857143,0,""
-"2026-02-03T08:00:00.000Z","2026-02-03","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,18710,"18,710 Invocations"
-"2026-02-03T08:00:00.000Z","2026-02-03","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.08832145990999998,1.4688056619999998,"1.47 GB"
-"2026-02-03T08:00:00.000Z","2026-02-03","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000276,69,"69 Reads"
-"2026-02-03T08:00:00.000Z","2026-02-03","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,21755,"21,755 Requests"
-"2026-02-04T08:00:00.000Z","2026-02-04","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.513806429184,48.47230464,"48.47 GB Hrs"
-"2026-02-04T08:00:00.000Z","2026-02-04","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,35.73188273400001,"35.73 GB"
-"2026-02-04T08:00:00.000Z","2026-02-04","Image Optimization Cache Writes","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.000044,11,"11 Writes"
-"2026-02-04T08:00:00.000Z","2026-02-04","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0006905833333333333,0.0021638889,"7.79 seconds"
-"2026-02-04T08:00:00.000Z","2026-02-04","Image Optimization Transformation","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0006,12,"12 Transformations"
-"2026-02-04T08:00:00.000Z","2026-02-04","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.000002,5,"5 Reads"
-"2026-02-04T08:00:00.000Z","2026-02-04","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.25413582222222225,1.9854361111,"1 hours"
-"2026-02-04T08:00:00.000Z","2026-02-04","Pro","","",0.7142857142857143,0,""
-"2026-02-04T08:00:00.000Z","2026-02-04","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,118784,"118,784 Invocations"
-"2026-02-04T08:00:00.000Z","2026-02-04","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.5936887261100001,9.892356648000002,"9.89 GB"
-"2026-02-04T08:00:00.000Z","2026-02-04","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000356,89,"89 Reads"
-"2026-02-04T08:00:00.000Z","2026-02-04","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,117257,"117,257 Requests"
-"2026-02-05T08:00:00.000Z","2026-02-05","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.6021593336035556,56.8074843022,"56.81 GB Hrs"
-"2026-02-05T08:00:00.000Z","2026-02-05","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,48.68175821799999,"48.68 GB"
-"2026-02-05T08:00:00.000Z","2026-02-05","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.00070175,0.0022361113000000004,"8.05 seconds"
-"2026-02-05T08:00:00.000Z","2026-02-05","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000016,4,"4 Reads"
-"2026-02-05T08:00:00.000Z","2026-02-05","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.3107559111111111,2.4277805556,"2 hours"
-"2026-02-05T08:00:00.000Z","2026-02-05","Pro","","",0.7142857142857143,0,""
-"2026-02-05T08:00:00.000Z","2026-02-05","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,155417,"155,417 Invocations"
-"2026-02-05T08:00:00.000Z","2026-02-05","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.7787948496699998,12.978883743,"12.98 GB"
-"2026-02-05T08:00:00.000Z","2026-02-05","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000584,146,"146 Reads"
-"2026-02-05T08:00:00.000Z","2026-02-05","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,149343,"149,343 Requests"
-"2026-02-06T08:00:00.000Z","2026-02-06","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.5888664624924445,55.5534398578,"55.55 GB Hrs"
-"2026-02-06T08:00:00.000Z","2026-02-06","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,59.87623984199999,"59.88 GB"
-"2026-02-06T08:00:00.000Z","2026-02-06","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0009698333333333332,0.0031388888,"11.3 seconds"
-"2026-02-06T08:00:00.000Z","2026-02-06","Image Optimization Transformation","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.00005,1,"1 Transformation"
-"2026-02-06T08:00:00.000Z","2026-02-06","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.000002,5,"5 Reads"
-"2026-02-06T08:00:00.000Z","2026-02-06","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.3845937777777778,3.0046388889,"3 hours"
-"2026-02-06T08:00:00.000Z","2026-02-06","Pro","","",0.7142857142857143,0,""
-"2026-02-06T08:00:00.000Z","2026-02-06","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,206747,"206,747 Invocations"
-"2026-02-06T08:00:00.000Z","2026-02-06","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",1.02315402193,17.050000123,"17.05 GB"
-"2026-02-06T08:00:00.000Z","2026-02-06","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000292,73,"73 Reads"
-"2026-02-06T08:00:00.000Z","2026-02-06","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,196691,"196,691 Requests"
-"2026-02-07T08:00:00.000Z","2026-02-07","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.6803373958257778,64.1827731911,"64.18 GB Hrs"
-"2026-02-07T08:00:00.000Z","2026-02-07","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,60.26629542,"60.27 GB"
-"2026-02-07T08:00:00.000Z","2026-02-07","Image Optimization Cache Writes","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.000004,1,"1 Write"
-"2026-02-07T08:00:00.000Z","2026-02-07","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0009159166666666667,0.0029472223000000003,"10.61 seconds"
-"2026-02-07T08:00:00.000Z","2026-02-07","Image Optimization Transformation","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.00005,1,"1 Transformation"
-"2026-02-07T08:00:00.000Z","2026-02-07","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000012,3,"3 Reads"
-"2026-02-07T08:00:00.000Z","2026-02-07","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.3868924444444444,3.0225972222,"3 hours"
-"2026-02-07T08:00:00.000Z","2026-02-07","Pro","","",0.7142857142857143,0,""
-"2026-02-07T08:00:00.000Z","2026-02-07","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,192937,"192,937 Invocations"
-"2026-02-07T08:00:00.000Z","2026-02-07","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.9647071247499999,16.076596488,"16.08 GB"
-"2026-02-07T08:00:00.000Z","2026-02-07","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000308,77,"77 Reads"
-"2026-02-07T08:00:00.000Z","2026-02-07","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,183060,"183,060 Requests"
-"2026-02-08T08:00:00.000Z","2026-02-08","Fluid Provisioned Memory","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.4951021512248889,46.7077501156,"46.71 GB Hrs"
-"2026-02-08T08:00:00.000Z","2026-02-08","Fast Data Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,36.902326117,"36.9 GB"
-"2026-02-08T08:00:00.000Z","2026-02-08","Edge Requests - Additional CPU Duration","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0006286666666666667,0.0020777777999999997,"7.48 seconds"
-"2026-02-08T08:00:00.000Z","2026-02-08","Image Optimization Cache Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000032,8,"8 Reads"
-"2026-02-08T08:00:00.000Z","2026-02-08","Fluid Active CPU","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.2807320888888889,2.1932194444,"2 hours"
-"2026-02-08T08:00:00.000Z","2026-02-08","Pro","","",0.7142857142857143,0,""
-"2026-02-08T08:00:00.000Z","2026-02-08","Function Invocations","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,140220,"140,220 Invocations"
-"2026-02-08T08:00:00.000Z","2026-02-08","Fast Origin Transfer","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.6783972668899999,11.306022952999998,"11.31 GB"
-"2026-02-08T08:00:00.000Z","2026-02-08","ISR Reads","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0.0000536,134,"134 Reads"
-"2026-02-08T08:00:00.000Z","2026-02-08","Edge Requests","prj_FxcwwFLfSTz5ATrFqeUB16IE9DrS","glotrade-web",0,131466,"131,466 Requests"
-"2026-02-09T08:00:00.000Z","2026-02-09","Pro","","",0.7142857142857143,0,""
-"2026-02-10T08:00:00.000Z","2026-02-10","Pro","","",0.7142857142857143,0,""
-"2026-02-11T08:00:00.000Z","2026-02-11","Pro","","",0.7142857142857143,0,""
-"2026-02-12T08:00:00.000Z","2026-02-12","Pro","","",0.7142857142857143,0,""
-"2026-02-13T08:00:00.000Z","2026-02-13","Pro","","",0.7142857142857143,0,""
-"2026-02-14T08:00:00.000Z","2026-02-14","Pro","","",0.7142857142857143,0,""
-"2026-02-15T08:00:00.000Z","2026-02-15","Pro","","",0.7142857142857143,0,""
-"2026-02-16T08:00:00.000Z","2026-02-16","Pro","","",0.7142857142857143,0,""
-"2026-02-17T08:00:00.000Z","2026-02-17","Pro","","",0.7142857142857143,0,""
-"2026-02-18T08:00:00.000Z","2026-02-18","Pro","","",0.7142857142857143,0,""
-"2026-02-19T08:00:00.000Z","2026-02-19","Pro","","",0.7142857142857143,0,""
-"2026-02-20T08:00:00.000Z","2026-02-20","Pro","","",0.7142857142857143,0,""
-"2026-02-21T08:00:00.000Z","2026-02-21","Pro","","",0.7142857142857143,0,""
-"2026-02-22T08:00:00.000Z","2026-02-22","Pro","","",0.7142857142857143,0,""
-"2026-02-23T08:00:00.000Z","2026-02-23","Pro","","",0.7142857142857143,0,""
-"2026-02-24T08:00:00.000Z","2026-02-24","Pro","","",0.7142857142857143,0,""
-"2026-02-25T08:00:00.000Z","2026-02-25","Pro","","",0.7142857142857143,0,""
-"2026-02-26T08:00:00.000Z","2026-02-26","Pro","","",0.7142857142857143,0,""
-"2026-02-27T08:00:00.000Z","2026-02-27","Pro","","",0.7142857142857143,0,""
-"2026-02-28T08:00:00.000Z","2026-02-28","Pro","","",0.7142857142857143,0,""
+so, here are our new timeframes:
+
+Routes    Requests     Transfer In     Transfer Out      Total Transfer
+
+
+last 24h
+
+
+/marketplace
+
+271K
+259.07 MB
+65.26 GB
+65.52 GB
+/_next/static/chunks/04abaca9-82928e309b8fae7f.js
+
+53
+62.35 kB
+118.15 MB
+118.21 MB
+/
+
+151
+161.48 kB
+6.08 MB
+6.25 MB
+/_next/static/chunks/5992-b854e7d7f0ee34db.js
+
+44
+53.35 kB
+5.64 MB
+5.69 MB
+/_next/static/chunks/9f5db5b3-d30a2b528083fc2b.js
+
+43
+51.16 kB
+4.86 MB
+4.92 MB
+/icon.png
+
+12
+14.41 kB
+4.71 MB
+4.72 MB
+/robots.txt
+
+2.2K
+1.88 MB
+823.77 kB
+2.7 MB
+/_next/static/chunks/87c73c54-09e1ba5c70e60a51.js
+
+43
+51.4 kB
+2.27 MB
+2.33 MB
+/_not-found
+
+284
+282.33 kB
+1.85 MB
+2.14 MB
+/_next/static/media/463dafcda517f24f-s.p.woff
+
+23
+30.88 kB
+1.56 MB
+1.59 MB
+
+
+
+
+
+last 12h
+
+
+/marketplace
+
+151K
+143.97 MB
+35 GB
+35.14 GB
+/_next/static/chunks/04abaca9-82928e309b8fae7f.js
+
+11
+12.53 kB
+25.45 MB
+25.46 MB
+/robots.txt
+
+2.1K
+1.81 MB
+798.69 kB
+2.61 MB
+/_not-found
+
+156
+149.88 kB
+1.47 MB
+1.62 MB
+/
+
+47
+47.24 kB
+1.51 MB
+1.56 MB
+/_next/static/chunks/5992-b854e7d7f0ee34db.js
+
+10
+11.22 kB
+1.36 MB
+1.37 MB
+/_next/static/chunks/9f5db5b3-d30a2b528083fc2b.js
+
+10
+11.1 kB
+1.19 MB
+1.2 MB
+/icon.png
+
+2
+2.09 kB
+1.04 MB
+1.04 MB
+/_next/static/chunks/87c73c54-09e1ba5c70e60a51.js
+
+9
+10.15 kB
+498.73 kB
+508.88 kB
+/_next/static/chunks/18-01c7ceb0bdcf1db3.js
+
+9
+10.43 kB
+418.63 kB
+429.05 kB
+
+
+
+
+last 6h
+
+
+/marketplace
+
+70K
+66.84 MB
+16.38 GB
+16.45 GB
+/_next/static/chunks/04abaca9-82928e309b8fae7f.js
+
+4
+4.79 kB
+9.15 MB
+9.16 MB
+/robots.txt
+
+2.1K
+1.76 MB
+783.97 kB
+2.55 MB
+/_not-found
+
+66
+67.2 kB
+780.33 kB
+847.53 kB
+/_next/static/chunks/5992-b854e7d7f0ee34db.js
+
+4
+4.55 kB
+548.79 kB
+553.34 kB
+/
+
+19
+19.58 kB
+488.79 kB
+508.37 kB
+/_next/static/chunks/9f5db5b3-d30a2b528083fc2b.js
+
+4
+4.56 kB
+477.87 kB
+482.43 kB
+/_next/static/chunks/18-01c7ceb0bdcf1db3.js
+
+4
+4.76 kB
+186.76 kB
+191.52 kB
+/_next/static/chunks/87c73c54-09e1ba5c70e60a51.js
+
+3
+3.61 kB
+165.35 kB
+168.96 kB
+/_next/static/css/45eaf8be36882bd2.css
+
+4
+4.82 kB
+107.22 kB
+112.05 kB
+
+
+
+
+last 1h
+
+
+/marketplace
+
+13K
+11.98 MB
+2.9 GB
+2.92 GB
+/
+
+4
+3.68 kB
+83.47 kB
+87.15 kB
+/_not-found
+
+13
+11.71 kB
+71.85 kB
+83.56 kB
+/robots.txt
+
+10
+9.02 kB
+2.88 kB
+11.9 kB
+/sitemap.xml
+
+4
+3.68 kB
+1.04 kB
+4.72 kB
+/product.php
+
+2
+2.12 kB
+215 B
+2.33 kB
+/wp-login.php
+
+2
+1.55 kB
+50 B
+1.6 kB
+/store.php
+
+1
+1.18 kB
+176 B
+1.35 kB
+/img/products/173703653492490912.jpg
+
+1
+934 B
+188 B
+1.12 kB
+/wp-includes/css/buttons.css
+
+1
+773 B
+25 B
+798 B
+
+
+
+yesterday's timeframe for the same routes before we have optimized:
+
+Routes    Requests     Transfer In     Transfer Out      Total Transfer
+
+
+last 24h
+
+/marketplace
+
+216K
+205.51 MB
+58.08 GB
+58.28 GB
+/_next/static/chunks/04abaca9-82928e309b8fae7f.js
+
+20
+23.6 kB
+43.86 MB
+43.89 MB
+/
+
+92
+94.2 kB
+3.17 MB
+3.27 MB
+/_next/static/chunks/5992-b854e7d7f0ee34db.js
+
+16
+19.87 kB
+2.03 MB
+2.05 MB
+/marketplace/[id]
+
+173
+214.42 kB
+1.62 MB
+1.84 MB
+/_next/static/chunks/9f5db5b3-d30a2b528083fc2b.js
+
+15
+18.18 kB
+1.68 MB
+1.7 MB
+/_not-found
+
+268
+277.71 kB
+1.4 MB
+1.68 MB
+/icon.png
+
+4
+5.27 kB
+1.57 MB
+1.58 MB
+/_next/static/chunks/87c73c54-09e1ba5c70e60a51.js
+
+16
+19.18 kB
+830.1 kB
+849.27 kB
+/_next/static/media/463dafcda517f24f-s.p.woff
+
+9
+12.36 kB
+610.78 kB
+623.14 kB
+
+1 of 10
+
+
+
+
+last 12h
+
+/marketplace
+
+111K
+106.12 MB
+30 GB
+30.1 GB
+/_next/static/chunks/04abaca9-82928e309b8fae7f.js
+
+12
+14.44 kB
+25.45 MB
+25.46 MB
+/
+
+51
+54.42 kB
+2.06 MB
+2.12 MB
+/_next/static/chunks/5992-b854e7d7f0ee34db.js
+
+13
+16.45 kB
+1.62 MB
+1.63 MB
+/icon.png
+
+4
+5.27 kB
+1.57 MB
+1.58 MB
+/_next/static/chunks/9f5db5b3-d30a2b528083fc2b.js
+
+12
+14.75 kB
+1.32 MB
+1.33 MB
+/_not-found
+
+119
+122.84 kB
+956.28 kB
+1.08 MB
+/_next/static/chunks/87c73c54-09e1ba5c70e60a51.js
+
+12
+14.55 kB
+609.2 kB
+623.75 kB
+/_next/static/media/463dafcda517f24f-s.p.woff
+
+7
+10.12 kB
+475.05 kB
+485.17 kB
+/_next/static/chunks/18-27866730d64132d1.js
+
+9
+11.44 kB
+418.06 kB
+429.5 kB
+
+1 of 10
+
+
+
+last 6h
+
+/marketplace
+
+54K
+51.78 MB
+14.29 GB
+14.34 GB
+/_next/static/chunks/04abaca9-82928e309b8fae7f.js
+
+4
+4.17 kB
+6.92 MB
+6.92 MB
+/
+
+28
+27.75 kB
+1.36 MB
+1.39 MB
+/icon.png
+
+1
+1.18 kB
+518.5 kB
+519.68 kB
+/_next/static/chunks/5992-b854e7d7f0ee34db.js
+
+4
+4.43 kB
+400.22 kB
+404.64 kB
+/_next/static/chunks/9f5db5b3-d30a2b528083fc2b.js
+
+4
+4.21 kB
+359.8 kB
+364.01 kB
+/_not-found
+
+58
+58.23 kB
+291.34 kB
+349.57 kB
+/_next/static/chunks/87c73c54-09e1ba5c70e60a51.js
+
+5
+5.35 kB
+221.6 kB
+226.96 kB
+/_next/static/media/463dafcda517f24f-s.p.woff
+
+3
+3.36 kB
+203.59 kB
+206.95 kB
+/_next/static/media/4473ecc91f70f139-s.p.woff
+
+3
+3.36 kB
+198.8 kB
+202.16 kB
+
+1 of 7
+
+
+
+last 1h
+
+
+/marketplace
+
+9.9K
+9.47 MB
+2.38 GB
+2.39 GB
+/_not-found
+
+8
+7.39 kB
+35.77 kB
+43.16 kB
+/product.php
+
+4
+3.41 kB
+100 B
+3.51 kB
+/robots.txt
+
+2
+1.82 kB
+762 B
+2.58 kB
+/sitemap.xml
+
+2
+1.92 kB
+300 B
+2.22 kB
+/
+
+2
+1.35 kB
+0 B
+1.35 kB
+/.env
+
+1
+830 B
+25 B
+855 B
+
+1 of 1
+

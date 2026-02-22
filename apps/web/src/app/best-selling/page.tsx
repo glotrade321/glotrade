@@ -3,8 +3,7 @@ import type { ProductCardData } from "@/types/product";
 import { apiGet } from "@/utils/api";
 import Link from "next/link";
 import CategorySelect from "@/components/best-selling/CategorySelect";
-import { cookies } from "next/headers";
-import { getStoredLocale, translate, Locale } from "@/utils/i18n";
+import { defaultLocale, translate, Locale } from "@/utils/i18n";
 
 type Product = {
   _id: string;
@@ -22,8 +21,7 @@ type SearchResponse = { status: string; data: { products: Product[]; total: numb
 
 export default async function BestSellingPage({ searchParams }: { searchParams: Promise<{ days?: string; category?: string }> }) {
   const params = await searchParams;
-  const cookieStore = await cookies();
-  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
+  const locale = defaultLocale as Locale;
   let items: Product[] = [];
   try {
     const query: Record<string, string | number> = { limit: 48, sort: "-views" };
@@ -103,4 +101,3 @@ async function fetchCategories(): Promise<string[]> {
 }
 
 // client select moved to components/best-selling/CategorySelect.tsx
-

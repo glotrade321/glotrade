@@ -96,7 +96,7 @@ export default function ProductCard({ product, locale }: { product: ProductCardD
   };
 
   return (
-    <Link href={`/marketplace/${p._id}`} className="group rounded-lg border border-neutral-200 dark:border-neutral-800 p-2 sm:p-4 hover:shadow-sm transition-shadow h-full flex flex-col">
+    <Link prefetch={false} href={`/marketplace/${p._id}`} className="group rounded-lg border border-neutral-200 dark:border-neutral-800 p-2 sm:p-4 hover:shadow-sm transition-shadow h-full flex flex-col">
       <div className="aspect-square rounded-md bg-neutral-100 dark:bg-neutral-900 mb-2 sm:mb-3 overflow-hidden relative">
         {p.featured ? (
           <span className="absolute left-1 sm:left-2 top-1 sm:top-2 z-10 rounded bg-amber-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 flex items-center gap-0.5 sm:gap-1 shadow-sm">
@@ -212,4 +212,3 @@ function StarRating({ value }: { value: number }) {
     </span>
   );
 }
-

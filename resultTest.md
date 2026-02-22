@@ -5,14 +5,6 @@ Hello harz,
 
 Your Product Manager account has been created. You now have access to manage products on the Glotrade platform.
 
-🔑 Your Login Credentials
-
-Login URL: http://localhost:3000/login
-
-Username: harzimex_938
-
-Email: harzimex@gmail.com
-
 Password: XjS0$lgkni!X
 
 ⚠️ Important Security Notice:
