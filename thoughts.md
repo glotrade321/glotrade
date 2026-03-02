@@ -1,3 +1,6 @@
+
+PATH="/usr/local/opt/node@22/bin:$PATH" npx ts-node scripts/test-redis.ts
+
 so, here are our new timeframes:
 
 Routes    Requests     Transfer In     Transfer Out      Total Transfer
