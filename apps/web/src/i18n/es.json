@@ -1695,8 +1695,8 @@
   "gdip": {
     "layout": {
       "restricted": {
-        "title": "Acceso de Distribuidor Restringido",
-        "message": "Esta área es exclusivamente para distribuidores autenticados. Póngase en contacto con el soporte si cree que esto es un error."
+        "title": "Acceso de Distribuidores/Socios Asegurados Restringido",
+        "message": "Esta área es exclusivamente para distribuidores/socios asegurados autenticados. Póngase en contacto con el soporte si cree que esto es un error."
       }
     },
     "dashboard": {

@@ -1744,8 +1744,8 @@
   "gdip": {
     "layout": {
       "restricted": {
-        "title": "Accès Distributeur Restreint",
-        "message": "Cette zone est exclusivement réservée aux distributeurs authentifiés. Veuillez contacter l'assistance si vous pensez qu'il s'agit d'une erreur."
+        "title": "Accès Distributeurs/Partenaires Assurés Restreint",
+        "message": "Cette zone est exclusivement réservée aux distributeurs/partenaires assurés authentifiés. Veuillez contacter l'assistance si vous pensez qu'il s'agit d'une erreur."
       }
     },
     "dashboard": {

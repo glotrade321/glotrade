@@ -1843,8 +1843,8 @@
   "gdip": {
     "layout": {
       "restricted": {
-        "title": "Distributor Access Restricted",
-        "message": "This area is exclusively for authenticated distributors. Please contact support if you believe this is an error."
+        "title": "Distributor/Insured Partners Access Restricted",
+        "message": "This area is exclusively for authenticated distributors/Insured Partners. Please contact support if you believe this is an error."
       }
     },
     "dashboard": {

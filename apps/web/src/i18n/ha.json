@@ -1626,8 +1626,8 @@
   "gdip": {
     "layout": {
       "restricted": {
-        "title": "An takaita damar dila",
-        "message": "Wannan sashin na diloli ne kawai. Da fatan za a tuntuɓi sashen taimako idan kuna tunanin wannan kuskure ne."
+        "title": "An takaita damar diloli/abokan hulda masu inshora",
+        "message": "Wannan sashin na diloli/abokan hulda masu inshora da aka tantance ne kawai. Da fatan za a tuntuɓi sashen taimako idan kuna tunanin wannan kuskure ne."
       }
     },
     "dashboard": {
