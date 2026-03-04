@@ -225,7 +225,7 @@ export class MarketService extends BaseService<IProduct> {
     // This reduces response size by 40-60% (from ~270 KB to ~108-162 KB per request)
     const queryExec = this.model
       .find(queryObj)
-      .select('_id title price currency images discount rating category brand featured minOrderQuantity shippingOptions')
+      .select('_id title price currency images discount rating category subcategory condition brand featured quantity createdAt minOrderQuantity shippingOptions')
       .sort(sort || "-createdAt") // Default sort: newest products first
       .skip(skip)
       .limit(limit)

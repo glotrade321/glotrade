@@ -20,7 +20,7 @@ import { getOptimizedImageUrl } from "@/utils/image";
 interface Product {
     _id: string;
     title: string;
-    description: string;
+    description?: string;
     price: number;
     currency: string;
     category: string;
@@ -31,7 +31,7 @@ interface Product {
     brand?: string;
     featured: boolean;
     discount: number;
-    createdAt: string;
+    createdAt?: string;
     seller?: {
         _id: string;
         username: string;
@@ -80,7 +80,7 @@ export default function AdminProductsPage() {
         if (searchTerm) {
             filtered = filtered.filter(product =>
                 product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 product.brand?.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
@@ -126,8 +126,18 @@ export default function AdminProductsPage() {
         }).format(amount);
     };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString('en-US', {
+    const formatDate = (dateString?: string) => {
+        if (!dateString) {
+            return "N/A";
+        }
+
+        const date = new Date(dateString);
+
+        if (Number.isNaN(date.getTime())) {
+            return "N/A";
+        }
+
+        return date.toLocaleString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
@@ -246,7 +256,7 @@ export default function AdminProductsPage() {
                                                 Stock
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Status
+                                                Condition
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Created
@@ -295,14 +305,12 @@ export default function AdminProductsPage() {
                                                     )}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${product.quantity > 10
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : product.quantity > 0
-                                                            ? 'bg-yellow-100 text-yellow-800'
-                                                            : 'bg-red-100 text-red-800'
-                                                        }`}>
-                                                        {product.quantity} in stock
-                                                    </span>
+                                                    <div className="text-sm font-semibold text-gray-900">
+                                                        {product.quantity.toLocaleString()}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">
+                                                        units available
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex flex-col gap-1">
@@ -379,7 +387,7 @@ export default function AdminProductsPage() {
                                                             ? 'bg-yellow-100 text-yellow-800'
                                                             : 'bg-red-100 text-red-800'
                                                         }`}>
-                                                        {product.quantity} stock
+                                                        {product.quantity.toLocaleString()} in stock
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-3">
