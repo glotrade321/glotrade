@@ -32,6 +32,7 @@ interface Product {
     featured: boolean;
     discount: number;
     createdAt?: string;
+    updatedAt?: string;
     seller?: {
         _id: string;
         username: string;
@@ -262,6 +263,9 @@ export default function AdminProductsPage() {
                                                 Created
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Updated
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Actions
                                             </th>
                                         </tr>
@@ -279,10 +283,13 @@ export default function AdminProductsPage() {
                                                             )}
                                                         </div>
                                                         <div className="ml-4">
-                                                            <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
+                                                            <div
+                                                                className="text-sm font-medium text-gray-900 line-clamp-2 max-w-[200px] sm:max-w-xs whitespace-normal"
+                                                                title={product.title}
+                                                            >
                                                                 {product.title}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">
+                                                            <div className="text-sm text-gray-500 mt-1">
                                                                 {product.brand || 'No brand'}
                                                             </div>
                                                         </div>
@@ -330,6 +337,9 @@ export default function AdminProductsPage() {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {formatDate(product.createdAt)}
                                                 </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {formatDate(product.updatedAt)}
+                                                </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     <div className="flex items-center gap-2">
                                                         <Link
@@ -375,8 +385,18 @@ export default function AdminProductsPage() {
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="text-sm font-medium text-gray-900 truncate">{product.title}</h4>
+                                                <h4
+                                                    className="text-sm font-medium text-gray-900 line-clamp-2 whitespace-normal"
+                                                    title={product.title}
+                                                >
+                                                    {product.title}
+                                                </h4>
                                                 <p className="text-sm text-gray-500 mt-1">{product.category}</p>
+                                                {(product.createdAt || product.updatedAt) && (
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        {product.updatedAt ? `Updated ${formatDate(product.updatedAt)}` : `Created ${formatDate(product.createdAt)}`}
+                                                    </p>
+                                                )}
                                                 <div className="flex items-center gap-2 mt-2">
                                                     <span className="text-sm font-semibold text-gray-900">
                                                         {formatCurrency(product.price, product.currency)}
@@ -471,7 +491,10 @@ export default function AdminProductsPage() {
                                             />
                                         )}
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                            <p
+                                                className="text-sm font-medium text-gray-900 line-clamp-2 whitespace-normal"
+                                                title={deleteModal.product.title}
+                                            >
                                                 {deleteModal.product.title}
                                             </p>
                                             <p className="text-xs text-gray-500">

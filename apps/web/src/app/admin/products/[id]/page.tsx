@@ -323,7 +323,7 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
               {/* Pricing & Stock */}
               <div>
                 <div className="mb-2 text-sm font-semibold">Pricing & Stock</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   <div>
                     <div className="mb-1 text-xs text-neutral-500">Price</div>
                     <input type="number" min={0} value={form.price} onChange={(e) => handleFormChange((s: any) => ({ ...s, price: Number(e.target.value) }))} className="w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm" />
@@ -333,12 +333,18 @@ export default function ManageProductPage({ params }: { params: Promise<{ id: st
                     <input type="number" min={0} value={form.originalPrice} onChange={(e) => handleFormChange((s: any) => ({ ...s, originalPrice: Number(e.target.value) }))} className="w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm" />
                   </div>
                   <div>
+                    <div className="mb-1 text-xs text-neutral-500">Discount %</div>
+                    <input type="number" min={0} max={100} value={form.discount} onChange={(e) => handleFormChange((s: any) => ({ ...s, discount: Number(e.target.value) }))} className="w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm" />
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
                     <div className="mb-1 text-xs text-neutral-500">Stock</div>
                     <input type="number" min={0} value={form.quantity} onChange={(e) => handleFormChange((s: any) => ({ ...s, quantity: Number(e.target.value) }))} className="w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm" />
                   </div>
                   <div>
-                    <div className="mb-1 text-xs text-neutral-500">Discount %</div>
-                    <input type="number" min={0} max={100} value={form.discount} onChange={(e) => handleFormChange((s: any) => ({ ...s, discount: Number(e.target.value) }))} className="w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm" />
+                    <div className="mb-1 text-xs text-neutral-500">Min. Order Qty</div>
+                    <input type="number" min={1} value={form.minOrderQuantity} onChange={(e) => handleFormChange((s: any) => ({ ...s, minOrderQuantity: Number(e.target.value) }))} placeholder="1" className="w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm" />
                   </div>
                 </div>
               </div>

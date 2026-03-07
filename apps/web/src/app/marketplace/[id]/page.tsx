@@ -296,25 +296,32 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               )}
               <div className="flex items-center gap-3 text-xs sm:text-sm">
                 <span className="w-12 text-black font-semibold">{translate(locale, "product.qty")}</span>
-                <QtySelectControl
-                  productId={product._id}
-                  minQty={Math.max(1, Number(product.minOrderQuantity || 1))}
-                  maxQty={(() => {
-                    try {
-                      // derive from selected variant if we have a current variant label
-                      const el = typeof document !== 'undefined' ? document.getElementById(`variant-label-${product._id}`) : null;
-                      const label = el?.textContent || '';
-                      if (label && Array.isArray(product.variants) && product.variants.length) {
-                        const parsed: Record<string, string> = Object.fromEntries(label.split('|').map(p => p.trim()).filter(Boolean).map(kv => kv.split(':').map(s => s.trim()) as [string, string]));
-                        const match = product.variants.find(v => Object.entries(parsed).every(([k, vv]) => (v.attributes || {})[k] === vv));
-                        if (match) return Math.max(0, Number(match.quantity || 0));
-                      }
-                    } catch { }
-                    return Math.max(0, Number(product.quantity || 0));
-                  })()}
-                  locale={locale}
-                  className="w-20 rounded-full border border-neutral-300 bg-white dark:bg-neutral-900 px-3 sm:px-4 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-400 focus:border-neutral-400 transition"
-                />
+                <div className="flex flex-col gap-1">
+                  <QtySelectControl
+                    productId={product._id}
+                    minQty={Math.max(1, Number(product.minOrderQuantity || 1))}
+                    maxQty={(() => {
+                      try {
+                        // derive from selected variant if we have a current variant label
+                        const el = typeof document !== 'undefined' ? document.getElementById(`variant-label-${product._id}`) : null;
+                        const label = el?.textContent || '';
+                        if (label && Array.isArray(product.variants) && product.variants.length) {
+                          const parsed: Record<string, string> = Object.fromEntries(label.split('|').map(p => p.trim()).filter(Boolean).map(kv => kv.split(':').map(s => s.trim()) as [string, string]));
+                          const match = product.variants.find(v => Object.entries(parsed).every(([k, vv]) => (v.attributes || {})[k] === vv));
+                          if (match) return Math.max(0, Number(match.quantity || 0));
+                        }
+                      } catch { }
+                      return Math.max(0, Number(product.quantity || 0));
+                    })()}
+                    locale={locale}
+                    className="w-20 rounded-full border border-neutral-300 bg-white dark:bg-neutral-900 px-3 sm:px-4 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-400 focus:border-neutral-400 transition"
+                  />
+                  {(product.minOrderQuantity ?? 1) > 1 && (
+                    <span className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 font-medium">
+                      {translate(locale, "product.minOrder")}: {product.minOrderQuantity} units
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 

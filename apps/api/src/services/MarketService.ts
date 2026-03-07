@@ -225,7 +225,7 @@ export class MarketService extends BaseService<IProduct> {
     // This reduces response size by 40-60% (from ~270 KB to ~108-162 KB per request)
     const queryExec = this.model
       .find(queryObj)
-      .select('_id title price currency images discount rating category subcategory condition brand featured quantity createdAt minOrderQuantity shippingOptions')
+      .select('_id title price currency images discount rating category subcategory condition brand featured quantity createdAt updatedAt minOrderQuantity shippingOptions')
       .sort(sort || "-createdAt") // Default sort: newest products first
       .skip(skip)
       .limit(limit)
@@ -263,10 +263,10 @@ export class MarketService extends BaseService<IProduct> {
 
     const categories = await Category.find({ isActive: true }).sort("name");
     const result = categories as unknown as ICategory[];
-    
+
     // Cache for 5 minutes
     await cacheService.set(CACHE_KEY, result, 300);
-    
+
     return result;
   }
 
