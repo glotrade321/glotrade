@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable @typescript-eslint/no-explicit-any 
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {

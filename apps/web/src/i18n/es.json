@@ -463,14 +463,14 @@
       "options": {
         "communication": {
           "title": "Informar una llamada telefónica, correo electrónico o SMS/mensaje de texto sospechoso",
-          "desc": "Informar cualquier comunicación sospechosa que pretenda ser de AfriTrade"
+          "desc": "Informar cualquier comunicación sospechosa que pretenda ser de Glotrade"
         },
         "website": {
-          "title": "Informar un sitio web o aplicación falsa similar a AfriTrade",
+          "title": "Informar un sitio web o aplicación falsa similar a Glotrade",
           "desc": "Informar sitios web o aplicaciones que suplantan nuestra plataforma"
         },
         "jobs": {
-          "title": "Informar ofertas de trabajo falsas y otras actividades que suplantan a AfriTrade",
+          "title": "Informar ofertas de trabajo falsas y otras actividades que suplantan a Glotrade",
           "desc": "Informar ofertas de trabajo falsas o actividades que utilicen nuestro nombre de marca"
         }
       },
@@ -485,7 +485,7 @@
       "breadcrumb": "Fraude de comunicación",
       "backToOptions": "Volver a las opciones de informes",
       "title": "Informar comunicación sospechosa",
-      "desc": "Informe cualquier llamada telefónica, correo electrónico o mensaje de texto / SMS sospechoso que pretenda ser de AfriTrade.",
+      "desc": "Informe cualquier llamada telefónica, correo electrónico o mensaje de texto / SMS sospechoso que pretenda ser de Glotrade.",
       "warning": "<strong>Importante:</strong> si ya proporcionó información personal o realizó un pago, comuníquese con su banco de inmediato y considere cambiar sus contraseñas.",
       "form": {
         "typeLabel": "Tipo de comunicación *",
@@ -508,7 +508,7 @@
           "immediatePayment": "Pago inmediato exigido",
           "suspension": "Amenaza de suspensión de cuenta",
           "crypto": "Tarjetas de regalo o criptomonedas solicitadas",
-          "unprofessional": "Afirmó ser de AfriTrade pero parecía poco profesional",
+          "unprofessional": "Afirmó ser de Glotrade pero parecía poco profesional",
           "grammar": "Tenía mala gramática u ortografía",
           "urgency": "Creó sentido de urgencia",
           "links": "Se pidió hacer clic en enlaces sospechosos"
@@ -533,15 +533,15 @@
       },
       "tips": {
         "title": "Consejos de seguridad",
-        "neverAsk": "AfriTrade nunca le pedirá su contraseña o información de pago por teléfono, correo electrónico o SMS",
+        "neverAsk": "Glotrade nunca le pedirá su contraseña o información de pago por teléfono, correo electrónico o SMS",
         "noThreat": "Nunca amenazaremos con suspender su cuenta para una acción inmediata",
-        "official": "Las comunicaciones oficiales siempre provienen de direcciones @afritrade.com verificadas"
+        "official": "Las comunicaciones oficiales siempre provienen de direcciones @glotrade.online verificadas"
       }
     },
     "website": {
       "breadcrumb": "Suplantación de sitio web y aplicación",
       "title": "Informar sitio web o aplicación falsa",
-      "desc": "Informe sitios web o aplicaciones móviles que suplanten a AfriTrade o intenten robar información del usuario.",
+      "desc": "Informe sitios web o aplicaciones móviles que suplanten a Glotrade o intenten robar información del usuario.",
       "form": {
         "typeLabel": "Tipo de suplantación de identidad *",
         "types": {
@@ -559,7 +559,7 @@
         "descLabel": "Describa el sitio web/aplicación sospechosa *",
         "descPlaceholder": "Describa lo que vio, qué lo hizo sospechoso y cualquier otro detalle...",
         "elements": {
-          "url": "La URL parece similar pero ligeramente diferente de afritrade.com",
+          "url": "La URL parece similar pero ligeramente diferente de glotrade.online",
           "credentials": "Se solicitaron credenciales de inicio de sesión o información personal",
           "payment": "Se solicitó información de pago",
           "design": "Tenía un mal diseño o parecía poco profesional",
@@ -584,7 +584,7 @@
       },
       "tips": {
         "title": "Cómo detectar sitios web y aplicaciones falsas",
-        "url": "Compruebe siempre la URL con cuidado: nuestro sitio web oficial es afritrade.com",
+        "url": "Compruebe siempre la URL con cuidado: nuestro sitio web oficial es glotrade.online",
         "padlock": "Busque el icono del candado en la barra de direcciones de su navegador",
         "design": "Tenga cuidado con los sitios con mal diseño, errores ortográficos u ofertas poco realistas",
         "stores": "Solo descargue aplicaciones de las tiendas de aplicaciones oficiales (Google Play, Apple App Store)"
@@ -593,18 +593,18 @@
     "jobs": {
       "breadcrumb": "Estafas de empleo y oportunidades",
       "title": "Informar oportunidades de trabajo falsas",
-      "desc": "Informe ofertas de trabajo falsas, esquemas de inversión u oportunidades comerciales que afirmen falsamente ser de AfriTrade.",
+      "desc": "Informe ofertas de trabajo falsas, esquemas de inversión u oportunidades comerciales que afirmen falsamente ser de Glotrade.",
       "warning": "<strong>Importante:</strong> si ya proporcionó información personal, envió dinero o compartió documentos, comuníquese con su banco de inmediato y considere informar a las autoridades locales.",
       "form": {
         "typeLabel": "Tipo de actividad sospechosa *",
         "types": {
           "fake_job": {
             "label": "Oferta de trabajo falsa",
-            "desc": "Ofertas de trabajo que pretenden ser de AfriTrade"
+            "desc": "Ofertas de trabajo que pretenden ser de Glotrade"
           },
           "investment_scheme": {
             "label": "Esquema de inversión",
-            "desc": "Promesas de altos rendimientos usando el nombre de AfriTrade"
+            "desc": "Promesas de altos rendimientos usando el nombre de Glotrade"
           },
           "business_opportunity": {
             "label": "Asociación comercial",
@@ -638,7 +638,7 @@
           "investment": "Inversión o compra de equipo requerida",
           "grammar": "Tenía mala gramática u ortografía en las comunicaciones",
           "bank": "Se pidió cuenta bancaria o información de pago",
-          "unprofessional": "Afirmó estar afiliado a AfriTrade pero parecía poco profesional",
+          "unprofessional": "Afirmó estar afiliado a Glotrade pero parecía poco profesional",
           "commission": "Se ofreció trabajo basado en comisiones con altas promesas",
           "recruit": "Se pidió reclutar a otros o formar un equipo"
         },
@@ -660,7 +660,7 @@
         "tooGood": "Tenga cuidado con las oportunidades que parecen demasiado buenas para ser verdad",
         "research": "Investigue la empresa a fondo antes de postularse",
         "noShare": "Nunca comparta documentos personales o información bancaria",
-        "careers": "Todas las ofertas de trabajo legítimas de AfriTrade se enumeran en nuestra página oficial de empleo"
+        "careers": "Todas las ofertas de trabajo legítimas de Glotrade se enumeran en nuestra página oficial de empleo"
       }
     },
     "fraudCases": {
@@ -671,29 +671,29 @@
         "communication": {
           "title": "Fraude de comunicación",
           "cases": {
-            "fake": "<strong>SMS/correo electrónico falso:</strong> mensajes que dicen ser de AfriTrade y solicitan verificación de pago o actualizaciones de cuenta",
+            "fake": "<strong>SMS/correo electrónico falso:</strong> mensajes que dicen ser de Glotrade y solicitan verificación de pago o actualizaciones de cuenta",
             "urgent": "<strong>Solicitudes de pago urgentes:</strong> Exigencias de pago inmediato a través de métodos inusuales (tarjetas de regalo, criptomonedas)",
             "suspension": "<strong>Amenazas de suspensión de cuenta:</strong> advertencias falsas sobre la suspensión de la cuenta que requieren una acción inmediata"
           },
-          "remember": "<strong>Recuerde:</strong> AfriTrade nunca le pedirá su contraseña, información de pago o detalles personales por SMS o correo electrónico."
+          "remember": "<strong>Recuerde:</strong> Glotrade nunca le pedirá su contraseña, información de pago o detalles personales por SMS o correo electrónico."
         },
         "impersonation": {
           "title": "Suplantación de sitio web y aplicación",
           "cases": {
-            "fake": "<strong>Sitios web falsos:</strong> sitios que se parecen a AfriTrade pero tienen URL ligeramente diferentes",
+            "fake": "<strong>Sitios web falsos:</strong> sitios que se parecen a Glotrade pero tienen URL ligeramente diferentes",
             "copycat": "<strong>Aplicaciones de imitación:</strong> aplicaciones móviles en tiendas de aplicaciones que imitan nuestra plataforma",
             "phishing": "<strong>Páginas de phishing:</strong> páginas diseñadas para robar credenciales de inicio de sesión e información de pago"
           },
-          "verify": "<strong>Verifique siempre:</strong> verifique la URL cuidadosamente. Nuestro sitio web oficial es siempre afritrade.com"
+          "verify": "<strong>Verifique siempre:</strong> verifique la URL cuidadosamente. Nuestro sitio web oficial es siempre glotrade.online"
         },
         "jobs": {
           "title": "Estafas de empleo y oportunidades",
           "cases": {
-            "postings": "<strong>Ofertas de trabajo falsas:</strong> ofertas de trabajo que pretenden ser de AfriTrade con salarios poco realistas",
-            "schemes": "<strong>Esquemas de inversión:</strong> promesas de altos rendimientos usando el nombre de AfriTrade",
-            "partnerships": "<strong>Estafas de asociación:</strong> oportunidades de negocio falsas que afirman estar afiliadas a AfriTrade"
+            "postings": "<strong>Ofertas de trabajo falsas:</strong> ofertas de trabajo que pretenden ser de Glotrade con salarios poco realistas",
+            "schemes": "<strong>Esquemas de inversión:</strong> promesas de altos rendimientos usando el nombre de Glotrade",
+            "partnerships": "<strong>Estafas de asociación:</strong> oportunidades de negocio falsas que afirman estar afiliadas a Glotrade"
           },
-          "verify": "<strong>Verificar empleo:</strong> todas las ofertas de trabajo legítimas de AfriTrade se enumeran en nuestra página oficial de empleo."
+          "verify": "<strong>Verificar empleo:</strong> todas las ofertas de trabajo legítimas de Glotrade se enumeran en nuestra página oficial de empleo."
         }
       },
       "action": {

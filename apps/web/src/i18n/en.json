@@ -318,14 +318,14 @@
       "options": {
         "communication": {
           "title": "Report a suspicious phone call, email, or SMS/text message",
-          "desc": "Report any suspicious communication claiming to be from AfriTrade"
+          "desc": "Report any suspicious communication claiming to be from Glotrade"
         },
         "website": {
-          "title": "Report a fake website or app similar to AfriTrade",
+          "title": "Report a fake website or app similar to Glotrade",
           "desc": "Report websites or apps that impersonate our platform"
         },
         "jobs": {
-          "title": "Report fake job opportunities and other activities that impersonate AfriTrade",
+          "title": "Report fake job opportunities and other activities that impersonate Glotrade",
           "desc": "Report fake job postings or activities using our brand name"
         }
       },
@@ -340,7 +340,7 @@
       "breadcrumb": "Communication Fraud",
       "backToOptions": "Back to Reporting Options",
       "title": "Report Suspicious Communication",
-      "desc": "Report any suspicious phone calls, emails, or SMS/text messages that claim to be from AfriTrade.",
+      "desc": "Report any suspicious phone calls, emails, or SMS/text messages that claim to be from Glotrade.",
       "warning": "<strong>Important:</strong> If you've already provided personal information or made a payment, contact your bank immediately and consider changing your passwords.",
       "form": {
         "typeLabel": "Type of Communication *",
@@ -363,7 +363,7 @@
           "immediatePayment": "Demanded immediate payment",
           "suspension": "Threatened account suspension",
           "crypto": "Asked for gift cards or cryptocurrency",
-          "unprofessional": "Claimed to be from AfriTrade but seemed unprofessional",
+          "unprofessional": "Claimed to be from Glotrade but seemed unprofessional",
           "grammar": "Had poor grammar or spelling",
           "urgency": "Created sense of urgency",
           "links": "Asked to click on suspicious links"
@@ -388,15 +388,15 @@
       },
       "tips": {
         "title": "Security Tips",
-        "neverAsk": "AfriTrade will never ask for your password or payment information via phone, email, or SMS",
+        "neverAsk": "Glotrade will never ask for your password or payment information via phone, email, or SMS",
         "noThreat": "We will never threaten to suspend your account for immediate action",
-        "official": "Official communications always come from verified @afritrade.com addresses"
+        "official": "Official communications always come from verified @glotrade.online addresses"
       }
     },
     "website": {
       "breadcrumb": "Website & App Impersonation",
       "title": "Report Fake Website or App",
-      "desc": "Report websites or mobile apps that impersonate AfriTrade or try to steal user information.",
+      "desc": "Report websites or mobile apps that impersonate Glotrade or try to steal user information.",
       "form": {
         "typeLabel": "Type of Impersonation *",
         "types": {
@@ -414,7 +414,7 @@
         "descLabel": "Describe the suspicious website/app *",
         "descPlaceholder": "Describe what you saw, what made it suspicious, and any other details...",
         "elements": {
-          "url": "URL looks similar but slightly different from afritrade.com",
+          "url": "URL looks similar but slightly different from glotrade.online",
           "credentials": "Asked for login credentials or personal information",
           "payment": "Requested payment information",
           "design": "Had poor design or looked unprofessional",
@@ -439,7 +439,7 @@
       },
       "tips": {
         "title": "How to Spot Fake Websites & Apps",
-        "url": "Always check the URL carefully - our official website is afritrade.com",
+        "url": "Always check the URL carefully - our official website is glotrade.online",
         "padlock": "Look for the padlock icon in your browser's address bar",
         "design": "Be wary of sites with poor design, spelling errors, or unrealistic offers",
         "stores": "Only download apps from official app stores (Google Play, Apple App Store)"
@@ -448,18 +448,18 @@
     "jobs": {
       "breadcrumb": "Job & Opportunity Scams",
       "title": "Report Fake Job Opportunities",
-      "desc": "Report fake job postings, investment schemes, or business opportunities that falsely claim to be from AfriTrade.",
+      "desc": "Report fake job postings, investment schemes, or business opportunities that falsely claim to be from Glotrade.",
       "warning": "<strong>Important:</strong> If you've already provided personal information, sent money, or shared documents, contact your bank immediately and consider reporting to local authorities.",
       "form": {
         "typeLabel": "Type of Suspicious Activity *",
         "types": {
           "fake_job": {
             "label": "Fake Job Posting",
-            "desc": "Job offers claiming to be from AfriTrade"
+            "desc": "Job offers claiming to be from Glotrade"
           },
           "investment_scheme": {
             "label": "Investment Scheme",
-            "desc": "Promises of high returns using AfriTrade's name"
+            "desc": "Promises of high returns using Glotrade's name"
           },
           "business_opportunity": {
             "label": "Business Partnership",
@@ -493,7 +493,7 @@
           "investment": "Required investment or purchase of equipment",
           "grammar": "Had poor grammar or spelling in communications",
           "bank": "Asked for bank account or payment information",
-          "unprofessional": "Claimed affiliation with AfriTrade but seemed unprofessional",
+          "unprofessional": "Claimed affiliation with Glotrade but seemed unprofessional",
           "commission": "Offered commission-based work with high promises",
           "recruit": "Asked to recruit others or build a team"
         },
@@ -515,7 +515,7 @@
         "tooGood": "Be wary of opportunities that seem too good to be true",
         "research": "Research the company thoroughly before applying",
         "noShare": "Never share personal documents or bank information",
-        "careers": "All legitimate AfriTrade job postings are listed on our official careers page"
+        "careers": "All legitimate Glotrade job postings are listed on our official careers page"
       }
     },
     "fraudCases": {
@@ -526,29 +526,29 @@
         "communication": {
           "title": "Communication Fraud",
           "cases": {
-            "fake": "<strong>Fake SMS/Email:</strong> Messages claiming to be from AfriTrade asking for payment verification or account updates",
+            "fake": "<strong>Fake SMS/Email:</strong> Messages claiming to be from Glotrade asking for payment verification or account updates",
             "urgent": "<strong>Urgent Payment Requests:</strong> Demands for immediate payment via unusual methods (gift cards, cryptocurrency)",
             "suspension": "<strong>Account Suspension Threats:</strong> False warnings about account suspension requiring immediate action"
           },
-          "remember": "<strong>Remember:</strong> AfriTrade will never ask for your password, payment information, or personal details via SMS or email."
+          "remember": "<strong>Remember:</strong> Glotrade will never ask for your password, payment information, or personal details via SMS or email."
         },
         "impersonation": {
           "title": "Website & App Impersonation",
           "cases": {
-            "fake": "<strong>Fake Websites:</strong> Sites that look like AfriTrade but have slightly different URLs",
+            "fake": "<strong>Fake Websites:</strong> Sites that look like Glotrade but have slightly different URLs",
             "copycat": "<strong>Copycat Apps:</strong> Mobile apps in app stores that mimic our platform",
             "phishing": "<strong>Phishing Pages:</strong> Pages designed to steal login credentials and payment information"
           },
-          "verify": "<strong>Always verify:</strong> Check the URL carefully. Our official website is always afritrade.com"
+          "verify": "<strong>Always verify:</strong> Check the URL carefully. Our official website is always glotrade.online"
         },
         "jobs": {
           "title": "Job & Opportunity Scams",
           "cases": {
-            "postings": "<strong>Fake Job Postings:</strong> Job offers claiming to be from AfriTrade with unrealistic salaries",
-            "schemes": "<strong>Investment Schemes:</strong> Promises of high returns using AfriTrade's name",
-            "partnerships": "<strong>Partnership Scams:</strong> Fake business opportunities claiming affiliation with AfriTrade"
+            "postings": "<strong>Fake Job Postings:</strong> Job offers claiming to be from Glotrade with unrealistic salaries",
+            "schemes": "<strong>Investment Schemes:</strong> Promises of high returns using Glotrade's name",
+            "partnerships": "<strong>Partnership Scams:</strong> Fake business opportunities claiming affiliation with Glotrade"
           },
-          "verify": "<strong>Verify employment:</strong> All legitimate AfriTrade job postings are listed on our official careers page."
+          "verify": "<strong>Verify employment:</strong> All legitimate Glotrade job postings are listed on our official careers page."
         }
       },
       "action": {
@@ -1736,9 +1736,9 @@
       "howToQR": "QR Code: Others can scan this QR code to send you money",
       "howToLink": "Deep Link: Share the wallet link via messaging apps or social media",
       "howToId": "Wallet ID: Others can search for your Wallet ID manually",
-      "howToCompatible": "Compatible: Works with the AfriTrade app and web platform",
-      "shareText": "Send money to {name} via AfriTrade",
-      "shareTitle": "AfriTrade Wallet - {name}"
+      "howToCompatible": "Compatible: Works with the Glotrade app and web platform",
+      "shareText": "Send money to {name} via Glotrade",
+      "shareTitle": "Glotrade Wallet - {name}"
     }
   },
   "agent": {

@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
-import { Globe, HelpCircle, ShieldCheck, X } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { Globe, HelpCircle, Phone, ShieldCheck, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { setStoredLocale, translate, getStoredLocale, Locale, languageNames, locales } from "@/utils/i18n";
 import { useRouter } from "next/navigation";
 
 export default function UpperHeader() {
   const router = useRouter();
   const [locale, setLocale] = useState<Locale>("en");
+  const [showContactMenu, setShowContactMenu] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -53,10 +54,66 @@ export default function UpperHeader() {
       <div className="w-[95%] lg:w-[95%] mx-auto flex justify-between items-center gap-4 py-1.5 px-3 md:px-0">
         <div className="hidden sm:flex items-center gap-3 text-white text-[10px] md:text-sm font-semibold whitespace-nowrap">
           <span>{translate(locale, "header.needHelp")} {translate(locale, "header.callUs")}</span>
-          <span>(+234)902-900-4712</span>
+          <span>Lagos: (+234)902-900-4712</span>
+          <span>Abuja: (+234)702-460-0924</span>
         </div>
 
         <div className="flex flex-1 sm:flex-none justify-center sm:justify-end items-center gap-4 md:gap-6 text-white text-[11px] md:text-sm font-semibold">
+          <div className="relative sm:hidden">
+            <button
+              type="button"
+              onClick={() => {
+                setShowContactMenu(!showContactMenu);
+                setShowLangMenu(false);
+              }}
+              className="inline-flex items-center justify-center rounded-full bg-white/10 p-2 transition-all hover:scale-105"
+              aria-label="Show contact numbers"
+            >
+              <Phone size={16} />
+            </button>
+
+            {showContactMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowContactMenu(false)}
+                />
+                <div className="absolute left-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/20 bg-[#2EA5FF] p-0 text-white shadow-2xl shadow-[#2EA5FF]/25 z-20">
+                  <div className="border-b border-white/15 px-4 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/70">
+                      Quick Contact
+                    </p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {translate(locale, "header.needHelp")} {translate(locale, "header.callUs")}
+                    </p>
+                  </div>
+                  <div className="space-y-2 p-3">
+                    <a
+                      href="tel:+2349029004712"
+                      className="flex items-center justify-between rounded-xl border border-white/15 bg-[#2497ee] px-3 py-3 transition-colors hover:bg-[#1f8fe3]"
+                    >
+                      <span>
+                        <span className="block text-[11px] uppercase tracking-[0.18em] text-white/70">Lagos</span>
+                        <span className="block text-sm font-semibold">(+234)902-900-4712</span>
+                      </span>
+                      <Phone size={15} className="shrink-0 text-white/85" />
+                    </a>
+                    <a
+                      href="tel:+2347024600924"
+                      className="flex items-center justify-between rounded-xl border border-white/15 bg-[#2497ee] px-3 py-3 transition-colors hover:bg-[#1f8fe3]"
+                    >
+                      <span>
+                        <span className="block text-[11px] uppercase tracking-[0.18em] text-white/70">Abuja</span>
+                        <span className="block text-sm font-semibold">(+234)702-460-0924</span>
+                      </span>
+                      <Phone size={15} className="shrink-0 text-white/85" />
+                    </a>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
           <Link
             href="/gdip"
             onClick={handleGDIPClick}
@@ -74,7 +131,10 @@ export default function UpperHeader() {
           <div className="relative">
             <button
               type="button"
-              onClick={() => setShowLangMenu(!showLangMenu)}
+              onClick={() => {
+                setShowLangMenu(!showLangMenu);
+                setShowContactMenu(false);
+              }}
               className="inline-flex items-center gap-1.5 whitespace-nowrap transition-all hover:scale-105 bg-white/10 px-2 py-1 rounded-lg"
             >
               <Globe size={16} className="md:w-[18px] md:h-[18px]" />

@@ -79,14 +79,14 @@
       "options": {
         "communication": {
           "title": "Bayar da rahoton kiran waya mai tuhuma, imel, ko saƙon SMS/rubutu",
-          "desc": "Bayar da rahoton kowane sadarwa mai tuhuma da ke da'awar daga AfriTrade take"
+          "desc": "Bayar da rahoton kowane sadarwa mai tuhuma da ke da'awar daga Glotrade take"
         },
         "website": {
-          "title": "Bayar da rahoton gidan yanar gizo ko app mai kama da AfriTrade",
+          "title": "Bayar da rahoton gidan yanar gizo ko app mai kama da Glotrade",
           "desc": "Bayar da rahoton gidajen yanar gizo ko aikace-aikacen da ke kwaikwayon dandalinmu"
         },
         "jobs": {
-          "title": "Bayar da rahoton damar aiki na jabu da sauran ayyukan da ke yin iƙirarin AfriTrade ne",
+          "title": "Bayar da rahoton damar aiki na jabu da sauran ayyukan da ke yin iƙirarin Glotrade ne",
           "desc": "Bayar da rahoton jabun saƙon aiki ko ayyukan da ke amfani da sunan alamar mu"
         }
       },
@@ -101,7 +101,7 @@
       "breadcrumb": "Zambar Sadarwa",
       "backToOptions": "Koma Zuwa Zaɓuɓɓukan Rahoto",
       "title": "Bayar da Rahoton Gidan Yanar Gizo ko App Mai Kwaikwayo",
-      "desc": "Bayar da rahoton duk wani kiran waya mai tuhuma, imel, ko saƙon SMS da ke da'awar daga AfriTrade take.",
+      "desc": "Bayar da rahoton duk wani kiran waya mai tuhuma, imel, ko saƙon SMS da ke da'awar daga Glotrade take.",
       "warning": "<strong>Muhimmi:</strong> Idan kun riga kun ba da bayanan sirri ko kun yi biyan kuɗi, tuntuɓi bankin ku nan da nan kuma kuyi tunanin canza kalmomin sirrinku.",
       "form": {
         "typeLabel": "Nau'in Sadarwa *",
@@ -124,7 +124,7 @@
           "immediatePayment": "Neman biyan kuɗi nan take",
           "suspension": "An yi barazanar dakatar da asusun",
           "crypto": "Neman katin kyauta ko kuɗin crypto",
-          "unprofessional": "An yi iƙirarin cewa daga AfriTrade ne amma ba su nuna ƙwarewa ba",
+          "unprofessional": "An yi iƙirarin cewa daga Glotrade ne amma ba su nuna ƙwarewa ba",
           "grammar": "Yana da kura-kurai na harshe ko rubutu",
           "urgency": "Ƙirƙirar jin gaggawa",
           "links": "Nemi danna hanyoyin haɗin shakku"
@@ -149,15 +149,15 @@
       },
       "tips": {
         "title": "Hanyoyin Tsaro",
-        "neverAsk": "AfriTrade ba zai taɓa neman kalmar sirrinku ko bayanan biyan kuɗi ta waya, imel, ko SMS ba",
+        "neverAsk": "Glotrade ba zai taɓa neman kalmar sirrinku ko bayanan biyan kuɗi ta waya, imel, ko SMS ba",
         "noThreat": "Ba za mu taɓa yin barazanar dakatar da asusunku don ɗaukar mataki nan take ba",
-        "official": "Sadarwar hukuma koyaushe tana fitowa daga adireshin @afritrade.com da aka tabbatar"
+        "official": "Sadarwar hukuma koyaushe tana fitowa daga adireshin @glotrade.online da aka tabbatar"
       }
     },
     "website": {
       "breadcrumb": "Kwaikwayon Gidan Yanar Gizo & App",
       "title": "Bayar da Rahoton Jabun Gidan Yanar Gizo ko App",
-      "desc": "Bayar da rahoton gidajen yanar gizo ko aikace-aikacen tafi-da-gidanka da ke kwaikwayon AfriTrade ko ƙoƙarin sace bayanan mai amfani.",
+      "desc": "Bayar da rahoton gidajen yanar gizo ko aikace-aikacen tafi-da-gidanka da ke kwaikwayon Glotrade ko ƙoƙarin sace bayanan mai amfani.",
       "form": {
         "typeLabel": "Nau'in Kwaikwayo *",
         "types": {
@@ -175,7 +175,7 @@
         "descLabel": "Bayyana gidan yanar gizon/app mai tuhuma *",
         "descPlaceholder": "Bayyana abin da kuka gani, me ya sa ya zama abin shakku, da duk wani cikakken bayani...",
         "elements": {
-          "url": "URL ya yi kama amma ya bambanta kaɗan da afritrade.com",
+          "url": "URL ya yi kama amma ya bambanta kaɗan da glotrade.online",
           "credentials": "Neman bayanan shiga ko na sirri",
           "payment": "Neman bayanan biyan kuɗi",
           "design": "Zane mara kyau ko rashin ƙwarewa",
@@ -200,7 +200,7 @@
       },
       "tips": {
         "title": "Yadda Ake Gane Jabun Yanar Gizo & Apps",
-        "url": "Koyaushe duba URL ɗin a hankali - rukunin gidan yanar gizon mu na hukuma shine afritrade.com",
+        "url": "Koyaushe duba URL ɗin a hankali - rukunin gidan yanar gizon mu na hukuma shine glotrade.online",
         "padlock": "Nemi alamar kwaɗo a mashin adireshin burauzar ku",
         "design": "Kasance mai hattara da shafukan da ba su da tsari mai kyau, kuskuren rubutu, ko tayin da ba a saba gani ba",
         "stores": "Zazzage ƙa'idodi kawai daga shagunan ƙa'idodin hukuma (Google Play, Apple App Store)"
@@ -209,18 +209,18 @@
     "jobs": {
       "breadcrumb": "Zambar Aiki & Damar Tallafi",
       "title": "Bayar da Rahoton Jabun Damar Aiki",
-      "desc": "Bayar da rahoton jabun ayyukan yi, tsarin saka hannun jari, ko damar kasuwanci da ke da'awar karya daga AfriTrade suke.",
+      "desc": "Bayar da rahoton jabun ayyukan yi, tsarin saka hannun jari, ko damar kasuwanci da ke da'awar karya daga Glotrade suke.",
       "warning": "<strong>Muhimmi:</strong> Idan kun riga kun bayar da bayanan sirri, tura kuɗi, ko raba takardu, tuntuɓi bankin ku nan da nan kuma kuyi tunanin kai rahoto ga hukumomin yankinku.",
       "form": {
         "typeLabel": "Nau'in Aiki Na Shakku *",
         "types": {
           "fake_job": {
             "label": "Jabun Sanarwar Aiki",
-            "desc": "Tayin aiki da da'awar daga AfriTrade yake"
+            "desc": "Tayin aiki da da'awar daga Glotrade yake"
           },
           "investment_scheme": {
             "label": "Tsarin Zuba Jari",
-            "desc": "Alkawuran samun riba mai yawa ta amfani da sunan AfriTrade"
+            "desc": "Alkawuran samun riba mai yawa ta amfani da sunan Glotrade"
           },
           "business_opportunity": {
             "label": "Abokan Kasuwanci",
@@ -254,7 +254,7 @@
           "investment": "Neman zuba jari ko siyan kayan aiki",
           "grammar": "Kuskure a cikin sadarwa ta nahawu ko rubutu",
           "bank": "Neman asusun banki ko bayanan biyan kuɗi",
-          "unprofessional": "Da'awar yana da alaƙa da AfriTrade amma ba su nuna ƙwarewa ba",
+          "unprofessional": "Da'awar yana da alaƙa da Glotrade amma ba su nuna ƙwarewa ba",
           "commission": "Bayar da aiki da ya danganci hukumar tare da alkawarai masu yawa",
           "recruit": "Nemi ɗaukar wasu ko gina ƙungiya"
         },
@@ -276,7 +276,7 @@
         "tooGood": "Kasance mai hattara da damar da ta yi kyau da za a iya yarda da ita",
         "research": "Bincika kamfanin sosai kafin neman aiki",
         "noShare": "Kada a raba takaddun shaida ko bayanan banki",
-        "careers": "Duk saƙon aiki na AfriTrade na gaskiya suna cikin shafinmu na hukuma"
+        "careers": "Duk saƙon aiki na Glotrade na gaskiya suna cikin shafinmu na hukuma"
       }
     },
     "fraudCases": {
@@ -287,29 +287,29 @@
         "communication": {
           "title": "Zambar Sadarwa",
           "cases": {
-            "fake": "<strong>Jabun SMS/Imel:</strong> Saƙonni da ke da'awar daga AfriTrade suna neman tantance biyan kuɗi ko sabunta asusu",
+            "fake": "<strong>Jabun SMS/Imel:</strong> Saƙonni da ke da'awar daga Glotrade suna neman tantance biyan kuɗi ko sabunta asusu",
             "urgent": "<strong>Bukatar Biyan Gaggawa:</strong> Neman biyan kuɗi nan take ta hanyoyin da ba a saba gani ba (katunan kyauta, crypto)",
             "suspension": "<strong>Barazanar Dakatar da Asusun:</strong> Gargaɗin dakatar da asusun bogi yana buƙatar mataki nan take"
           },
-          "remember": "<strong>Ka Tuna:</strong> AfriTrade ba zai taɓa neman kalmar sirrinku, bayanan biyan kuɗi, ko bayanan sirri ta SMS ko imel ba."
+          "remember": "<strong>Ka Tuna:</strong> Glotrade ba zai taɓa neman kalmar sirrinku, bayanan biyan kuɗi, ko bayanan sirri ta SMS ko imel ba."
         },
         "impersonation": {
           "title": "Kwaikwayon Gidan Yanar Gizo & App",
           "cases": {
-            "fake": "<strong>Jabun Shafukan Yanar Gizo:</strong> Shafukan da suke kama da AfriTrade amma suna da dan bambancin URL",
+            "fake": "<strong>Jabun Shafukan Yanar Gizo:</strong> Shafukan da suke kama da Glotrade amma suna da dan bambancin URL",
             "copycat": "<strong>Aikace-aikacen kwaikwayo:</strong> Aikace-aikacen tafi-da-gidanka a cikin shagunan app waɗanda ke kwaikwayon dandalinmu",
             "phishing": "<strong>Shafukan damfara:</strong> Shafukan da aka tsara don sace bayanan shiga da bayanan biyan kuɗi"
           },
-          "verify": "<strong>Koyaushe Tabbatar:</strong> Bincika URL ɗin sosai. Shafin mu na hukuma koyaushe shine afritrade.com"
+          "verify": "<strong>Koyaushe Tabbatar:</strong> Bincika URL ɗin sosai. Shafin mu na hukuma koyaushe shine glotrade.online"
         },
         "jobs": {
           "title": "Zambar Aiki & Damar Tallafi",
           "cases": {
-            "postings": "<strong>Jabun Sanarwar Aiki:</strong> Tayin aiki da da'awar daga AfriTrade tare da albashin da ba gaskiya ba",
-            "schemes": "<strong>Tsarin Zuba Jari:</strong> Alkawuran samun riba mai yawa ta amfani da sunan AfriTrade",
-            "partnerships": "<strong>Zambar hadin gwiwa:</strong> Jabun damar kasuwanci tare da alakar da ba ta dace ba da AfriTrade"
+            "postings": "<strong>Jabun Sanarwar Aiki:</strong> Tayin aiki da da'awar daga Glotrade tare da albashin da ba gaskiya ba",
+            "schemes": "<strong>Tsarin Zuba Jari:</strong> Alkawuran samun riba mai yawa ta amfani da sunan Glotrade",
+            "partnerships": "<strong>Zambar hadin gwiwa:</strong> Jabun damar kasuwanci tare da alakar da ba ta dace ba da Glotrade"
           },
-          "verify": "<strong>Tabbatar da Daukar Ma'aikata:</strong> Duk sanarwar aiki na AfriTrade na gaskiya suna cikin shafin aikin mu na kwarai."
+          "verify": "<strong>Tabbatar da Daukar Ma'aikata:</strong> Duk sanarwar aiki na Glotrade na gaskiya suna cikin shafin aikin mu na kwarai."
         }
       },
       "action": {
