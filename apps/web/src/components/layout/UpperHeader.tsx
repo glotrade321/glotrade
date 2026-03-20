@@ -104,7 +104,7 @@ export default function UpperHeader() {
                     >
                       <span>
                         <span className="block text-[11px] uppercase tracking-[0.18em] text-white/70">Abuja</span>
-                        <span className="block text-sm font-semibold">(+234)702-460-0924</span>
+                        <span className="block text-sm font-semibold">(+234)704-460-0942</span>
                       </span>
                       <Phone size={15} className="shrink-0 text-white/85" />
                     </a>
