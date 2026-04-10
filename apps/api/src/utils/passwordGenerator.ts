@@ -1,33 +1,42 @@
 import crypto from 'crypto';
 
+const UPPERCASE = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const LOWERCASE = 'abcdefghijkmnopqrstuvwxyz';
+const NUMBERS = '23456789';
+
+function pickRandomChar(chars: string): string {
+    return chars[crypto.randomInt(chars.length)];
+}
+
+function shuffleChars(chars: string[]): string[] {
+    for (let i = chars.length - 1; i > 0; i--) {
+        const j = crypto.randomInt(i + 1);
+        [chars[i], chars[j]] = [chars[j], chars[i]];
+    }
+    return chars;
+}
+
 /**
  * Generate a secure random password
  * @param length Password length (default: 12)
- * @returns Secure random password
+ * @returns Secure random password with copy-safe characters only
  */
 export function generateSecurePassword(length = 12): string {
-    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-    const numbers = '0123456789';
-    const symbols = '!@#$%^&*';
-
-    const allChars = uppercase + lowercase + numbers + symbols;
-
-    let password = '';
+    const safeLength = Math.max(length, 12);
+    const allChars = UPPERCASE + LOWERCASE + NUMBERS;
+    const passwordChars: string[] = [];
 
     // Ensure at least one of each type
-    password += uppercase[crypto.randomInt(uppercase.length)];
-    password += lowercase[crypto.randomInt(lowercase.length)];
-    password += numbers[crypto.randomInt(numbers.length)];
-    password += symbols[crypto.randomInt(symbols.length)];
+    passwordChars.push(pickRandomChar(UPPERCASE));
+    passwordChars.push(pickRandomChar(LOWERCASE));
+    passwordChars.push(pickRandomChar(NUMBERS));
 
     // Fill remaining length with random characters
-    for (let i = 4; i < length; i++) {
-        password += allChars[crypto.randomInt(allChars.length)];
+    for (let i = passwordChars.length; i < safeLength; i++) {
+        passwordChars.push(pickRandomChar(allChars));
     }
 
-    // Shuffle password to randomize position of required characters
-    return password.split('').sort(() => crypto.randomInt(3) - 1).join('');
+    return shuffleChars(passwordChars).join('').replace(/\s+/g, '');
 }
 
 /**

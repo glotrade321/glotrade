@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { apiGet, apiPost, apiDelete } from '@/utils/api';
 import AdminLayout from '@/components/admin/AdminLayout';
+import Modal from '@/components/common/Modal';
 
 interface ProductManager {
     _id: string;
@@ -26,6 +27,9 @@ export default function ProductManagersPage() {
     const [productManagers, setProductManagers] = useState<ProductManager[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [deleteTarget, setDeleteTarget] = useState<ProductManager | null>(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [deletedEmail, setDeletedEmail] = useState('');
 
     useEffect(() => {
         fetchProductManagers();
@@ -55,17 +59,18 @@ export default function ProductManagersPage() {
         }
     };
 
-    const handleDelete = async (id: string, email: string) => {
-        if (!confirm(`Delete Product Manager ${email}? This action cannot be undone.`)) {
-            return;
-        }
-
+    const handleDelete = async () => {
+        if (!deleteTarget) return;
+        setDeleteLoading(true);
         try {
-            await apiDelete(`/api/v1/admin/product-managers/${id}`);
-            alert('Product Manager deleted successfully');
+            await apiDelete(`/api/v1/admin/product-managers/${deleteTarget._id}`);
+            setDeletedEmail(deleteTarget.email);
+            setDeleteTarget(null);
             fetchProductManagers(); // Refresh list
         } catch (err: any) {
             alert(err.message || 'Failed to delete Product Manager');
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -228,7 +233,7 @@ export default function ProductManagersPage() {
                                                 Reset Password
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(pm._id, pm.email)}
+                                                onClick={() => setDeleteTarget(pm)}
                                                 className="text-red-600 hover:text-red-900"
                                                 title="Delete"
                                             >
@@ -258,6 +263,76 @@ export default function ProductManagersPage() {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                open={Boolean(deleteTarget)}
+                onClose={() => !deleteLoading && setDeleteTarget(null)}
+                title={(
+                    <span className="inline-flex items-center gap-2 text-rose-600">
+                        Delete Product Manager
+                    </span>
+                )}
+                size="md"
+                footer={(
+                    <>
+                        <button
+                            onClick={() => setDeleteTarget(null)}
+                            disabled={deleteLoading}
+                            className="flex-1 rounded-full border px-4 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleDelete}
+                            disabled={deleteLoading}
+                            className="flex-1 rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {deleteLoading ? 'Deleting...' : 'Delete Product Manager'}
+                        </button>
+                    </>
+                )}
+            >
+                <div className="space-y-4 p-2">
+                    <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                        <p className="text-sm font-medium text-rose-900">
+                            Delete Product Manager <span className="break-all">{deleteTarget?.email}</span>?
+                        </p>
+                        <p className="mt-2 text-sm text-rose-700">
+                            This action cannot be undone. The account will be removed from the Product Managers list.
+                        </p>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal
+                open={Boolean(deletedEmail)}
+                onClose={() => setDeletedEmail('')}
+                title={(
+                    <span className="inline-flex items-center gap-2 text-emerald-600">
+                        Product Manager Deleted
+                    </span>
+                )}
+                size="md"
+                footer={(
+                    <button
+                        onClick={() => setDeletedEmail('')}
+                        className="w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+                    >
+                        Close
+                    </button>
+                )}
+            >
+                <div className="space-y-4 p-2">
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                        <p className="text-sm font-medium text-emerald-900">
+                            Product Manager <span className="break-all">{deletedEmail}</span> was deleted successfully.
+                        </p>
+                        <p className="mt-2 text-sm text-emerald-700">
+                            The account has been removed from the Product Managers list and the user has been notified by email.
+                        </p>
+                    </div>
+                </div>
+            </Modal>
         </AdminLayout>
     );
 }

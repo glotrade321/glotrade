@@ -10,6 +10,8 @@ class CacheService {
     private memoryCache: Map<string, { value: any; expiresAt: number | null }> = new Map();
     private isEnabled: boolean = false;
     private provider: CacheProvider = CacheProvider.MEMORY;
+    private redisFailureLogged: boolean = false;
+    private readonly isProd: boolean = process.env.NODE_ENV === "production";
 
     constructor() {
         this.isEnabled = process.env.REDIS_ENABLED === "true";
@@ -20,6 +22,9 @@ class CacheService {
                 try {
                     this.client = new Redis(redisUrl, {
                         retryStrategy: (times) => {
+                            if (!this.isProd) {
+                                return null;
+                            }
                             const delay = Math.min(times * 50, 2000);
                             return delay;
                         },
@@ -29,10 +34,18 @@ class CacheService {
                     this.client.on("connect", () => {
                         console.log("🚀 Redis connected successfully");
                         this.provider = CacheProvider.REDIS;
+                        this.redisFailureLogged = false;
                     });
 
                     this.client.on("error", (err) => {
-                        console.warn("⚠️ Redis connection error, falling back to memory:", err.message);
+                        if (!this.redisFailureLogged) {
+                            console.warn("⚠️ Redis connection error, falling back to memory:", err.message);
+                            this.redisFailureLogged = true;
+                        }
+                        this.provider = CacheProvider.MEMORY;
+                    });
+
+                    this.client.on("end", () => {
                         this.provider = CacheProvider.MEMORY;
                     });
                 } catch (error: any) {
@@ -53,6 +66,14 @@ class CacheService {
         return this.client;
     }
 
+    public getProvider(): CacheProvider {
+        return this.provider;
+    }
+
+    public isRedisReady(): boolean {
+        return this.provider === CacheProvider.REDIS && this.client?.status === "ready";
+    }
+
     /**
      * Set a value in the cache
      * @param key Cache key
@@ -61,16 +82,22 @@ class CacheService {
      */
     async set(key: string, value: any, ttl?: number): Promise<void> {
         if (this.provider === CacheProvider.REDIS && this.client) {
-            const stringValue = typeof value === "string" ? value : JSON.stringify(value);
-            if (ttl) {
-                await this.client.set(key, stringValue, "EX", ttl);
-            } else {
-                await this.client.set(key, stringValue);
+            try {
+                const stringValue = typeof value === "string" ? value : JSON.stringify(value);
+                if (ttl) {
+                    await this.client.set(key, stringValue, "EX", ttl);
+                } else {
+                    await this.client.set(key, stringValue);
+                }
+                return;
+            } catch (error: any) {
+                console.warn("⚠️ Redis set failed, using memory cache:", error.message);
+                this.provider = CacheProvider.MEMORY;
             }
-        } else {
-            const expiresAt = ttl ? Date.now() + ttl * 1000 : null;
-            this.memoryCache.set(key, { value, expiresAt });
         }
+
+        const expiresAt = ttl ? Date.now() + ttl * 1000 : null;
+        this.memoryCache.set(key, { value, expiresAt });
     }
 
     /**
@@ -79,24 +106,29 @@ class CacheService {
      */
     async get<T>(key: string): Promise<T | null> {
         if (this.provider === CacheProvider.REDIS && this.client) {
-            const value = await this.client.get(key);
-            if (!value) return null;
             try {
-                return JSON.parse(value) as T;
-            } catch {
-                return value as unknown as T;
+                const value = await this.client.get(key);
+                if (!value) return null;
+                try {
+                    return JSON.parse(value) as T;
+                } catch {
+                    return value as unknown as T;
+                }
+            } catch (error: any) {
+                console.warn("⚠️ Redis get failed, using memory cache:", error.message);
+                this.provider = CacheProvider.MEMORY;
             }
-        } else {
-            const cached = this.memoryCache.get(key);
-            if (!cached) return null;
-
-            if (cached.expiresAt && cached.expiresAt < Date.now()) {
-                this.memoryCache.delete(key);
-                return null;
-            }
-
-            return cached.value as T;
         }
+
+        const cached = this.memoryCache.get(key);
+        if (!cached) return null;
+
+        if (cached.expiresAt && cached.expiresAt < Date.now()) {
+            this.memoryCache.delete(key);
+            return null;
+        }
+
+        return cached.value as T;
     }
 
     /**
@@ -105,10 +137,16 @@ class CacheService {
      */
     async del(key: string): Promise<void> {
         if (this.provider === CacheProvider.REDIS && this.client) {
-            await this.client.del(key);
-        } else {
-            this.memoryCache.delete(key);
+            try {
+                await this.client.del(key);
+                return;
+            } catch (error: any) {
+                console.warn("⚠️ Redis delete failed, using memory cache:", error.message);
+                this.provider = CacheProvider.MEMORY;
+            }
         }
+
+        this.memoryCache.delete(key);
     }
 
     /**
@@ -116,10 +154,16 @@ class CacheService {
      */
     async clear(): Promise<void> {
         if (this.provider === CacheProvider.REDIS && this.client) {
-            await this.client.flushdb();
-        } else {
-            this.memoryCache.clear();
+            try {
+                await this.client.flushdb();
+                return;
+            } catch (error: any) {
+                console.warn("⚠️ Redis flush failed, using memory cache:", error.message);
+                this.provider = CacheProvider.MEMORY;
+            }
         }
+
+        this.memoryCache.clear();
     }
 }
 

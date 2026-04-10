@@ -138,6 +138,7 @@ app.use(
 
 // Rate limiting (skip in development to avoid 429s during SSR/HMR and local testing)
 const redisClient = cacheService.getClient();
+const useRedisRateLimitStore = cacheService.isRedisReady();
 
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -146,7 +147,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
   skip: () => !IS_PROD,
   message: "Too many requests, please try again shortly.",
-  store: redisClient
+  store: useRedisRateLimitStore && redisClient
     ? new RedisStore({
       // @ts-expect-error - ioredis types mismatch with rate-limit-redis but it works
       sendCommand: (...args: string[]) => redisClient.call(...args),

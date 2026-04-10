@@ -89,6 +89,7 @@ export class ProductManagerService {
         temporaryPassword: string;
     }) {
         const loginUrl = process.env.APP_ORIGIN || 'http://localhost:3000';
+        const credentialCodeStyle = "display:inline-block;background:#e9ecef;padding:4px 8px;border-radius:4px;font-family:monospace;font-size:15px;white-space:nowrap;word-break:keep-all;letter-spacing:0.04em;";
 
         const htmlContent = `
       <p>Hello <strong>${data.firstName}</strong>,</p>
@@ -98,9 +99,10 @@ export class ProductManagerService {
       <div style="background: #f8f9fa; border-left: 4px solid #2EA5FF; padding: 20px; margin: 20px 0; border-radius: 5px;">
         <h3 style="margin-top: 0; color: #2EA5FF;">🔑 Your Login Credentials</h3>
         <p style="margin: 10px 0;"><strong>Login URL:</strong> <a href="${loginUrl}/auth/login" style="color: #2EA5FF;">${loginUrl}/auth/login</a></p>
-        <p style="margin: 10px 0;"><strong>Username:</strong> <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace;">${data.username}</code></p>
-        <p style="margin: 10px 0;"><strong>Email:</strong> <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace;">${data.email}</code></p>
-        <p style="margin: 10px 0;"><strong>Password:</strong> <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace;">${data.temporaryPassword}</code></p>
+        <p style="margin: 10px 0;"><strong>Username:</strong> <code style="${credentialCodeStyle}">${data.username}</code></p>
+        <p style="margin: 10px 0;"><strong>Email:</strong> <code style="${credentialCodeStyle}">${data.email}</code></p>
+        <p style="margin: 10px 0;"><strong>Password:</strong> <code style="${credentialCodeStyle}">${data.temporaryPassword}</code></p>
+        <p style="margin: 12px 0 0; font-size: 13px; color: #6c757d;">Copy the password exactly as shown above. It does not contain spaces.</p>
       </div>
       
       <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 5px;">
@@ -129,6 +131,17 @@ export class ProductManagerService {
             to: data.email,
             subject: 'Welcome to Glotrade - Product Manager Account',
             html: htmlContent,
+            text: [
+                `Hello ${data.firstName},`,
+                '',
+                'Your Product Manager account has been created.',
+                `Login URL: ${loginUrl}/auth/login`,
+                `Username: ${data.username}`,
+                `Email: ${data.email}`,
+                `Password: ${data.temporaryPassword}`,
+                '',
+                'Copy the password exactly as shown above. It does not contain spaces.',
+            ].join('\n'),
             cta: {
                 label: 'Login Now',
                 url: `${loginUrl}/auth/login`
@@ -187,10 +200,20 @@ export class ProductManagerService {
         <p>Hello <strong>${user.firstName}</strong>,</p>
         <p>Your password has been reset by an administrator.</p>
         <div style="background: #f8f9fa; border-left: 4px solid #2EA5FF; padding: 20px; margin: 20px 0; border-radius: 5px;">
-          <p style="margin: 0;"><strong>New Password:</strong> <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace;">${newPassword}</code></p>
+          <p style="margin: 0;"><strong>New Password:</strong> <code style="display:inline-block;background:#e9ecef;padding:4px 8px;border-radius:4px;font-family:monospace;font-size:15px;white-space:nowrap;word-break:keep-all;letter-spacing:0.04em;">${newPassword}</code></p>
+          <p style="margin: 12px 0 0; font-size: 13px; color: #6c757d;">Copy the password exactly as shown above. It does not contain spaces.</p>
         </div>
         <p>Please login with your new password.</p>
       `,
+            text: [
+                `Hello ${user.firstName},`,
+                '',
+                'Your password has been reset by an administrator.',
+                `Login URL: ${loginUrl}/auth/login`,
+                `New Password: ${newPassword}`,
+                '',
+                'Copy the password exactly as shown above. It does not contain spaces.',
+            ].join('\n'),
             cta: {
                 label: 'Login Now',
                 url: `${loginUrl}/auth/login`
@@ -201,18 +224,79 @@ export class ProductManagerService {
     }
 
     /**
+     * Send account revocation email
+     */
+    private async sendDeletionEmail(data: {
+        email: string;
+        firstName?: string;
+    }) {
+        const adminEmail = 'admin@glotrade.online';
+        const supportEmail = 'support@glotrade.online';
+
+        await EmailService.sendEmail({
+            to: data.email,
+            subject: 'Glotrade Product Manager Access Removed',
+            html: `
+        <p>Hello <strong>${data.firstName || 'there'}</strong>,</p>
+        <p>Your Product Manager account access on Glotrade has been removed by an administrator.</p>
+        <div style="background: #fff5f5; border-left: 4px solid #dc2626; padding: 20px; margin: 20px 0; border-radius: 5px;">
+          <p style="margin: 0; color: #7f1d1d;"><strong>Access Update:</strong> You can no longer sign in with this Product Manager account.</p>
+        </div>
+        <p>If you believe this was done in error or you need access restored, please contact <a href="mailto:${adminEmail}" style="color: #2EA5FF;">${adminEmail}</a> or <a href="mailto:${supportEmail}" style="color: #2EA5FF;">${supportEmail}</a>.</p>
+        <p>Best regards,<br><strong>The Glotrade Team</strong></p>
+      `,
+            text: [
+                `Hello ${data.firstName || 'there'},`,
+                '',
+                'Your Product Manager account access on Glotrade has been removed by an administrator.',
+                'You can no longer sign in with this Product Manager account.',
+                '',
+                `If you believe this was done in error or you need access restored, please contact ${adminEmail} or ${supportEmail}.`,
+            ].join('\n'),
+        });
+    }
+
+    /**
      * Delete Product Manager (soft delete)
      */
     async deleteProductManager(userId: string, deletedBy: string) {
-        const user = await User.findById(userId);
-        if (!user || user.role !== 'product_manager') {
+        const user = await User.findOne({
+            _id: userId,
+            role: 'product_manager',
+            isDeleted: { $ne: true },
+        }).select('email firstName');
+
+        if (!user) {
             throw new Error('Product Manager not found');
         }
 
-        user.isDeleted = true;
-        user.deletedAt = new Date();
-        user.deletedBy = deletedBy;
-        await user.save();
+        const result = await User.updateOne(
+            {
+                _id: userId,
+                role: 'product_manager',
+                isDeleted: { $ne: true },
+            },
+            {
+                $set: {
+                    isDeleted: true,
+                    deletedAt: new Date(),
+                    deletedBy,
+                },
+            }
+        );
+
+        if (result.matchedCount === 0) {
+            throw new Error('Product Manager not found');
+        }
+
+        try {
+            await this.sendDeletionEmail({
+                email: user.email,
+                firstName: user.firstName,
+            });
+        } catch (error) {
+            console.error('[ProductManagerService] Failed to send deletion email:', error);
+        }
 
         return { message: 'Product Manager deleted successfully' };
     }
