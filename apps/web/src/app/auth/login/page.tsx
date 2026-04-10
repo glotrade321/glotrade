@@ -49,9 +49,13 @@ function LoginForm() {
 
       toast(translate(locale, "auth.toast.signedIn"), "success");
 
-      // Check for product manager role and redirect
+      // Check for manager roles and redirect
       if (json.data.role === 'product_manager') {
         router.replace('/admin/products');
+        return;
+      }
+      if (json.data.role === 'order_manager') {
+        router.replace('/admin/orders');
         return;
       }
 

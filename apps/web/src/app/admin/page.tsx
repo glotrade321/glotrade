@@ -85,12 +85,16 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Check if user is product_manager and redirect to products page
+        // Restricted manager roles land on their single workspace
         const userData = localStorage.getItem('afritrade:user');
         if (userData) {
           const user = JSON.parse(userData);
           if (user.role === 'product_manager') {
             router.push('/admin/products');
+            return;
+          }
+          if (user.role === 'order_manager') {
+            router.push('/admin/orders');
             return;
           }
         }

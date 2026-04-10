@@ -35,7 +35,7 @@ interface MenuItem {
   children?: MenuItem[];
   adminOnly?: boolean; // Only show to admin/super admin
   superAdminOnly?: boolean; // Only show to super admin
-  productManagerOnly?: boolean; // Only show to product managers
+  allowedRoles?: string[];
 }
 
 const adminMenuItems: MenuItem[] = [
@@ -52,21 +52,22 @@ const adminMenuItems: MenuItem[] = [
     adminOnly: true // Only show to admins, not product managers
   },
   {
-    label: "Product Managers",
-    href: "/admin/product-managers",
+    label: "Manager Accounts",
+    href: "/admin/managers",
     icon: <Users size={20} />,
-    superAdminOnly: true // Only show to super admins
+    adminOnly: true
   },
   {
     label: "Product Management",
     href: "/admin/products",
-    icon: <Package size={20} />
+    icon: <Package size={20} />,
+    allowedRoles: ["admin", "product_manager"]
   },
   {
     label: "Order Management",
     href: "/admin/orders",
     icon: <ShoppingCart size={20} />,
-    adminOnly: true
+    allowedRoles: ["admin", "order_manager"]
   },
   {
     label: "Withdrawals",
@@ -185,8 +186,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           const user = JSON.parse(userData);
           setUser(user);
 
-          // Allow admin, super admin, and product_manager roles
-          if (user.role !== "admin" && !user.isSuperAdmin && user.role !== "product_manager") {
+          // Allow admin, super admin, and manager roles
+          if (user.role !== "admin" && !user.isSuperAdmin && user.role !== "product_manager" && user.role !== "order_manager") {
             router.push("/dashboard");
             return;
           }
@@ -200,6 +201,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
     loadUser();
   }, [router]);
+
+  useEffect(() => {
+    if (!user || user.isSuperAdmin || user.role === "admin") return;
+
+    const allowedPath = user.role === "product_manager" ? "/admin/products" : "/admin/orders";
+    if (!pathname.startsWith(allowedPath)) {
+      router.replace(allowedPath);
+    }
+  }, [pathname, router, user]);
 
   const handleLogout = async () => {
     try {
@@ -292,7 +302,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   {user.username || user.firstName || "Admin User"}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {user.isSuperAdmin ? "Super Admin" : "Administrator"}
+                  {user.isSuperAdmin ? "Super Admin" : user.role === "product_manager" ? "Product Manager" : user.role === "order_manager" ? "Order Manager" : "Administrator"}
                 </p>
               </div>
             </div>
@@ -308,8 +318,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 .filter(item => {
                   // Filter menu items based on user role
                   if (item.superAdminOnly && !user.isSuperAdmin) return false;
-                  if (item.adminOnly && user.role === 'product_manager') return false;
-                  if (item.productManagerOnly && user.role !== 'product_manager') return false;
+                  if (item.adminOnly && (user.role === 'product_manager' || user.role === 'order_manager')) return false;
+                  if (item.allowedRoles && !user.isSuperAdmin && user.role !== 'admin' && !item.allowedRoles.includes(user.role)) return false;
                   return true;
                 })
                 .map(renderMenuItem)}
@@ -329,7 +339,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {/* Footer */}
           <div className="p-4 border-t border-gray-200 bg-white">
             <div className="space-y-2">
-              {user.role !== 'product_manager' && (
+              {user.role !== 'product_manager' && user.role !== 'order_manager' && (
                 <>
                   <Link
                     href="/"

@@ -167,3 +167,27 @@ export const productManagerAuth = (req: any, res: any, next: any) => {
     next(error);
   }
 };
+
+/**
+ * Order Manager Authentication Middleware
+ *
+ * Allows admin, super admin, and order_manager roles to access
+ * order management endpoints.
+ */
+export const orderManagerAuth = (req: any, res: any, next: any) => {
+  try {
+    if (!req.user) {
+      throw new ForbiddenError("Authentication required");
+    }
+
+    const hasAccess = req.user.role === 'admin' || req.user.role === 'order_manager' || req.user.isSuperAdmin === true;
+
+    if (!hasAccess) {
+      throw new ForbiddenError("Order management access required. Insufficient privileges.");
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

@@ -110,6 +110,17 @@ export default function AdminOrdersPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
+  const getOrdersApiBase = () => {
+    try {
+      const raw = localStorage.getItem('afritrade:user');
+      if (!raw) return '/api/v1/admin/orders';
+      const user = JSON.parse(raw);
+      return user.role === 'order_manager' ? '/api/v1/order-manager/orders' : '/api/v1/admin/orders';
+    } catch {
+      return '/api/v1/admin/orders';
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
     fetchOrderStats();
@@ -142,7 +153,7 @@ export default function AdminOrdersPage() {
       if (dateRange.to) params.append("to", dateRange.to);
       if (searchTerm) params.append("q", searchTerm);
 
-      const response = await apiGet(`/api/v1/admin/orders?${params.toString()}`) as any;
+      const response = await apiGet(`${getOrdersApiBase()}?${params.toString()}`) as any;
 
       if (response.data) {
         setOrders(response.data.orders || []);
@@ -157,7 +168,7 @@ export default function AdminOrdersPage() {
 
   const fetchOrderStats = async () => {
     try {
-      const response = await apiGet("/api/v1/admin/orders/stats") as any;
+      const response = await apiGet(`${getOrdersApiBase()}/stats`) as any;
       if (response.data) {
         setStats(response.data);
       }
@@ -169,7 +180,7 @@ export default function AdminOrdersPage() {
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     try {
       setActionLoading(true);
-      await apiPut(`/api/v1/admin/orders/${orderId}/status`, { status: newStatus });
+      await apiPut(`${getOrdersApiBase()}/${orderId}/status`, { status: newStatus });
 
       // Update local state
       setOrders(prev => prev.map(order =>
@@ -203,7 +214,7 @@ export default function AdminOrdersPage() {
 
     try {
       setActionLoading(true);
-      await apiPost(`/api/v1/admin/orders/${selectedOrder._id}/cancel`, {});
+      await apiPost(`${getOrdersApiBase()}/${selectedOrder._id}/cancel`, {});
       fetchOrders(); // Refresh orders to show updated status
       fetchOrderStats(); // Refresh stats
       setShowCancelModal(false);
@@ -230,7 +241,7 @@ export default function AdminOrdersPage() {
       // - Uses default "Admin refund" reason
       // - Refunds full order amount
       // - Perfect for quick admin actions from the orders page
-      await apiPost(`/api/v1/admin/orders/${selectedOrder._id}/refund`, {});
+      await apiPost(`${getOrdersApiBase()}/${selectedOrder._id}/refund`, {});
       fetchOrders(); // Refresh orders to show updated status
       fetchOrderStats(); // Refresh stats
       setShowRefundModal(false);

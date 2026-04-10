@@ -41,6 +41,8 @@ import insuranceRoutes from "./routes/insurance.routes";
 import imageRoutes from "./routes/image.routes";
 import supportRoutes from "./routes/support.routes";
 import productManagerRoutes from "./routes/productManager.routes";
+import managerRoutes from "./routes/manager.routes";
+import orderManagerRoutes from "./routes/orderManager.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 import { initScheduledJobs } from "./jobs/scheduler";
@@ -224,6 +226,8 @@ app.use("/api/v1/insurance", insuranceRoutes);
 app.use("/api/v1/images", imageRoutes);
 app.use("/api/v1/support", supportRoutes);
 app.use("/api/v1/admin/product-managers", productManagerRoutes);
+app.use("/api/v1/admin/managers", managerRoutes);
+app.use("/api/v1/order-manager", orderManagerRoutes);
 
 
 

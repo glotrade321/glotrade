@@ -29,8 +29,8 @@ export default function AdminGuard({ children, redirectTo = "/" }: AdminGuardPro
                 const userRole = user?.role?.toLowerCase();
                 const isSuperAdmin = user?.isSuperAdmin === true;
 
-                // Only allow admin, superAdmin, or product_manager
-                if (userRole === "admin" || userRole === "superadmin" || userRole === "product_manager" || isSuperAdmin) {
+                // Only allow admin, superAdmin, or manager roles
+                if (userRole === "admin" || userRole === "superadmin" || userRole === "product_manager" || userRole === "order_manager" || isSuperAdmin) {
                     setIsAdmin(true);
                     setIsChecking(false);
                 } else {
