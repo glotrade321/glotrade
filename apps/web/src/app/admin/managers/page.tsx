@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { apiDelete, apiGet, apiPost } from '@/utils/api';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/common/Modal';
@@ -32,25 +32,23 @@ const roleLabel: Record<ManagerRole, string> = {
 
 export default function ManagerAccountsPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [managers, setManagers] = useState<ManagerAccount[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [roleFilter, setRoleFilter] = useState<'all' | ManagerRole>(() => {
-        const role = searchParams.get('role');
-        return role === 'product_manager' || role === 'order_manager' ? role : 'all';
-    });
+    const [roleFilter, setRoleFilter] = useState<'all' | ManagerRole>('all');
     const [deleteTarget, setDeleteTarget] = useState<ManagerAccount | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [deletedEmail, setDeletedEmail] = useState('');
 
     useEffect(() => {
-        const role = searchParams.get('role');
-        setRoleFilter(role === 'product_manager' || role === 'order_manager' ? role : 'all');
-    }, [searchParams]);
+        fetchManagers();
+    }, []);
 
     useEffect(() => {
-        fetchManagers();
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role');
+        setRoleFilter(role === 'product_manager' || role === 'order_manager' ? role : 'all');
     }, []);
 
     const fetchManagers = async () => {
@@ -120,7 +118,7 @@ export default function ManagerAccountsPage() {
 
     const handleRoleFilterChange = (value: 'all' | ManagerRole) => {
         setRoleFilter(value);
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
         if (value === 'all') {
             params.delete('role');
         } else {

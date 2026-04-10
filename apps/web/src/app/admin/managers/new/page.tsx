@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiPost } from '@/utils/api';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -24,20 +24,26 @@ const roleOptions: Array<{ value: ManagerRole; label: string; description: strin
 
 export default function CreateManagerAccountPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const initialRole = searchParams.get('role') === 'order_manager' ? 'order_manager' : 'product_manager';
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [createdEmail, setCreatedEmail] = useState('');
-    const [createdRole, setCreatedRole] = useState<ManagerRole>(initialRole);
+    const [createdRole, setCreatedRole] = useState<ManagerRole>('product_manager');
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
         lastName: '',
         phone: '',
-        role: initialRole as ManagerRole,
+        role: 'product_manager' as ManagerRole,
     });
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role') === 'order_manager' ? 'order_manager' : 'product_manager';
+        setCreatedRole(role);
+        setFormData((current) => ({ ...current, role }));
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -205,7 +211,7 @@ export default function CreateManagerAccountPage() {
                             <button
                                 onClick={() => {
                                     setShowSuccessModal(false);
-                                    setFormData({ email: '', firstName: '', lastName: '', phone: '', role: initialRole });
+                                    setFormData({ email: '', firstName: '', lastName: '', phone: '', role: formData.role });
                                 }}
                                 className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                             >
