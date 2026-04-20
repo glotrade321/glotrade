@@ -41,6 +41,13 @@ router.get("/products", (req: any, res: any, next: any) => {
   return requireApprovedVendor()(req, res, next);
 }, controller.listProducts);
 
+router.get("/products/manager-overview", (req: any, res: any, next: any) => {
+  if (req.user.role === 'product_manager' || req.user.role === 'admin' || req.user.isSuperAdmin) {
+    return next();
+  }
+  return requireApprovedVendor()(req, res, next);
+}, controller.productManagerOverview);
+
 router.post("/products", (req: any, res: any, next: any) => {
   if (req.user.role === 'product_manager' || req.user.role === 'admin' || req.user.isSuperAdmin) {
     return next();
@@ -96,4 +103,3 @@ router.get("/inventory/movements/:productId", requireApprovedVendor(), controlle
 router.post("/inventory/bulk-update", requireApprovedVendor(), controller.bulkUpdateStock);
 
 export default router;
-

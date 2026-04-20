@@ -427,7 +427,7 @@ export class VendorController {
 
       const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
         ? {}
-        : { seller: req.user.id };
+        : { seller: new mongoose.Types.ObjectId(req.user.id) };
 
       const products = await Product.find(query).sort({ createdAt: -1 });
       res.json({ status: "success", data: products });
@@ -435,6 +435,172 @@ export class VendorController {
       next(e as any);
     }
   };
+
+  productManagerOverview = async (req: any, res: any, next: any) => {
+    try {
+      if (!req.user) throw new ValidationError("Authentication required");
+
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const weekAgo = new Date(now);
+      weekAgo.setDate(now.getDate() - 7);
+      const staleDate = new Date(now);
+      staleDate.setDate(now.getDate() - 30);
+
+      const lowStockThreshold = Math.min(Math.max(Number(req.query.lowStockThreshold) || 5, 1), 100);
+      const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
+        ? {}
+        : { seller: new mongoose.Types.ObjectId(req.user.id) };
+
+      const [overview] = await Product.aggregate([
+        { $match: query },
+        {
+          $facet: {
+            summary: [
+              {
+                $group: {
+                  _id: null,
+                  totalProducts: { $sum: 1 },
+                  activeProducts: { $sum: { $cond: [{ $eq: ["$status", "active"] }, 1, 0] } },
+                  suspendedProducts: { $sum: { $cond: [{ $eq: ["$status", "suspended"] }, 1, 0] } },
+                  soldProducts: { $sum: { $cond: [{ $eq: ["$status", "sold"] }, 1, 0] } },
+                  outOfStock: { $sum: { $cond: [{ $lte: ["$quantity", 0] }, 1, 0] } },
+                  lowStock: {
+                    $sum: {
+                      $cond: [
+                        { $and: [{ $gt: ["$quantity", 0] }, { $lte: ["$quantity", lowStockThreshold] }] },
+                        1,
+                        0,
+                      ],
+                    },
+                  },
+                  addedThisMonth: { $sum: { $cond: [{ $gte: ["$createdAt", startOfMonth] }, 1, 0] } },
+                  updatedThisWeek: { $sum: { $cond: [{ $gte: ["$updatedAt", weekAgo] }, 1, 0] } },
+                  needsImages: {
+                    $sum: {
+                      $cond: [{ $eq: [{ $size: { $ifNull: ["$images", []] } }, 0] }, 1, 0],
+                    },
+                  },
+                  needsDescription: {
+                    $sum: {
+                      $cond: [
+                        { $lt: [{ $strLenCP: { $trim: { input: { $ifNull: ["$description", ""] } } } }, 40] },
+                        1,
+                        0,
+                      ],
+                    },
+                  },
+                  staleProducts: { $sum: { $cond: [{ $lt: ["$updatedAt", staleDate] }, 1, 0] } },
+                  totalViews: { $sum: { $ifNull: ["$views", 0] } },
+                  inventoryUnits: { $sum: { $ifNull: ["$quantity", 0] } },
+                },
+              },
+              { $project: { _id: 0 } },
+            ],
+            attentionQueue: [
+              {
+                $addFields: {
+                  missingImages: { $eq: [{ $size: { $ifNull: ["$images", []] } }, 0] },
+                  shortDescription: { $lt: [{ $strLenCP: { $trim: { input: { $ifNull: ["$description", ""] } } } }, 40] },
+                  stale: { $lt: ["$updatedAt", staleDate] },
+                },
+              },
+              {
+                $match: {
+                  $or: [
+                    { quantity: { $lte: lowStockThreshold } },
+                    { missingImages: true },
+                    { shortDescription: true },
+                    { stale: true },
+                    { status: { $ne: "active" } },
+                  ],
+                },
+              },
+              { $sort: { quantity: 1, updatedAt: 1 } },
+              { $limit: 8 },
+              {
+                $project: {
+                  _id: 1,
+                  title: 1,
+                  status: 1,
+                  quantity: 1,
+                  price: 1,
+                  currency: 1,
+                  images: 1,
+                  updatedAt: 1,
+                  issue: {
+                    $switch: {
+                      branches: [
+                        { case: { $lte: ["$quantity", 0] }, then: "Out of stock" },
+                        { case: { $lte: ["$quantity", lowStockThreshold] }, then: "Low stock" },
+                        { case: "$missingImages", then: "Needs images" },
+                        { case: "$shortDescription", then: "Improve description" },
+                        { case: { $ne: ["$status", "active"] }, then: "Not active" },
+                        { case: "$stale", then: "Review listing" },
+                      ],
+                      default: "Needs review",
+                    },
+                  },
+                },
+              },
+            ],
+            recentUpdates: [
+              { $sort: { updatedAt: -1 } },
+              { $limit: 8 },
+              {
+                $project: {
+                  _id: 1,
+                  title: 1,
+                  status: 1,
+                  quantity: 1,
+                  price: 1,
+                  currency: 1,
+                  images: 1,
+                  updatedAt: 1,
+                },
+              },
+            ],
+            categoryBreakdown: [
+              { $group: { _id: "$category", count: { $sum: 1 } } },
+              { $sort: { count: -1 } },
+              { $limit: 8 },
+              { $project: { _id: 0, category: "$_id", count: 1 } },
+            ],
+          },
+        },
+      ]);
+
+      const summary = overview?.summary?.[0] || {
+        totalProducts: 0,
+        activeProducts: 0,
+        suspendedProducts: 0,
+        soldProducts: 0,
+        outOfStock: 0,
+        lowStock: 0,
+        addedThisMonth: 0,
+        updatedThisWeek: 0,
+        needsImages: 0,
+        needsDescription: 0,
+        staleProducts: 0,
+        totalViews: 0,
+        inventoryUnits: 0,
+      };
+
+      res.json({
+        status: "success",
+        data: {
+          summary,
+          attentionQueue: overview?.attentionQueue || [],
+          recentUpdates: overview?.recentUpdates || [],
+          categoryBreakdown: overview?.categoryBreakdown || [],
+          lowStockThreshold,
+        },
+      });
+    } catch (e) {
+      next(e as any);
+    }
+  };
+
   createProduct = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
@@ -643,4 +809,3 @@ export class VendorController {
 }
 
 export default new VendorController();
-

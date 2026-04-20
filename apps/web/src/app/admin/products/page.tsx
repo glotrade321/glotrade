@@ -11,8 +11,12 @@ import {
     Trash2,
     Eye,
     Download,
-    Filter,
-    MoreVertical
+    AlertTriangle,
+    CheckCircle2,
+    Clock3,
+    Image as ImageIcon,
+    Layers,
+    TrendingUp
 } from "lucide-react";
 import Link from "next/link";
 import { getOptimizedImageUrl } from "@/utils/image";
@@ -39,6 +43,40 @@ interface Product {
     };
 }
 
+interface ProductOverviewItem {
+    _id: string;
+    title: string;
+    status: string;
+    quantity: number;
+    price: number;
+    currency: string;
+    images?: string[];
+    updatedAt?: string;
+    issue?: string;
+}
+
+interface ProductOverview {
+    summary: {
+        totalProducts: number;
+        activeProducts: number;
+        suspendedProducts: number;
+        soldProducts: number;
+        outOfStock: number;
+        lowStock: number;
+        addedThisMonth: number;
+        updatedThisWeek: number;
+        needsImages: number;
+        needsDescription: number;
+        staleProducts: number;
+        totalViews: number;
+        inventoryUnits: number;
+    };
+    attentionQueue: ProductOverviewItem[];
+    recentUpdates: ProductOverviewItem[];
+    categoryBreakdown: Array<{ category?: string; count: number }>;
+    lowStockThreshold: number;
+}
+
 export default function AdminProductsPage() {
     const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
@@ -50,6 +88,8 @@ export default function AdminProductsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; product: Product | null }>({ isOpen: false, product: null });
+    const [overview, setOverview] = useState<ProductOverview | null>(null);
+    const [overviewLoading, setOverviewLoading] = useState(true);
     const itemsPerPage = 20;
 
     // Fetch products
@@ -70,9 +110,27 @@ export default function AdminProductsPage() {
         }
     };
 
+    const fetchOverview = async () => {
+        setOverviewLoading(true);
+        try {
+            const response = await apiGet<{ status: string; data: ProductOverview }>('/api/v1/vendors/products/manager-overview');
+            if (response.status === 'success') {
+                setOverview(response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching product overview:", error);
+        } finally {
+            setOverviewLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
     }, [currentPage]);
+
+    useEffect(() => {
+        fetchOverview();
+    }, []);
 
     // Filter products
     useEffect(() => {
@@ -112,6 +170,7 @@ export default function AdminProductsPage() {
             await apiDelete(`/api/v1/vendors/products/${deleteModal.product._id}`);
             closeDeleteModal();
             fetchProducts();
+            fetchOverview();
         } catch (error: any) {
             console.error("Error deleting product:", error);
             alert("Failed to delete product: " + error.message);
@@ -148,8 +207,60 @@ export default function AdminProductsPage() {
         });
     };
 
+    const formatCompactNumber = (value: number) => {
+        return new Intl.NumberFormat('en-US', {
+            notation: value >= 10000 ? 'compact' : 'standard',
+            maximumFractionDigits: 1,
+        }).format(value || 0);
+    };
+
+    const formatShortDate = (dateString?: string) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return "N/A";
+
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
     // Get unique categories from products
     const categories = Array.from(new Set(products.map(p => p.category)));
+    const summary = overview?.summary;
+    const productHealthIssues = (summary?.outOfStock || 0) + (summary?.lowStock || 0) + (summary?.needsImages || 0) + (summary?.needsDescription || 0);
+    const activeRate = summary?.totalProducts ? Math.round((summary.activeProducts / summary.totalProducts) * 100) : 0;
+    const maxCategoryCount = Math.max(...(overview?.categoryBreakdown || []).map((item) => item.count), 1);
+    const metricCards = summary ? [
+        {
+            label: "Total Products",
+            value: formatCompactNumber(summary.totalProducts),
+            helper: `${formatCompactNumber(summary.inventoryUnits)} units in inventory`,
+            icon: <Package size={20} />,
+            className: "bg-blue-50 text-blue-700 border-blue-100",
+        },
+        {
+            label: "Active Rate",
+            value: `${activeRate}%`,
+            helper: `${formatCompactNumber(summary.activeProducts)} active listings`,
+            icon: <CheckCircle2 size={20} />,
+            className: "bg-emerald-50 text-emerald-700 border-emerald-100",
+        },
+        {
+            label: "Needs Attention",
+            value: formatCompactNumber(productHealthIssues),
+            helper: `${summary.outOfStock} out, ${summary.lowStock} low stock`,
+            icon: <AlertTriangle size={20} />,
+            className: "bg-amber-50 text-amber-700 border-amber-100",
+        },
+        {
+            label: "This Month",
+            value: formatCompactNumber(summary.addedThisMonth),
+            helper: `${summary.updatedThisWeek} updated this week`,
+            icon: <TrendingUp size={20} />,
+            className: "bg-indigo-50 text-indigo-700 border-indigo-100",
+        },
+    ] : [];
 
     return (
         <AdminLayout>
@@ -169,6 +280,164 @@ export default function AdminProductsPage() {
                         <Plus size={20} />
                         Add Product
                     </Link>
+                </div>
+
+                {/* Product Manager Overview */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-4">
+                        <div>
+                            <h2 className="text-lg font-semibold text-gray-900">Product Overview</h2>
+                            <p className="text-sm text-gray-600">Fast catalog health checks and recent progress.</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={fetchOverview}
+                            disabled={overviewLoading}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                        >
+                            Refresh
+                        </button>
+                    </div>
+
+                    {overviewLoading && !overview ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                            {[0, 1, 2, 3].map((item) => (
+                                <div key={item} className="h-32 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                    <div className="h-4 w-24 rounded bg-gray-100" />
+                                    <div className="mt-5 h-8 w-20 rounded bg-gray-100" />
+                                    <div className="mt-4 h-3 w-36 rounded bg-gray-100" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : overview ? (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                                {metricCards.map((card) => (
+                                    <div key={card.label} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-500">{card.label}</p>
+                                                <p className="mt-2 text-3xl font-bold text-gray-900">{card.value}</p>
+                                            </div>
+                                            <div className={`rounded-lg border p-2 ${card.className}`}>
+                                                {card.icon}
+                                            </div>
+                                        </div>
+                                        <p className="mt-4 text-sm text-gray-600">{card.helper}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-1">
+                                    <div className="flex items-center gap-2">
+                                        <AlertTriangle size={18} className="text-amber-600" />
+                                        <h3 className="font-semibold text-gray-900">Attention Queue</h3>
+                                    </div>
+                                    <div className="mt-4 space-y-3">
+                                        {overview.attentionQueue.length === 0 ? (
+                                            <p className="text-sm text-gray-500">No urgent product issues found.</p>
+                                        ) : overview.attentionQueue.slice(0, 5).map((item) => (
+                                            <Link key={item._id} href={`/admin/products/${item._id}`} className="flex items-center gap-3 rounded-lg border border-gray-100 p-3 transition-colors hover:bg-gray-50">
+                                                <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                                                    {item.images?.[0] ? (
+                                                        <img src={getOptimizedImageUrl(item.images[0], { width: 90, quality: 60 })} alt={item.title} className="h-full w-full object-cover" />
+                                                    ) : (
+                                                        <div className="flex h-full w-full items-center justify-center">
+                                                            <ImageIcon size={18} className="text-gray-400" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="truncate text-sm font-medium text-gray-900">{item.title}</p>
+                                                    <p className="text-xs text-amber-700">{item.issue}</p>
+                                                </div>
+                                                <span className="text-xs font-semibold text-gray-500">{item.quantity}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                    <div className="flex items-center gap-2">
+                                        <Clock3 size={18} className="text-blue-600" />
+                                        <h3 className="font-semibold text-gray-900">Recent Updates</h3>
+                                    </div>
+                                    <div className="mt-4 space-y-3">
+                                        {overview.recentUpdates.slice(0, 5).map((item) => (
+                                            <div key={item._id} className="flex items-center justify-between gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50">
+                                                <Link href={`/marketplace/${item._id}`} target="_blank" className="min-w-0 flex-1">
+                                                    <p className="truncate text-sm font-medium text-gray-900">{item.title}</p>
+                                                    <p className="text-xs text-gray-500">{item.status} · {item.quantity} units · preview</p>
+                                                </Link>
+                                                <div className="flex flex-shrink-0 items-center gap-3">
+                                                    <span className="text-xs text-gray-500">{formatShortDate(item.updatedAt)}</span>
+                                                    <Link
+                                                        href={`/admin/products/${item._id}`}
+                                                        className="text-green-600 hover:text-green-900"
+                                                        title="Edit Product"
+                                                    >
+                                                        <Edit size={16} />
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {overview.recentUpdates.length === 0 && (
+                                            <p className="text-sm text-gray-500">No recent product updates yet.</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                    <div className="flex items-center gap-2">
+                                        <Layers size={18} className="text-indigo-600" />
+                                        <h3 className="font-semibold text-gray-900">Category Spread</h3>
+                                    </div>
+                                    <div className="mt-4 space-y-3">
+                                        {overview.categoryBreakdown.length === 0 ? (
+                                            <p className="text-sm text-gray-500">No category data available.</p>
+                                        ) : overview.categoryBreakdown.map((item) => (
+                                            <div key={item.category || 'Uncategorized'}>
+                                                <div className="flex items-center justify-between gap-3 text-sm">
+                                                    <span className="truncate font-medium text-gray-700">{item.category || 'Uncategorized'}</span>
+                                                    <span className="text-gray-500">{item.count}</span>
+                                                </div>
+                                                <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-100">
+                                                    <div
+                                                        className="h-full rounded-full bg-indigo-500"
+                                                        style={{ width: `${Math.max(8, Math.round((item.count / maxCategoryCount) * 100))}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="rounded-lg border border-gray-200 bg-white p-4">
+                                    <p className="text-xs font-medium text-gray-500">Needs Images</p>
+                                    <p className="mt-1 text-xl font-bold text-gray-900">{overview.summary.needsImages}</p>
+                                </div>
+                                <div className="rounded-lg border border-gray-200 bg-white p-4">
+                                    <p className="text-xs font-medium text-gray-500">Needs Description</p>
+                                    <p className="mt-1 text-xl font-bold text-gray-900">{overview.summary.needsDescription}</p>
+                                </div>
+                                <div className="rounded-lg border border-gray-200 bg-white p-4">
+                                    <p className="text-xs font-medium text-gray-500">Review Old Listings</p>
+                                    <p className="mt-1 text-xl font-bold text-gray-900">{overview.summary.staleProducts}</p>
+                                </div>
+                                <div className="rounded-lg border border-gray-200 bg-white p-4">
+                                    <p className="text-xs font-medium text-gray-500">Total Views</p>
+                                    <p className="mt-1 text-xl font-bold text-gray-900">{formatCompactNumber(overview.summary.totalViews)}</p>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="rounded-xl border border-gray-200 bg-white p-5 text-sm text-gray-600 shadow-sm">
+                            Product overview is unavailable right now.
+                        </div>
+                    )}
                 </div>
 
                 {/* Filters and Search */}
