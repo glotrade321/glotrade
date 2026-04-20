@@ -4,9 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import {
     Facebook,
-    Twitter,
     Instagram,
-    Linkedin,
+    Music2,
+    Youtube,
     Mail,
     Phone,
     MapPin,
@@ -17,6 +17,14 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
+
+const socialLinks = {
+    facebook: "https://www.facebook.com/share/18cWJ3yrjz/?mibextid=wwXIfr",
+    x: "https://x.com/glotradeproduct?s=21",
+    instagram: "https://www.instagram.com/glotrade_platform?igsh=cXJ6c2t6cGU2NzFq",
+    youtube: "https://www.youtube.com/@GLOTRADE.online/videos",
+    tiktok: "https://www.tiktok.com/@glotradeproducts?_r=1&_t=ZS-95hYR9R3X1N",
+};
 
 export default function Footer() {
     const [locale, setLocale] = useState<Locale>("en");
@@ -57,17 +65,20 @@ export default function Footer() {
                             {translate(locale, "footer.desc")}
                         </p>
                         <div className="flex items-center gap-4">
-                            <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
+                            <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label="Glotrade on Facebook" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
                                 <Facebook size={18} />
                             </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
-                                <Twitter size={18} />
+                            <a href={socialLinks.x} target="_blank" rel="noopener noreferrer" aria-label="Glotrade on X" className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white/5 text-sm font-bold hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
+                                X
                             </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
+                            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label="Glotrade on Instagram" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
                                 <Instagram size={18} />
                             </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
-                                <Linkedin size={18} />
+                            <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" aria-label="Glotrade on YouTube" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
+                                <Youtube size={18} />
+                            </a>
+                            <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer" aria-label="Glotrade on TikTok" className="p-2 bg-white/5 rounded-full hover:bg-[#2EA5FF] hover:text-white transition-all duration-300">
+                                <Music2 size={18} />
                             </a>
                         </div>
                     </div>
@@ -120,11 +131,18 @@ export default function Footer() {
                         <div className="space-y-3 pt-2">
                             <div className="flex items-start gap-3 text-xs text-neutral-400">
                                 <MapPin size={16} className="text-[#2EA5FF] shrink-0" />
-                                <span>Lagos, Nigeria</span>
+                                <span>Lagos & Abuja, Nigeria</span>
                             </div>
-                            <div className="flex items-center gap-3 text-xs text-neutral-400">
+                            <div className="flex items-start gap-3 text-xs text-neutral-400">
                                 <Phone size={16} className="text-[#2EA5FF] shrink-0" />
-                                <span>(+234) 902-900-4712</span>
+                                <div className="space-y-1">
+                                    <a href="tel:+2349029004712" className="block hover:text-[#2EA5FF] transition-colors">
+                                        Lagos: (+234)902-900-4712
+                                    </a>
+                                    <a href="tel:+2347024600924" className="block hover:text-[#2EA5FF] transition-colors">
+                                        Abuja: (+234)702-460-0924
+                                    </a>
+                                </div>
                             </div>
                             <div className="flex items-center gap-3 text-xs text-neutral-400">
                                 <Mail size={16} className="text-[#2EA5FF] shrink-0" />

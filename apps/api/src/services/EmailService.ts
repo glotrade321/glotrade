@@ -119,7 +119,11 @@ export class EmailService {
     </div>
     <div class="footer">
       <div class="social-links">
-        <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Instagram</a>
+        <a href="https://www.facebook.com/share/18cWJ3yrjz/?mibextid=wwXIfr">Facebook</a> |
+        <a href="https://x.com/glotradeproduct?s=21">X</a> |
+        <a href="https://www.instagram.com/glotrade_platform?igsh=cXJ6c2t6cGU2NzFq">Instagram</a> |
+        <a href="https://www.youtube.com/@GLOTRADE.online/videos">YouTube</a> |
+        <a href="https://www.tiktok.com/@glotradeproducts?_r=1&_t=ZS-95hYR9R3X1N">TikTok</a>
       </div>
       <p>&copy; ${new Date().getFullYear()} Glotrade International. All rights reserved.</p>
       <p>Lagos, Nigeria</p>

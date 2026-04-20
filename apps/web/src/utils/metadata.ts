@@ -115,10 +115,11 @@ export function generateOrganizationSchema() {
         url: defaultMetadata.siteUrl,
         logo: `${defaultMetadata.siteUrl}${defaultMetadata.defaultImage}`,
         sameAs: [
-            // Add social media URLs here
-            'https://facebook.com/glotrade',
-            'https://twitter.com/glotrade',
-            'https://instagram.com/glotrade',
+            'https://www.youtube.com/@GLOTRADE.online/videos',
+            'https://www.instagram.com/glotrade_platform?igsh=cXJ6c2t6cGU2NzFq',
+            'https://www.tiktok.com/@glotradeproducts?_r=1&_t=ZS-95hYR9R3X1N',
+            'https://www.facebook.com/share/18cWJ3yrjz/?mibextid=wwXIfr',
+            'https://x.com/glotradeproduct?s=21',
         ],
     };
 }

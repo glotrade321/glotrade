@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     title: 'GloTrade - Your Trusted African E-Commerce Marketplace',
     description: 'Shop the best products across Africa with GloTrade. Secure payments, fast delivery, and quality guaranteed.',
     images: ['/glotrade_logo.png'],
-    creator: '@glotrade',
+    creator: '@glotradeproduct',
   },
   robots: {
     index: true,
