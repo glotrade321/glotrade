@@ -1,5 +1,5 @@
 import express from "express";
-import { requireAuth, requireAdmin } from "../middleware/auth";
+import { requireAuth, requireInsuredPartnersManager } from "../middleware/auth";
 import insuranceController from "../controllers/insurance.controller";
 import commodityController from "../controllers/commodity.controller";
 
@@ -25,19 +25,19 @@ router.get("/certificate/:tpiaId", insuranceController.getInsuranceCertificate);
  * POST /api/insurance/claim/:tpiaId
  * File an insurance claim (Admin)
  */
-router.post("/claim/:tpiaId", requireAdmin, insuranceController.fileInsuranceClaim);
+router.post("/claim/:tpiaId", requireInsuredPartnersManager, insuranceController.fileInsuranceClaim);
 
 /**
  * PUT /api/insurance/:insuranceId/claim/:claimNumber
  * Process an insurance claim (Admin)
  */
-router.put("/:insuranceId/claim/:claimNumber", requireAdmin, insuranceController.processInsuranceClaim);
+router.put("/:insuranceId/claim/:claimNumber", requireInsuredPartnersManager, insuranceController.processInsuranceClaim);
 
 /**
  * GET /api/insurance/claims
  * Get all insurance claims (Admin)
  */
-router.get("/claims", requireAdmin, insuranceController.getAllClaims);
+router.get("/claims", requireInsuredPartnersManager, insuranceController.getAllClaims);
 
 // ============================================
 // Commodity Routes
@@ -47,13 +47,13 @@ router.get("/claims", requireAdmin, insuranceController.getAllClaims);
  * PUT /api/commodity/:commodityId/price
  * Update commodity price (Admin)
  */
-router.put("/commodity/:commodityId/price", requireAdmin, commodityController.updateCommodityPrice);
+router.put("/commodity/:commodityId/price", requireInsuredPartnersManager, commodityController.updateCommodityPrice);
 
 /**
  * POST /api/commodity/prices/bulk
  * Bulk update commodity prices (Admin)
  */
-router.post("/commodity/prices/bulk", requireAdmin, commodityController.bulkUpdatePrices);
+router.post("/commodity/prices/bulk", requireInsuredPartnersManager, commodityController.bulkUpdatePrices);
 
 /**
  * GET /api/commodity/prices

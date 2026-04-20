@@ -191,3 +191,27 @@ export const orderManagerAuth = (req: any, res: any, next: any) => {
     next(error);
   }
 };
+
+/**
+ * Insured Partners Manager Authentication Middleware
+ *
+ * Allows admin, super admin, and insured_partners_manager roles to access
+ * Insured Partners management endpoints.
+ */
+export const insuredPartnersManagerAuth = (req: any, res: any, next: any) => {
+  try {
+    if (!req.user) {
+      throw new ForbiddenError("Authentication required");
+    }
+
+    const hasAccess = req.user.role === 'admin' || req.user.role === 'insured_partners_manager' || req.user.isSuperAdmin === true;
+
+    if (!hasAccess) {
+      throw new ForbiddenError("Insured Partners management access required. Insufficient privileges.");
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

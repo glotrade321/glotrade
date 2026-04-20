@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
-import { CreateManagerAccountData, ManagerAccountService, ManagerRole } from '../services/ManagerAccountService';
+import { CreateManagerAccountData, MANAGER_ROLES, ManagerAccountService, ManagerRole } from '../services/ManagerAccountService';
 
 const managerAccountService = new ManagerAccountService();
-const VALID_MANAGER_ROLES: ManagerRole[] = ['product_manager', 'order_manager'];
 
 function isValidManagerRole(role: string): role is ManagerRole {
-    return VALID_MANAGER_ROLES.includes(role as ManagerRole);
+    return MANAGER_ROLES.includes(role as ManagerRole);
 }
 
 export class ManagerAccountController {

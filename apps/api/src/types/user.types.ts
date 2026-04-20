@@ -1,7 +1,7 @@
 // apps/api/src/types/user.types.ts
 import { Document, Model } from "mongoose";
 
-export type UserRole = "buyer" | "seller" | "admin" | "product_manager" | "order_manager";
+export type UserRole = "buyer" | "seller" | "admin" | "product_manager" | "order_manager" | "insured_partners_manager";
 
 export interface IUserBase {
   address?: string;

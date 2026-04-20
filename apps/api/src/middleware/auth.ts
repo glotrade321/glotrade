@@ -212,6 +212,24 @@ export const requireAdmin = (req: any, res: any, next: any) => {
   next();
 };
 
+export const requireInsuredPartnersManager = (req: any, res: any, next: any) => {
+  if (!req.user) {
+    return res.status(401).json({
+      status: "error",
+      message: "Authentication required",
+    });
+  }
+
+  if (req.user.role !== "admin" && req.user.role !== "insured_partners_manager" && !req.user.isSuperAdmin) {
+    return res.status(403).json({
+      status: "error",
+      message: "Insured Partners management access required",
+    });
+  }
+
+  next();
+};
+
 // Middleware to require super admin role
 export const requireSuperAdmin = (req: any, res: any, next: any) => {
   if (!req.user) {

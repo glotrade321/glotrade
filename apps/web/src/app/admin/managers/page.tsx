@@ -7,7 +7,7 @@ import { apiDelete, apiGet, apiPost } from '@/utils/api';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/common/Modal';
 
-type ManagerRole = 'product_manager' | 'order_manager';
+type ManagerRole = 'product_manager' | 'order_manager' | 'insured_partners_manager';
 
 interface ManagerAccount {
     _id: string;
@@ -28,6 +28,15 @@ interface ManagerAccount {
 const roleLabel: Record<ManagerRole, string> = {
     product_manager: 'Product Manager',
     order_manager: 'Order Manager',
+    insured_partners_manager: 'Insured Partners Manager',
+};
+
+const managerRoles: ManagerRole[] = ['product_manager', 'order_manager', 'insured_partners_manager'];
+
+const roleBadgeClass: Record<ManagerRole, string> = {
+    product_manager: 'bg-blue-100 text-blue-800',
+    order_manager: 'bg-amber-100 text-amber-800',
+    insured_partners_manager: 'bg-emerald-100 text-emerald-800',
 };
 
 export default function ManagerAccountsPage() {
@@ -48,7 +57,7 @@ export default function ManagerAccountsPage() {
         if (typeof window === 'undefined') return;
         const params = new URLSearchParams(window.location.search);
         const role = params.get('role');
-        setRoleFilter(role === 'product_manager' || role === 'order_manager' ? role : 'all');
+        setRoleFilter(managerRoles.includes(role as ManagerRole) ? role as ManagerRole : 'all');
     }, []);
 
     const fetchManagers = async () => {
@@ -145,7 +154,7 @@ export default function ManagerAccountsPage() {
                 <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Manager Accounts</h1>
-                        <p className="text-gray-600 mt-1">Create and manage Product Managers and Order Managers</p>
+                        <p className="text-gray-600 mt-1">Create and manage Product, Order, and Insured Partners Managers</p>
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                         <select
@@ -156,6 +165,7 @@ export default function ManagerAccountsPage() {
                             <option value="all">All Manager Roles</option>
                             <option value="product_manager">Product Managers</option>
                             <option value="order_manager">Order Managers</option>
+                            <option value="insured_partners_manager">Insured Partners Managers</option>
                         </select>
                         <Link
                             href={roleFilter === 'all' ? '/admin/managers/new' : `/admin/managers/new?role=${roleFilter}`}
@@ -178,7 +188,7 @@ export default function ManagerAccountsPage() {
                 {filteredManagers.length === 0 ? (
                     <div className="bg-white rounded-lg shadow-md p-12 text-center">
                         <h3 className="mt-4 text-lg font-medium text-gray-900">No Manager Accounts</h3>
-                        <p className="mt-2 text-gray-600">Get started by creating a Product Manager or Order Manager account.</p>
+                        <p className="mt-2 text-gray-600">Get started by creating a Product, Order, or Insured Partners Manager account.</p>
                         <Link
                             href={roleFilter === 'all' ? '/admin/managers/new' : `/admin/managers/new?role=${roleFilter}`}
                             className="mt-6 inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
@@ -221,7 +231,7 @@ export default function ManagerAccountsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${manager.role === 'product_manager' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'}`}>
+                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${roleBadgeClass[manager.role]}`}>
                                                 {roleLabel[manager.role]}
                                             </span>
                                         </td>
@@ -260,7 +270,7 @@ export default function ManagerAccountsPage() {
 
                 <div className="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
                     <p className="text-sm text-blue-700">
-                        <strong>Manager Access Scope:</strong> Product Managers can only access product management. Order Managers can only access order management. They will not see other admin sections.
+                        <strong>Manager Access Scope:</strong> Product Managers can only access product management. Order Managers can only access order management. Insured Partners Managers can only access Insured Partners management. They will not see other admin sections.
                     </p>
                 </div>
             </div>

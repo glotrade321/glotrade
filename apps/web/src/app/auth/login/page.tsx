@@ -58,6 +58,10 @@ function LoginForm() {
         router.replace('/admin/orders');
         return;
       }
+      if (json.data.role === 'insured_partners_manager') {
+        router.replace('/admin/gdip');
+        return;
+      }
 
       const next = search.get("next") || "/";
       router.replace(next);

@@ -99,12 +99,12 @@ export default function UpperHeader() {
                       <Phone size={15} className="shrink-0 text-white/85" />
                     </a>
                     <a
-                      href="tel:+2347044600942"
+                      href="tel:+2347044600924"
                       className="flex items-center justify-between rounded-xl border border-white/15 bg-[#2497ee] px-3 py-3 transition-colors hover:bg-[#1f8fe3]"
                     >
                       <span>
                         <span className="block text-[11px] uppercase tracking-[0.18em] text-white/70">Abuja</span>
-                        <span className="block text-sm font-semibold">(+234)704-460-0942</span>
+                        <span className="block text-sm font-semibold">(+234)704-460-0924</span>
                       </span>
                       <Phone size={15} className="shrink-0 text-white/85" />
                     </a>

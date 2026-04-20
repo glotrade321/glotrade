@@ -24,6 +24,20 @@ import {
 } from "lucide-react";
 import { logout } from "@/utils/auth";
 
+const managerWorkspaceByRole: Record<string, string> = {
+  product_manager: "/admin/products",
+  order_manager: "/admin/orders",
+  insured_partners_manager: "/admin/gdip",
+};
+
+const managerRoleLabels: Record<string, string> = {
+  product_manager: "Product Manager",
+  order_manager: "Order Manager",
+  insured_partners_manager: "Insured Partners Manager",
+};
+
+const isManagerRole = (role?: string) => Boolean(role && managerWorkspaceByRole[role]);
+
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
@@ -97,7 +111,7 @@ const adminMenuItems: MenuItem[] = [
     label: "Insured Partners",
     href: "/admin/gdip",
     icon: <Shield size={20} />,
-    adminOnly: true
+    allowedRoles: ["admin", "insured_partners_manager"]
   },
   {
     label: "Analytics",
@@ -187,7 +201,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           setUser(user);
 
           // Allow admin, super admin, and manager roles
-          if (user.role !== "admin" && !user.isSuperAdmin && user.role !== "product_manager" && user.role !== "order_manager") {
+          if (user.role !== "admin" && !user.isSuperAdmin && !isManagerRole(user.role)) {
             router.push("/dashboard");
             return;
           }
@@ -205,7 +219,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     if (!user || user.isSuperAdmin || user.role === "admin") return;
 
-    const allowedPath = user.role === "product_manager" ? "/admin/products" : "/admin/orders";
+    const allowedPath = managerWorkspaceByRole[user.role] || "/admin";
     if (!pathname.startsWith(allowedPath)) {
       router.replace(allowedPath);
     }
@@ -302,7 +316,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   {user.username || user.firstName || "Admin User"}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {user.isSuperAdmin ? "Super Admin" : user.role === "product_manager" ? "Product Manager" : user.role === "order_manager" ? "Order Manager" : "Administrator"}
+                  {user.isSuperAdmin ? "Super Admin" : managerRoleLabels[user.role] || "Administrator"}
                 </p>
               </div>
             </div>
@@ -318,7 +332,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 .filter(item => {
                   // Filter menu items based on user role
                   if (item.superAdminOnly && !user.isSuperAdmin) return false;
-                  if (item.adminOnly && (user.role === 'product_manager' || user.role === 'order_manager')) return false;
+                  if (item.adminOnly && isManagerRole(user.role)) return false;
                   if (item.allowedRoles && !user.isSuperAdmin && user.role !== 'admin' && !item.allowedRoles.includes(user.role)) return false;
                   return true;
                 })
@@ -339,7 +353,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {/* Footer */}
           <div className="p-4 border-t border-gray-200 bg-white">
             <div className="space-y-2">
-              {user.role !== 'product_manager' && user.role !== 'order_manager' && (
+              {!isManagerRole(user.role) && (
                 <>
                   <Link
                     href="/"

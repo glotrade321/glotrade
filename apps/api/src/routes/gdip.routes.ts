@@ -1,6 +1,6 @@
 import express from "express";
 import GDIPController from "../controllers/gdip.controller";
-import { requireAuth, requireAdmin } from "../middleware/auth";
+import { requireAuth, requireInsuredPartnersManager } from "../middleware/auth";
 
 const router = express.Router();
 
@@ -70,76 +70,76 @@ router.get("/forming-gdc", requireAuth, GDIPController.getFormingGDC);
  * @desc    Create a new trade cycle for a GDC
  * @access  Private (Admin only)
  */
-router.post("/admin/cycle/create", requireAuth, requireAdmin, GDIPController.createTradeCycle);
+router.post("/admin/cycle/create", requireAuth, requireInsuredPartnersManager, GDIPController.createTradeCycle);
 
 /**
  * @route   POST /api/gdip/admin/cycle/:cycleId/complete
  * @desc    Complete a trade cycle with profit/loss results
  * @access  Private (Admin only)
  */
-router.post("/admin/cycle/:cycleId/complete", requireAuth, requireAdmin, GDIPController.completeTradeCycle);
+router.post("/admin/cycle/:cycleId/complete", requireAuth, requireInsuredPartnersManager, GDIPController.completeTradeCycle);
 
 /**
  * @route   POST /api/gdip/admin/cycle/:cycleId/distribute
  * @desc    Distribute profits to TPIA holders
  * @access  Private (Admin only)
  */
-router.post("/admin/cycle/:cycleId/distribute", requireAuth, requireAdmin, GDIPController.distributeProfits);
+router.post("/admin/cycle/:cycleId/distribute", requireAuth, requireInsuredPartnersManager, GDIPController.distributeProfits);
 
 /**
  * @route   GET /api/gdip/admin/gdcs
  * @desc    Get all GDCs (admin view)
  * @access  Private (Admin only)
  */
-router.get("/admin/gdcs", requireAuth, requireAdmin, GDIPController.getAllGDCs);
+router.get("/admin/gdcs", requireAuth, requireInsuredPartnersManager, GDIPController.getAllGDCs);
 
 /**
  * @route   GET /api/gdip/admin/tpias
  * @desc    Get all TPIAs (admin view)
  * @access  Private (Admin only)
  */
-router.get("/admin/tpias", requireAuth, requireAdmin, GDIPController.getAllTPIAs);
+router.get("/admin/tpias", requireAuth, requireInsuredPartnersManager, GDIPController.getAllTPIAs);
 
 /**
  * @route   GET /api/gdip/admin/cycles
  * @desc    Get all trade cycles (admin view)
  * @access  Private (Admin only)
  */
-router.get("/admin/cycles", requireAuth, requireAdmin, GDIPController.getAllCycles);
+router.get("/admin/cycles", requireAuth, requireInsuredPartnersManager, GDIPController.getAllCycles);
 
 /**
  * @route   GET /api/gdip/admin/cycle/:cycleId
  * @desc    Get details of a specific trade cycle
  * @access  Private (Admin only)
  */
-router.get("/admin/cycle/:cycleId", requireAuth, requireAdmin, GDIPController.getCycleDetails);
+router.get("/admin/cycle/:cycleId", requireAuth, requireInsuredPartnersManager, GDIPController.getCycleDetails);
 
 /**
  * @route   POST /api/gdip/admin/commodities/types
  * @desc    Create a new commodity type
  * @access  Private (Admin only)
  */
-router.post("/admin/commodities/types", requireAuth, requireAdmin, GDIPController.createCommodityType);
+router.post("/admin/commodities/types", requireAuth, requireInsuredPartnersManager, GDIPController.createCommodityType);
 
 /**
  * @route   PATCH /api/gdip/admin/commodities/types/:id
  * @desc    Update a commodity type
  * @access  Private (Admin only)
  */
-router.patch("/admin/commodities/types/:id", requireAuth, requireAdmin, GDIPController.updateCommodityType);
+router.patch("/admin/commodities/types/:id", requireAuth, requireInsuredPartnersManager, GDIPController.updateCommodityType);
 
 /**
  * @route   DELETE /api/gdip/admin/commodities/types/:id
  * @desc    Delete a commodity type
  * @access  Private (Admin only)
  */
-router.delete("/admin/commodities/types/:id", requireAuth, requireAdmin, GDIPController.deleteCommodityType);
+router.delete("/admin/commodities/types/:id", requireAuth, requireInsuredPartnersManager, GDIPController.deleteCommodityType);
 
 /**
  * @route   POST /api/gdip/admin/initialize-cycles
  * @desc    Initialize trade cycles for existing full GDCs
  * @access  Private (Admin only)
  */
-router.post("/admin/initialize-cycles", requireAuth, requireAdmin, GDIPController.initializeCycles);
+router.post("/admin/initialize-cycles", requireAuth, requireInsuredPartnersManager, GDIPController.initializeCycles);
 
 export default router;

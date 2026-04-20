@@ -20,8 +20,19 @@ interface Banner {
     isActive: boolean;
     startDate?: string;
     endDate?: string;
-    position: number;
+    position?: number;
 }
+
+const formatDateInputValue = (value?: string) => {
+    if (!value) return "";
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "" : date.toISOString().split('T')[0];
+};
+
+const normalizePosition = (value?: number) => (
+    Number.isFinite(value) ? Number(value) : 0
+);
 
 export default function AdminBannersPage() {
     const [banners, setBanners] = useState<Banner[]>([]);
@@ -65,9 +76,9 @@ export default function AdminBannersPage() {
                 title: banner.title,
                 link: banner.link || "",
                 isActive: banner.isActive,
-                startDate: banner.startDate ? new Date(banner.startDate).toISOString().split('T')[0] : "",
-                endDate: banner.endDate ? new Date(banner.endDate).toISOString().split('T')[0] : "",
-                position: banner.position,
+                startDate: formatDateInputValue(banner.startDate),
+                endDate: formatDateInputValue(banner.endDate),
+                position: normalizePosition(banner.position),
                 image: null
             });
         } else {
@@ -99,9 +110,9 @@ export default function AdminBannersPage() {
             data.append("title", formData.title);
             data.append("link", formData.link);
             data.append("isActive", String(formData.isActive));
-            if (formData.startDate) data.append("startDate", formData.startDate);
-            if (formData.endDate) data.append("endDate", formData.endDate);
-            data.append("position", String(formData.position));
+            data.append("startDate", formData.startDate);
+            data.append("endDate", formData.endDate);
+            data.append("position", String(normalizePosition(formData.position)));
             if (formData.image) data.append("image", formData.image);
 
             if (currentBanner) {
@@ -113,7 +124,7 @@ export default function AdminBannersPage() {
             fetchBanners();
         } catch (error) {
             console.error("Failed to save banner", error);
-            alert("Failed to save banner");
+            alert(error instanceof Error ? error.message : "Failed to save banner");
         } finally {
             setIsSubmitting(false);
         }
@@ -292,7 +303,10 @@ export default function AdminBannersPage() {
                                         <input
                                             type="number"
                                             value={formData.position}
-                                            onChange={e => setFormData({ ...formData, position: parseInt(e.target.value) })}
+                                            onChange={e => {
+                                                const nextPosition = Number.parseInt(e.target.value, 10);
+                                                setFormData({ ...formData, position: Number.isNaN(nextPosition) ? 0 : nextPosition });
+                                            }}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                         />
                                     </div>

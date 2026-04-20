@@ -7,7 +7,7 @@ import { apiPost } from '@/utils/api';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/common/Modal';
 
-type ManagerRole = 'product_manager' | 'order_manager';
+type ManagerRole = 'product_manager' | 'order_manager' | 'insured_partners_manager';
 
 const roleOptions: Array<{ value: ManagerRole; label: string; description: string }> = [
     {
@@ -19,6 +19,11 @@ const roleOptions: Array<{ value: ManagerRole; label: string; description: strin
         value: 'order_manager',
         label: 'Order Manager',
         description: 'Can access only order management features.',
+    },
+    {
+        value: 'insured_partners_manager',
+        label: 'Insured Partners Manager',
+        description: 'Can access only Insured Partners management features.',
     },
 ];
 
@@ -40,7 +45,8 @@ export default function CreateManagerAccountPage() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
         const params = new URLSearchParams(window.location.search);
-        const role = params.get('role') === 'order_manager' ? 'order_manager' : 'product_manager';
+        const requestedRole = params.get('role') as ManagerRole | null;
+        const role = roleOptions.some((option) => option.value === requestedRole) ? requestedRole as ManagerRole : 'product_manager';
         setCreatedRole(role);
         setFormData((current) => ({ ...current, role }));
     }, []);
@@ -81,7 +87,7 @@ export default function CreateManagerAccountPage() {
                 <div className="bg-white rounded-lg shadow-md p-8">
                     <h1 className="text-2xl font-bold text-gray-900 mb-2">Create Manager Account</h1>
                     <p className="text-gray-600 mb-6">
-                        Create a Product Manager or Order Manager account. Login credentials will be sent via email.
+                        Create a Product, Order, or Insured Partners Manager account. Login credentials will be sent via email.
                     </p>
 
                     {error && (

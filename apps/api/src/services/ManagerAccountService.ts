@@ -3,7 +3,9 @@ import bcrypt from 'bcryptjs';
 import { generateSecurePassword, generateUsername } from '../utils/passwordGenerator';
 import EmailService from './EmailService';
 
-export type ManagerRole = 'product_manager' | 'order_manager';
+export type ManagerRole = 'product_manager' | 'order_manager' | 'insured_partners_manager';
+
+export const MANAGER_ROLES: ManagerRole[] = ['product_manager', 'order_manager', 'insured_partners_manager'];
 
 export interface CreateManagerAccountData {
     email: string;
@@ -17,6 +19,7 @@ export interface CreateManagerAccountData {
 const ROLE_LABELS: Record<ManagerRole, string> = {
     product_manager: 'Product Manager',
     order_manager: 'Order Manager',
+    insured_partners_manager: 'Insured Partners Manager',
 };
 
 const ROLE_CAPABILITIES: Record<ManagerRole, string[]> = {
@@ -34,11 +37,19 @@ const ROLE_CAPABILITIES: Record<ManagerRole, string[]> = {
         'Cancel eligible orders',
         'Process refunds when required',
     ],
+    insured_partners_manager: [
+        'View insured partner portfolios',
+        'Manage GDCs and TPIA records',
+        'Create and manage trade cycles',
+        'Maintain insured commodity settings',
+        'Review insurance claims and commodity prices',
+    ],
 };
 
 const ROLE_WORKSPACE_PATHS: Record<ManagerRole, string> = {
     product_manager: '/admin/products',
     order_manager: '/admin/orders',
+    insured_partners_manager: '/admin/gdip',
 };
 
 export class ManagerAccountService {
@@ -243,7 +254,7 @@ export class ManagerAccountService {
     }
 
     async listManagers(role?: ManagerRole) {
-        const query = role ? { role } : { role: { $in: ['product_manager', 'order_manager'] } };
+        const query = role ? { role } : { role: { $in: MANAGER_ROLES } };
         return User.find(query)
             .select('email username firstName lastName role isBlocked lastSeen createdAt createdBy')
             .populate('createdBy', 'email username')
@@ -255,7 +266,7 @@ export class ManagerAccountService {
             .select('email username firstName lastName phone role isBlocked lastSeen createdAt createdBy')
             .populate('createdBy', 'email username');
 
-        if (!user || !['product_manager', 'order_manager'].includes(user.role)) {
+        if (!user || !MANAGER_ROLES.includes(user.role as ManagerRole)) {
             throw new Error('Manager account not found');
         }
 
@@ -264,7 +275,7 @@ export class ManagerAccountService {
 
     async resetPassword(userId: string) {
         const user = await User.findById(userId);
-        if (!user || !['product_manager', 'order_manager'].includes(user.role)) {
+        if (!user || !MANAGER_ROLES.includes(user.role as ManagerRole)) {
             throw new Error('Manager account not found');
         }
 
@@ -286,7 +297,7 @@ export class ManagerAccountService {
     async deleteManager(userId: string, deletedBy: string) {
         const user = await User.findOne({
             _id: userId,
-            role: { $in: ['product_manager', 'order_manager'] },
+            role: { $in: MANAGER_ROLES },
             isDeleted: { $ne: true },
         }).select('email firstName role');
 
@@ -297,7 +308,7 @@ export class ManagerAccountService {
         const result = await User.updateOne(
             {
                 _id: userId,
-                role: { $in: ['product_manager', 'order_manager'] },
+                role: { $in: MANAGER_ROLES },
                 isDeleted: { $ne: true },
             },
             {
@@ -333,7 +344,7 @@ export class ManagerAccountService {
         isBlocked?: boolean;
     }) {
         const user = await User.findById(userId);
-        if (!user || !['product_manager', 'order_manager'].includes(user.role)) {
+        if (!user || !MANAGER_ROLES.includes(user.role as ManagerRole)) {
             throw new Error('Manager account not found');
         }
 

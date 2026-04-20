@@ -59,7 +59,7 @@ const userSchema = new Schema<IUser, IUserModel>(
     resetTokenExpires: { type: Date },
     role: {
       type: String,
-      enum: ["buyer", "seller", "admin", "product_manager", "order_manager"],
+      enum: ["buyer", "seller", "admin", "product_manager", "order_manager", "insured_partners_manager"],
       default: "buyer",
     },
     isVerified: {

@@ -5,6 +5,29 @@ import { ValidationError, NotFoundError } from '../utils/errors';
 
 const r2Service = new R2Service();
 
+const parseOptionalDate = (value: unknown) => {
+    if (value === undefined) return undefined;
+    if (value === null || value === '') return null;
+
+    const date = new Date(String(value));
+    if (Number.isNaN(date.getTime())) {
+        throw new ValidationError('Invalid banner date');
+    }
+
+    return date;
+};
+
+const parseBannerPosition = (value: unknown, fallback = 0) => {
+    if (value === undefined || value === null || value === '') return fallback;
+
+    const position = Number.parseInt(String(value), 10);
+    if (Number.isNaN(position)) {
+        throw new ValidationError('Banner position must be a valid number');
+    }
+
+    return position;
+};
+
 export const createBanner = async (req: any, res: any, next: any) => {
     try {
         const { title, link, isActive, startDate, endDate, position } = req.body;
@@ -17,15 +40,17 @@ export const createBanner = async (req: any, res: any, next: any) => {
         // Upload image to R2
         const key = `banners/${Date.now()}_${file.originalname}`;
         const uploadResult = await r2Service.uploadFile(file.buffer, key, file.mimetype);
+        const nextStartDate = parseOptionalDate(startDate);
+        const nextEndDate = parseOptionalDate(endDate);
 
         const banner = await Banner.create({
             title,
             image: uploadResult.url,
             link,
             isActive: isActive === 'true' || isActive === true,
-            startDate,
-            endDate,
-            position: position ? parseInt(position) : 0,
+            startDate: nextStartDate ?? undefined,
+            endDate: nextEndDate ?? undefined,
+            position: parseBannerPosition(position),
         });
 
         res.status(201).json({
@@ -59,12 +84,14 @@ export const getBanners = async (req: any, res: any, next: any) => {
                 isActive: true,
                 $or: [
                     { startDate: { $exists: false } },
+                    { startDate: null },
                     { startDate: { $lte: now } }
                 ],
                 $and: [
                     {
                         $or: [
                             { endDate: { $exists: false } },
+                            { endDate: null },
                             { endDate: { $gte: now } }
                         ]
                     }
@@ -134,9 +161,12 @@ export const updateBanner = async (req: any, res: any, next: any) => {
         banner.image = imageUrl;
         banner.link = link; // Allow clearing link? If so, handle empty string.
         if (isActive !== undefined) banner.isActive = isActive === 'true' || isActive === true;
-        if (startDate !== undefined) banner.startDate = startDate;
-        if (endDate !== undefined) banner.endDate = endDate;
-        if (position !== undefined) banner.position = parseInt(position);
+        const nextStartDate = parseOptionalDate(startDate);
+        const nextEndDate = parseOptionalDate(endDate);
+
+        if (nextStartDate !== undefined) banner.startDate = nextStartDate ?? undefined;
+        if (nextEndDate !== undefined) banner.endDate = nextEndDate ?? undefined;
+        if (position !== undefined) banner.position = parseBannerPosition(position, banner.position);
 
         await banner.save();
 

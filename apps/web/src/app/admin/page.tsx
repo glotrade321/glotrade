@@ -97,6 +97,10 @@ export default function AdminDashboardPage() {
             router.push('/admin/orders');
             return;
           }
+          if (user.role === 'insured_partners_manager') {
+            router.push('/admin/gdip');
+            return;
+          }
         }
 
         // Fetch recent activity
