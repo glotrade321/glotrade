@@ -66,6 +66,41 @@ router.get("/forming-gdc", requireAuth, GDIPController.getFormingGDC);
 // ==================== ADMIN ROUTES ====================
 
 /**
+ * @route   GET /api/gdip/admin/partners/search
+ * @desc    Search partners for assisted/manual TPIA purchases
+ * @access  Private (Admin or Insured Partners Manager)
+ */
+router.get("/admin/partners/search", requireAuth, requireInsuredPartnersManager, GDIPController.searchPartners);
+
+/**
+ * @route   GET /api/gdip/admin/tpia/manual-purchase/preview
+ * @desc    Preview next GDC slots for an assisted/manual TPIA purchase
+ * @access  Private (Admin or Insured Partners Manager)
+ */
+router.get("/admin/tpia/manual-purchase/preview", requireAuth, requireInsuredPartnersManager, GDIPController.previewManualPurchase);
+
+/**
+ * @route   POST /api/gdip/admin/tpia/manual-purchase
+ * @desc    Create a TPIA purchase for a partner who paid by bank deposit
+ * @access  Private (Admin or Insured Partners Manager)
+ */
+router.post("/admin/tpia/manual-purchase", requireAuth, requireInsuredPartnersManager, GDIPController.manualPurchaseTPIA);
+
+/**
+ * @route   PATCH /api/gdip/admin/tpia/:tpiaId/manual-payment
+ * @desc    Correct manual bank deposit details before a TPIA cycle starts
+ * @access  Private (Admin or Insured Partners Manager)
+ */
+router.patch("/admin/tpia/:tpiaId/manual-payment", requireAuth, requireInsuredPartnersManager, GDIPController.updateManualPaymentDetails);
+
+/**
+ * @route   POST /api/gdip/admin/tpia/:tpiaId/void
+ * @desc    Void a mistaken manual TPIA purchase before the GDC cycle starts
+ * @access  Private (Admin or Insured Partners Manager)
+ */
+router.post("/admin/tpia/:tpiaId/void", requireAuth, requireInsuredPartnersManager, GDIPController.voidManualPurchase);
+
+/**
  * @route   POST /api/gdip/admin/cycle/create
  * @desc    Create a new trade cycle for a GDC
  * @access  Private (Admin only)

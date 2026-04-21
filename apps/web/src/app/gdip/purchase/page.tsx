@@ -17,20 +17,16 @@ import {
 } from "lucide-react";
 import { translate } from "@/utils/translate";
 
-// COMMODITY_OPTIONS will be fetched from API
-
 export default function PurchaseTPIAPage() {
     const router = useRouter();
     const [walletBalance, setWalletBalance] = useState<number>(0);
     const [showTopUpModal, setShowTopUpModal] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [selectedCommodity, setSelectedCommodity] = useState("");
     const [profitMode, setProfitMode] = useState<"TPM" | "EPS">("TPM");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [formingGDC, setFormingGDC] = useState<any>(null);
-    const [commodityOptions, setCommodityOptions] = useState<{ name: string; label: string; icon: string }[]>([]);
 
     const TPIA_PRICE = 1000000; // ₦1,000,000
     const totalPrice = TPIA_PRICE * quantity;
@@ -47,19 +43,7 @@ export default function PurchaseTPIAPage() {
     useEffect(() => {
         fetchWalletBalance();
         fetchGDCStatus();
-        fetchCommodityTypes();
     }, []);
-
-    const fetchCommodityTypes = async () => {
-        try {
-            const response = await apiGet<{ success: boolean; data: any[] }>("/api/v1/gdip/commodities/types");
-            if (response.success && response.data) {
-                setCommodityOptions(response.data);
-            }
-        } catch (err) {
-            console.error("Error fetching commodity types:", err);
-        }
-    };
 
     const fetchGDCStatus = async () => {
         try {
@@ -84,11 +68,6 @@ export default function PurchaseTPIAPage() {
     };
 
     const handlePurchase = async () => {
-        if (!selectedCommodity) {
-            setError(translate("gdip.purchase.error.selectCommodity"));
-            return;
-        }
-
         // Check wallet balance
         if (walletBalance < totalPrice) {
             setShowTopUpModal(true);
@@ -102,7 +81,6 @@ export default function PurchaseTPIAPage() {
             const response = await apiPost<{ success: boolean; message: string; data: any }>(
                 "/api/v1/gdip/tpia/purchase",
                 {
-                    commodityType: selectedCommodity,
                     profitMode,
                     purchasePrice: TPIA_PRICE,
                     quantity,
@@ -179,39 +157,20 @@ export default function PurchaseTPIAPage() {
                                 </div>
                             )}
 
-                            {/* Commodity Selection */}
+                            {/* Trade Deployment */}
                             <div className="mb-10">
                                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
                                     {translate("gdip.purchase.config.commodityLabel")}
                                 </label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                                    {commodityOptions.length > 0 ? (
-                                        commodityOptions.map((commodity) => (
-                                            <button
-                                                key={commodity.name}
-                                                onClick={() => setSelectedCommodity(commodity.name)}
-                                                className={`p-4 sm:p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group active:scale-95 ${selectedCommodity === commodity.name
-                                                    ? "border-blue-600 bg-blue-50/50"
-                                                    : "border-gray-100 hover:border-blue-200 bg-white"
-                                                    }`}
-                                            >
-                                                <div className="text-3xl mb-3 relative z-10">{commodity.icon}</div>
-                                                <div className="font-black text-sm text-gray-900 tracking-tight relative z-10 leading-none">{commodity.label}</div>
-                                                {selectedCommodity === commodity.name && (
-                                                    <div className="absolute top-2 right-2">
-                                                        <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                                                    </div>
-                                                )}
-                                                <div className="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:scale-110 transition-transform">
-                                                    <CheckCircle2 className="w-16 h-16" />
-                                                </div>
-                                            </button>
-                                        ))
-                                    ) : (
-                                        <div className="col-span-full h-24 flex items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl">
-                                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
+                                <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5">
+                                    <div className="flex items-start gap-3">
+                                        <div className="rounded-xl bg-white p-2 text-emerald-600 shadow-sm">
+                                            <Activity className="h-5 w-5" />
                                         </div>
-                                    )}
+                                        <p className="text-xs font-bold leading-relaxed text-emerald-800">
+                                            {translate("gdip.purchase.config.commodityInfo")}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -229,9 +188,9 @@ export default function PurchaseTPIAPage() {
                                             : "border-gray-100 hover:border-purple-200 bg-white"
                                             }`}
                                     >
-                                        <div className="flex items-center justify-between mb-4 relative z-10">
-                                            <h3 className="font-black text-2xl tracking-tighter text-gray-900">{translate("gdip.purchase.config.modes.TPM.title")}</h3>
-                                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${profitMode === "TPM" ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-700"}`}>
+                                        <div className="flex flex-col items-start gap-2 mb-4 relative z-10 min-w-0">
+                                            <h3 className="font-black text-2xl tracking-normal text-gray-900">{translate("gdip.purchase.config.modes.TPM.title")}</h3>
+                                            <span className={`max-w-full px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-normal leading-tight break-words ${profitMode === "TPM" ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-700"}`}>
                                                 {translate("gdip.purchase.config.modes.TPM.badge")}
                                             </span>
                                         </div>
@@ -254,9 +213,9 @@ export default function PurchaseTPIAPage() {
                                             : "border-gray-100 hover:border-indigo-200 bg-white"
                                             }`}
                                     >
-                                        <div className="flex items-center justify-between mb-4 relative z-10">
-                                            <h3 className="font-black text-2xl tracking-tighter text-gray-900">{translate("gdip.purchase.config.modes.EPS.title")}</h3>
-                                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${profitMode === "EPS" ? "bg-indigo-600 text-white" : "bg-indigo-100 text-indigo-700"}`}>
+                                        <div className="flex flex-col items-start gap-2 mb-4 relative z-10 min-w-0">
+                                            <h3 className="font-black text-2xl tracking-normal text-gray-900">{translate("gdip.purchase.config.modes.EPS.title")}</h3>
+                                            <span className={`max-w-full px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-normal leading-tight break-words ${profitMode === "EPS" ? "bg-indigo-600 text-white" : "bg-indigo-100 text-indigo-700"}`}>
                                                 {translate("gdip.purchase.config.modes.EPS.badge")}
                                             </span>
                                         </div>
@@ -354,7 +313,7 @@ export default function PurchaseTPIAPage() {
                             {/* Purchase Button */}
                             <button
                                 onClick={handlePurchase}
-                                disabled={loading || !selectedCommodity}
+                                disabled={loading}
                                 className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-black transition-all disabled:opacity-50 shadow-2xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-3 group overflow-hidden relative"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />

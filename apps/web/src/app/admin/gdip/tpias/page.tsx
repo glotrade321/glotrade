@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Download, Landmark, Plus } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet } from "@/utils/api";
 import { formatCurrency } from "@/utils/format";
@@ -10,6 +11,7 @@ import TPIADetailsModal from "@/components/admin/gdip/TPIADetailsModal";
 interface TPIA {
     _id: string;
     tpiaId: string;
+    originalTpiaId?: string;
     partnerName: string;
     partnerEmail: string;
     purchasePrice: number;
@@ -19,6 +21,14 @@ interface TPIA {
     purchasedAt: string;
     profitMode: string;
     estimatedProfit?: number;
+    purchaseSource?: "wallet" | "manual_bank_deposit";
+    manualPayment?: {
+        amountReceived?: number;
+        bankReference?: string;
+        depositedAt?: string;
+        recordedAt?: string;
+        note?: string;
+    };
 }
 
 export default function AdminTPIAManagementPage() {
@@ -27,6 +37,7 @@ export default function AdminTPIAManagementPage() {
     const [tpias, setTPIAs] = useState<TPIA[]>([]);
     const [filteredTPIAs, setFilteredTPIAs] = useState<TPIA[]>([]);
     const [statusFilter, setStatusFilter] = useState<string>("all");
+    const [sourceFilter, setSourceFilter] = useState<string>("all");
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedTPIAId, setSelectedTPIAId] = useState<string | null>(null);
 
@@ -36,7 +47,7 @@ export default function AdminTPIAManagementPage() {
 
     useEffect(() => {
         filterTPIAs();
-    }, [statusFilter, searchTerm, tpias]);
+    }, [statusFilter, sourceFilter, searchTerm, tpias]);
 
     const fetchTPIAs = async () => {
         try {
@@ -65,13 +76,18 @@ export default function AdminTPIAManagementPage() {
             filtered = filtered.filter((t) => t.status === statusFilter);
         }
 
+        if (sourceFilter !== "all") {
+            filtered = filtered.filter((t) => (t.purchaseSource || "wallet") === sourceFilter);
+        }
+
         if (searchTerm) {
             const lowerTerm = searchTerm.toLowerCase();
             filtered = filtered.filter(
                 (t) =>
-                    t.tpiaId.toLowerCase().includes(lowerTerm) ||
+                    getDisplayTPIAId(t).toLowerCase().includes(lowerTerm) ||
                     t.partnerName.toLowerCase().includes(lowerTerm) ||
-                    t.partnerEmail.toLowerCase().includes(lowerTerm)
+                    t.partnerEmail.toLowerCase().includes(lowerTerm) ||
+                    (t.manualPayment?.bankReference || "").toLowerCase().includes(lowerTerm)
             );
         }
 
@@ -85,6 +101,64 @@ export default function AdminTPIAManagementPage() {
             month: "short",
             day: "numeric",
         });
+    };
+
+    const escapeCsvValue = (value: string | number | undefined) => {
+        const stringValue = String(value ?? "");
+        if (/[",\n]/.test(stringValue)) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+
+        return stringValue;
+    };
+
+    const manualTPIAs = tpias.filter((tpia) => tpia.purchaseSource === "manual_bank_deposit");
+    const getDisplayTPIAId = (tpia: TPIA) => tpia.originalTpiaId || tpia.tpiaId;
+
+    const exportManualPurchases = () => {
+        const headers = [
+            "TPIA ID",
+            "Partner Name",
+            "Partner Email",
+            "GDC",
+            "Status",
+            "Purchase Price",
+            "Amount Applied",
+            "Bank Reference",
+            "Deposit Date",
+            "Recorded At",
+            "Purchase Date",
+            "Profit Mode",
+            "Note"
+        ];
+
+        const rows = manualTPIAs.map((tpia) => [
+            getDisplayTPIAId(tpia),
+            tpia.partnerName,
+            tpia.partnerEmail,
+            `GDC-${tpia.gdcNumber}`,
+            tpia.status,
+            tpia.purchasePrice,
+            tpia.manualPayment?.amountReceived || tpia.purchasePrice,
+            tpia.manualPayment?.bankReference,
+            tpia.manualPayment?.depositedAt ? new Date(tpia.manualPayment.depositedAt).toISOString() : "",
+            tpia.manualPayment?.recordedAt ? new Date(tpia.manualPayment.recordedAt).toISOString() : "",
+            tpia.purchasedAt ? new Date(tpia.purchasedAt).toISOString() : "",
+            tpia.profitMode,
+            tpia.manualPayment?.note
+        ]);
+
+        const csvRows = [
+            headers.join(","),
+            ...rows.map((row) => row.map(escapeCsvValue).join(","))
+        ];
+        const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `manual-tpia-purchases-${new Date().toISOString().split("T")[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
     if (loading) {
@@ -111,10 +185,29 @@ export default function AdminTPIAManagementPage() {
                         </svg>
                         Back to Dashboard
                     </button>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
                             <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">TPIA Management</h1>
                             <p className="text-gray-600">Overview of all Insured Partner Investment Blocks</p>
+                        </div>
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                            <button
+                                onClick={() => router.push("/admin/gdip/partners?createTPIA=1")}
+                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                                title="Create a manual bank-deposit TPIA purchase"
+                            >
+                                <Plus className="h-4 w-4" />
+                                Create TPIA
+                            </button>
+                            <button
+                                onClick={exportManualPurchases}
+                                disabled={manualTPIAs.length === 0}
+                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                                title="Export manual bank deposit purchases"
+                            >
+                                <Download className="h-4 w-4" />
+                                Export Manual Purchases
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -140,6 +233,16 @@ export default function AdminTPIAManagementPage() {
                             <option value="active">Active</option>
                             <option value="pending">Pending</option>
                             <option value="matured">Matured</option>
+                            <option value="voided">Voided</option>
+                        </select>
+                        <select
+                            value={sourceFilter}
+                            onChange={(e) => setSourceFilter(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="all">All Sources</option>
+                            <option value="wallet">Wallet Purchases</option>
+                            <option value="manual_bank_deposit">Manual Bank Deposits</option>
                         </select>
                         <span className="text-sm text-gray-600 flex items-center">
                             Showing {filteredTPIAs.length} of {tpias.length}
@@ -154,6 +257,7 @@ export default function AdminTPIAManagementPage() {
                             <tr>
                                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TPIA ID</th>
                                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Partner</th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
                                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invested</th>
                                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Est. Profit</th>
                                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GDC</th>
@@ -165,12 +269,29 @@ export default function AdminTPIAManagementPage() {
                         <tbody className="divide-y divide-gray-200">
                             {filteredTPIAs.map((tpia) => (
                                 <tr key={tpia._id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{tpia.tpiaId}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">{getDisplayTPIAId(tpia)}</td>
                                     <td className="px-6 py-4">
                                         <div>
                                             <p className="font-medium text-gray-900">{tpia.partnerName}</p>
                                             <p className="text-xs text-gray-500">{tpia.partnerEmail}</p>
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {tpia.purchaseSource === "manual_bank_deposit" ? (
+                                            <div className="space-y-1">
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                    <Landmark className="h-3.5 w-3.5" />
+                                                    Manual
+                                                </span>
+                                                {tpia.manualPayment?.bankReference && (
+                                                    <p className="max-w-[140px] truncate text-xs text-gray-500" title={tpia.manualPayment.bankReference}>
+                                                        {tpia.manualPayment.bankReference}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">Wallet</span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 font-medium text-gray-900">{formatCurrency(tpia.purchasePrice)}</td>
                                     <td className="px-6 py-4 font-medium text-green-600">+{formatCurrency(tpia.estimatedProfit || 0)}</td>
@@ -178,6 +299,7 @@ export default function AdminTPIAManagementPage() {
                                     <td className="px-6 py-4">
                                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${tpia.status === "active" ? "bg-green-100 text-green-700" :
                                             tpia.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                                                tpia.status === "voided" ? "bg-red-100 text-red-700" :
                                                 "bg-gray-100 text-gray-700"
                                             }`}>
                                             {tpia.status.toUpperCase()}
@@ -207,11 +329,18 @@ export default function AdminTPIAManagementPage() {
                         <div key={tpia._id} className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <p className="font-bold text-lg text-gray-900">{tpia.tpiaId}</p>
+                                    <p className="font-bold text-lg text-gray-900">{getDisplayTPIAId(tpia)}</p>
                                     <p className="text-sm text-gray-500">{tpia.partnerName}</p>
+                                    {tpia.purchaseSource === "manual_bank_deposit" && (
+                                        <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                            <Landmark className="h-3.5 w-3.5" />
+                                            Manual bank deposit
+                                        </span>
+                                    )}
                                 </div>
                                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${tpia.status === "active" ? "bg-green-100 text-green-700" :
                                     tpia.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                                        tpia.status === "voided" ? "bg-red-100 text-red-700" :
                                         "bg-gray-100 text-gray-700"
                                     }`}>
                                     {tpia.status.toUpperCase()}
@@ -256,6 +385,7 @@ export default function AdminTPIAManagementPage() {
                 <TPIADetailsModal
                     tpiaId={selectedTPIAId}
                     onClose={() => setSelectedTPIAId(null)}
+                    onChanged={fetchTPIAs}
                 />
             )}
         </AdminLayout>

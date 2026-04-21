@@ -104,6 +104,8 @@ export default function PurchaseInvoicePage() {
 
     const { tpia } = data;
     const invoiceNumber = `INV-GDIP-${tpia.tpiaNumber.toString().padStart(6, '0')}`;
+    const tpiaReference = `TPIA-${tpia.tpiaNumber}`;
+    const gdcReference = `GDC-${tpia.gdcNumber}`;
     const purchaseDate = new Date(tpia.purchasedAt || tpia.createdAt).toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "long",
@@ -160,18 +162,19 @@ export default function PurchaseInvoicePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
                         <div className="space-y-2">
                             <p className="flex items-center gap-2 text-gray-900 font-black"><MapPin size={12} className="text-blue-600" /> {translate("gdip.invoice.info.hqLabel")}</p>
-                            <p>123 Business Avenue, Victoria Island</p>
-                            <p>Lagos, Federal Republic of Nigeria</p>
+                            <p>{translate("gdip.invoice.info.addressLine1")}</p>
+                            <p>{translate("gdip.invoice.info.addressLine2")}</p>
                         </div>
                         <div className="space-y-2">
                             <p className="flex items-center gap-2 text-gray-900 font-black"><Globe size={12} className="text-blue-600" /> {translate("gdip.invoice.info.nodeLabel")}</p>
-                            <p>www.glotrade.com</p>
-                            <p>node-id: gdip-ln-01</p>
+                            <p>{translate("gdip.invoice.info.website")}</p>
+                            <p>{gdcReference}</p>
                         </div>
                         <div className="md:text-right space-y-2">
                             <p className="flex items-center md:justify-end gap-2 text-gray-900 font-black"><Mail size={12} className="text-blue-600" /> {translate("gdip.invoice.info.commLabel")}</p>
-                            <p>support@glotrade.com</p>
-                            <p>+234 1 000 0000</p>
+                            <p>{translate("gdip.invoice.info.supportEmail")}</p>
+                            <p>{translate("gdip.invoice.info.supportPhoneLagos")}</p>
+                            <p>{translate("gdip.invoice.info.supportPhoneAbuja")}</p>
                         </div>
                     </div>
 
@@ -237,16 +240,16 @@ export default function PurchaseInvoicePage() {
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-2 pt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-t border-gray-50">
                                                         <div className="flex justify-between sm:justify-start sm:gap-4">
                                                             <span>{translate("gdip.invoice.table.item.blockId")}</span>
-                                                            <span className="text-gray-900 font-black">#{tpia.tpiaNumber}</span>
+                                                            <span className="text-gray-900 font-black">{tpiaReference}</span>
                                                         </div>
                                                         <div className="flex justify-between sm:justify-start sm:gap-4">
                                                             <span>{translate("gdip.invoice.table.item.nodeId")}</span>
-                                                            <span className="text-gray-900 font-black">#{tpia.gdcNumber}</span>
+                                                            <span className="text-gray-900 font-black">{gdcReference}</span>
                                                         </div>
                                                         <div className="sm:col-span-2 space-y-1 pt-1">
                                                             <p className="text-gray-300">{translate("gdip.invoice.table.item.configLabel")}</p>
                                                             <p className="text-gray-900 font-extrabold leading-relaxed">
-                                                                {tpia.commodityType || translate("gdip.invoice.table.item.defaultType")} • {tpia.commodityQuantity} {tpia.commodityUnit} {translate("gdip.invoice.table.item.backing")}
+                                                                {translate("gdip.invoice.table.item.deploymentBacking")}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -289,25 +292,25 @@ export default function PurchaseInvoicePage() {
                                         </div>
                                         <div className="text-right space-y-1">
                                             <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.invoice.mobile.qtyLabel")}</p>
-                                            <p className="text-lg font-black text-gray-900 leading-none">01 <span className="text-[10px] text-gray-300">UT</span></p>
+                                            <p className="text-lg font-black text-gray-900 leading-none">01 <span className="text-[10px] text-gray-300">{translate("gdip.invoice.mobile.unitAbbr")}</span></p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-6">
                                         <div>
                                             <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.invoice.table.item.blockId")}</p>
-                                            <p className="text-xs font-black text-gray-900">#{tpia.tpiaNumber}</p>
+                                            <p className="text-xs font-black text-gray-900">{tpiaReference}</p>
                                         </div>
                                         <div>
                                             <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.invoice.table.item.nodeId")}</p>
-                                            <p className="text-xs font-black text-gray-900">#{tpia.gdcNumber}</p>
+                                            <p className="text-xs font-black text-gray-900">{gdcReference}</p>
                                         </div>
                                     </div>
 
                                     <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
                                         <p className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2 leading-none">{translate("gdip.invoice.table.item.configLabel")}</p>
                                         <p className="text-[11px] font-bold text-gray-900 leading-relaxed uppercase tracking-tight">
-                                            {tpia.commodityType || translate("gdip.invoice.table.item.defaultType")} • {tpia.commodityQuantity} {tpia.commodityUnit} {translate("gdip.invoice.table.item.backing")}
+                                            {translate("gdip.invoice.table.item.deploymentBacking")}
                                         </p>
                                     </div>
                                 </div>

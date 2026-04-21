@@ -149,8 +149,9 @@ export default function TPIADetailsPage() {
         const totalProfit = details.tpia.totalProfitEarned + calculateEstimatedProfit();
         return ((totalProfit / details.tpia.purchasePrice) * 100).toFixed(2);
     };
+    const isCycleActive = () => details?.currentCycle?.status === "active";
     const calculateCycleProgress = () => {
-        if (!details || !details.currentCycle) return 0;
+        if (!details || !details.currentCycle || !isCycleActive()) return 0;
         const start = new Date(details.currentCycle.startDate).getTime();
         const end = new Date(details.currentCycle.endDate).getTime();
         const now = Date.now();
@@ -160,7 +161,7 @@ export default function TPIADetailsPage() {
         return Math.min(100, Math.max(0, progress));
     };
     const calculateEstimatedProfit = () => {
-        if (!details || !details.currentCycle) return 0;
+        if (!details || !details.currentCycle || !isCycleActive()) return 0;
         const progress = calculateCycleProgress() / 100;
         const totalTarget = (details.currentCycle.targetProfitRate / 100) * details.tpia.purchasePrice;
         return totalTarget * progress;
@@ -192,6 +193,20 @@ export default function TPIADetailsPage() {
     }
 
     const { tpia, gdc, insurance, currentCycle } = details;
+    const cycleTitle = currentCycle?.status === "active"
+        ? translate("gdip.details.cycle.title")
+        : currentCycle?.status === "scheduled"
+            ? translate("gdip.details.cycle.scheduledTitle")
+            : currentCycle
+                ? translate("gdip.details.cycle.updateTitle")
+                : translate("gdip.details.cycle.formationTitle");
+    const cycleSubtitle = currentCycle?.status === "active"
+        ? translate("gdip.details.cycle.subtitle")
+        : currentCycle?.status === "scheduled"
+            ? translate("gdip.details.cycle.scheduledSubtitle")
+            : currentCycle
+                ? translate("gdip.details.cycle.updateSubtitle")
+                : translate("gdip.details.cycle.formationSubtitle");
 
     return (
         <div className="min-h-screen bg-white">
@@ -297,7 +312,7 @@ export default function TPIADetailsPage() {
 
 
                         {/* Trade Cycle */}
-                        {currentCycle && (
+                        {currentCycle ? (
                             <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-8 shadow-sm">
                                 <div className="flex items-center justify-between mb-8">
                                     <div className="flex items-center gap-3">
@@ -305,12 +320,12 @@ export default function TPIADetailsPage() {
                                             <Activity className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">{translate("gdip.details.cycle.title")}</h2>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.cycle.subtitle")}</p>
+                                            <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">{cycleTitle}</h2>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{cycleSubtitle}</p>
                                         </div>
                                     </div>
-                                    <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-widest rounded-lg">
-                                        #{currentCycle.cycleNumber}
+                                    <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg ${currentCycle.status === "active" ? "bg-emerald-50 text-emerald-700" : "bg-indigo-50 text-indigo-700"}`}>
+                                        {currentCycle.status} #{currentCycle.cycleNumber}
                                     </span>
                                 </div>
 
@@ -333,7 +348,7 @@ export default function TPIADetailsPage() {
                                                 <p className="text-2xl font-black text-gray-900">{currentCycle.targetProfitRate}<span className="text-sm font-bold opacity-30">%</span></p>
                                             </div>
                                             <p className="text-sm font-black text-blue-600 uppercase tracking-widest">
-                                                {translate("gdip.details.cycle.progress", { progress: calculateCycleProgress().toFixed(1) })}
+                                                {isCycleActive() ? translate("gdip.details.cycle.progress", { progress: calculateCycleProgress().toFixed(1) }) : translate("gdip.common.notAccruingYet")}
                                             </p>
                                         </div>
                                         <div className="h-4 bg-gray-100 rounded-full overflow-hidden p-1 border border-gray-50">
@@ -351,8 +366,39 @@ export default function TPIADetailsPage() {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1">{translate("gdip.details.cycle.accruedProfit")}</p>
-                                            <p className="text-lg font-black text-blue-700 leading-none">+{formatCurrency(calculateEstimatedProfit())}</p>
+                                            {isCycleActive() ? (
+                                                <p className="text-lg font-black text-blue-700 leading-none">+{formatCurrency(calculateEstimatedProfit())}</p>
+                                            ) : (
+                                                <p className="text-xs font-black text-gray-500 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.startsAfterActivation")}</p>
+                                            )}
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-white rounded-3xl border border-amber-100 p-5 sm:p-8 shadow-sm">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 bg-amber-50 rounded-xl text-amber-600">
+                                        <Activity className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">{cycleTitle}</h2>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{cycleSubtitle}</p>
+                                    </div>
+                                </div>
+                                <div className="rounded-2xl bg-amber-50 p-4 border border-amber-100">
+                                    <p className="text-sm font-bold text-amber-800">
+                                        {translate("gdip.details.cycle.formationDescription", { number: gdc.gdcNumber, current: gdc.capacity, total: gdc.capacity })}
+                                    </p>
+                                    <div className="mt-4 h-3 bg-white rounded-full overflow-hidden p-0.5 border border-amber-100">
+                                        <div
+                                            className="h-full rounded-full bg-amber-500"
+                                            style={{ width: `${Math.min(100, Math.max(0, (gdc.currentFill / gdc.capacity) * 100))}%` }}
+                                        />
+                                    </div>
+                                    <div className="mt-3 flex justify-between text-[10px] font-black uppercase tracking-widest text-amber-700">
+                                        <span>{translate("gdip.details.cycle.slotsFilled", { current: gdc.currentFill, total: gdc.capacity })}</span>
+                                        <span>{translate("gdip.details.cycle.remaining", { count: Math.max(0, gdc.capacity - gdc.currentFill) })}</span>
                                     </div>
                                 </div>
                             </div>
@@ -482,7 +528,7 @@ export default function TPIADetailsPage() {
                                 <div className="flex justify-between items-center py-2">
                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.node.commodity")}</span>
                                     <span className="text-xs font-black text-gray-900 flex items-center gap-1.5 truncate ml-4">
-                                        <span className="opacity-50">🌾</span> {tpia.commodityType || translate("gdip.details.node.defaultCommodity")}
+                                        {translate("gdip.details.node.defaultCommodity")}
                                     </span>
                                 </div>
                             </div>

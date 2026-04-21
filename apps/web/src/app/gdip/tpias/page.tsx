@@ -29,6 +29,12 @@ interface TPIA {
         status: string;
         targetProfitRate: number;
     };
+    gdcFill?: {
+        currentFill: number;
+        capacity: number;
+        slotsRemaining: number;
+        status: string;
+    };
 }
 
 export default function AllTPIAsPage() {
@@ -82,7 +88,6 @@ export default function AllTPIAsPage() {
             filtered = filtered.filter(
                 (tpia) =>
                     tpia.tpiaId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    tpia.commodityType.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     tpia.insuranceCertificateNumber.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
@@ -105,6 +110,40 @@ export default function AllTPIAsPage() {
             month: "short",
             day: "numeric",
         }).toUpperCase();
+    };
+
+    const isCycleActive = (tpia: TPIA) => tpia.currentCycleId?.status === "active";
+
+    const calculateCycleProgress = (tpia: TPIA) => {
+        if (!isCycleActive(tpia) || !tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
+            return 0;
+        }
+
+        const start = new Date(tpia.currentCycleId.startDate).getTime();
+        const end = new Date(tpia.currentCycleId.endDate).getTime();
+        const now = Date.now();
+
+        if (isNaN(start) || isNaN(end) || end <= start) {
+            return 0;
+        }
+
+        return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+    };
+
+    const getCycleState = (tpia: TPIA) => {
+        if (isCycleActive(tpia)) {
+            return translate("gdip.common.cycleActive");
+        }
+
+        if (tpia.currentCycleId?.status === "scheduled") {
+            return translate("gdip.common.cycleScheduled");
+        }
+
+        if (tpia.gdcFill) {
+            return translate("gdip.common.waitingForGDCFilled", { current: tpia.gdcFill.currentFill, total: tpia.gdcFill.capacity });
+        }
+
+        return translate("gdip.common.waitingForGDC");
     };
 
     if (loading) {
@@ -250,11 +289,11 @@ export default function AllTPIAsPage() {
                                     </span>
                                 </div>
 
-                                {/* Commodity Badge */}
+                                {/* Trade Deployment Badge */}
                                 <div className="mb-8 relative z-10">
                                     <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl">
-                                        <span className="text-base grayscale group-hover:grayscale-0 transition-all">🌾</span>
-                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{translate("gdip.tpias.card.node", { type: tpia.commodityType })}</span>
+                                        <Sparkles className="h-3.5 w-3.5 text-blue-500" />
+                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{translate("gdip.tpias.card.node")}</span>
                                     </div>
                                 </div>
 
@@ -293,44 +332,40 @@ export default function AllTPIAsPage() {
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{formatDate(tpia.purchasedAt)}</p>
                                 </div>
 
-                                {tpia.status === "active" && tpia.currentCycleId && (
+                                {isCycleActive(tpia) ? (
                                     <div className="mt-8 pt-6 border-t border-gray-50 relative z-10">
                                         <div className="flex justify-between items-center mb-2.5">
                                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{translate("gdip.tpias.card.growthVelocity")}</span>
                                             <span className="text-xs font-black text-blue-600 tracking-tighter">
-                                                {(() => {
-                                                    if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
-                                                        return "0";
-                                                    }
-                                                    const start = new Date(tpia.currentCycleId.startDate).getTime();
-                                                    const end = new Date(tpia.currentCycleId.endDate).getTime();
-                                                    const now = Date.now();
-                                                    if (isNaN(start) || isNaN(end) || end <= start) {
-                                                        return "0";
-                                                    }
-                                                    const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-                                                    return progress.toFixed(1);
-                                                })()}%
+                                                {calculateCycleProgress(tpia).toFixed(1)}%
                                             </span>
                                         </div>
                                         <div className="h-2 bg-gray-50 rounded-full overflow-hidden p-0.5 border border-gray-100 shadow-inner">
                                             <div
                                                 className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000"
-                                                style={{
-                                                    width: `${(() => {
-                                                        if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
-                                                            return 0;
-                                                        }
-                                                        const start = new Date(tpia.currentCycleId.startDate).getTime();
-                                                        const end = new Date(tpia.currentCycleId.endDate).getTime();
-                                                        const now = Date.now();
-                                                        if (isNaN(start) || isNaN(end) || end <= start) {
-                                                            return 0;
-                                                        }
-                                                        return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-                                                    })()}%`
-                                                }}
+                                                style={{ width: `${calculateCycleProgress(tpia)}%` }}
                                             ></div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="mt-8 pt-6 border-t border-gray-50 relative z-10">
+                                        <div className="rounded-2xl bg-amber-50 border border-amber-100 p-4">
+                                            <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">{getCycleState(tpia)}</p>
+                                            {tpia.gdcFill && (
+                                                <>
+                                                    <div className="mt-3 h-2 bg-white rounded-full overflow-hidden p-0.5 border border-amber-100">
+                                                        <div
+                                                            className="h-full rounded-full bg-amber-500 transition-all duration-1000"
+                                                            style={{ width: `${Math.min(100, Math.max(0, (tpia.gdcFill.currentFill / tpia.gdcFill.capacity) * 100))}%` }}
+                                                        />
+                                                    </div>
+                                                    <p className="mt-2 text-[9px] font-bold text-amber-600 uppercase tracking-widest">
+                                                        {tpia.gdcFill.slotsRemaining > 0
+                                                            ? translate("gdip.common.slotsRemainingBeforeActivation", { count: tpia.gdcFill.slotsRemaining })
+                                                            : translate("gdip.common.gdcCompleteAwaitingActivation")}
+                                                    </p>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 )}

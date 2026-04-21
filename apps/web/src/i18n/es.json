@@ -1693,6 +1693,26 @@
     }
   },
   "gdip": {
+    "common": {
+      "cycleActive": "Ciclo activo",
+      "cycleScheduled": "Ciclo programado",
+      "cycleNotStarted": "Ciclo no iniciado",
+      "waitingForGDC": "Esperando la finalización del GDC",
+      "waitingForGDCFilled": "Esperando la finalización del GDC: {current}/{total} llenos",
+      "slotsRemaining": "{count} espacios restantes",
+      "slotsRemainingBeforeActivation": "{count} espacios restantes antes de la activación",
+      "gdcCompleteAwaitingActivation": "GDC completo, esperando activación del ciclo",
+      "scheduledNotAccruing": "Programado, aún no acumula",
+      "processingResults": "Procesando resultados",
+      "completed": "Completado",
+      "notStarted": "No iniciado",
+      "notAccruingYet": "Aún no acumula",
+      "pendingClose": "Cierre pendiente",
+      "cycleProgress": "Progreso del Ciclo",
+      "accruedProfit": "Beneficio Acumulado",
+      "activationStatus": "Estado de Activación",
+      "exportCsv": "Exportar CSV"
+    },
     "layout": {
       "restricted": {
         "title": "Acceso de Distribuidores/Socios Asegurados Restringido",
@@ -1737,7 +1757,15 @@
         "profitMode": "Modo de Ganancia",
         "cycleProgress": "Progreso del Ciclo",
         "waitingCycle": "Esperando el próximo ciclo de trading",
+        "startsAfterActivation": "Comienza después de la activación",
         "viewDetails": "Detalles del Bloque"
+      },
+      "cycleGuide": {
+        "title": "Cómo comienzan los ciclos TPIA",
+        "description": "Su TPIA se asigna a un GDC de 10 espacios después de la compra. El ciclo comercial de 37 días comienza solo cuando ese GDC está completo y activado.",
+        "pending": "Pendiente: esperando llenado del GDC",
+        "scheduled": "Programado: GDC completo",
+        "active": "Activo: ciclo en progreso"
       },
       "error": {
         "title": "Error",
@@ -1746,7 +1774,7 @@
     },
     "cycles": {
       "title": "Seguimiento del Ciclo de Vida",
-      "subtitle": "Ciclos de trading de materias primas en tiempo real y métricas de rendimiento",
+      "subtitle": "Ciclos comerciales gestionados y métricas de rendimiento",
       "backToDashboard": "Volver al Tablero",
       "stats": {
         "globalCycles": "Ciclos Globales",
@@ -1772,7 +1800,7 @@
       "card": {
         "sequenceIdentifier": "IDENTIFICADOR DE SECUENCIA",
         "performance": "Rendimiento {rating}",
-        "node": "Nodo {type}",
+        "node": "Despliegue comercial gestionado",
         "clusters": "GDC-{number} • {count} Clusters",
         "daysRemaining": "DÍAS RESTANTES",
         "growthVelocity": "Velocidad de Crecimiento",
@@ -1796,11 +1824,11 @@
     },
     "tpias": {
       "title": "Tenencias Activas",
-      "subtitle": "Gestione y rastree su portafolio privado de clusters de materias primas",
+      "subtitle": "Gestione y rastree su portafolio TPIA privado",
       "backToDashboard": "Volver al Tablero",
       "filters": {
         "searchLabel": "Filtrar Búsqueda",
-        "searchPlaceholder": "Buscar IDs, Materias Primas, Certificados...",
+        "searchPlaceholder": "Buscar IDs o certificados...",
         "statusLabel": "Filtro de Estado",
         "modeLabel": "Estrategia de Ganancia",
         "results": "Se encontraron {count} resultados",
@@ -1825,7 +1853,7 @@
       },
       "card": {
         "assetIdentifier": "IDENTIFICADOR DE ACTIVO",
-        "node": "Nodo {type}",
+        "node": "Despliegue comercial gestionado",
         "purchase": "Compra",
         "netValue": "Valor Neto",
         "clusterLocation": "Ubicación del Cluster",
@@ -1836,14 +1864,44 @@
         "growthVelocity": "Velocidad de Crecimiento"
       }
     },
+    "admin": {
+      "formationWatch": {
+        "title": "Vigilancia de Formación GDC",
+        "subtitle": "Clusters en formación esperando suficientes TPIA antes de la activación del ciclo.",
+        "subtitleDetailed": "Clusters en formación clasificados por tiempo de espera y espacios TPIA restantes.",
+        "needAttention": "{count} requieren atención",
+        "allNormal": "Todo normal",
+        "lastRefreshed": "Última actualización {time}",
+        "filled": "{current}/{total} llenos",
+        "tpiasFilled": "{current}/{total} TPIA llenos",
+        "days": "{count} días",
+        "slotsRemaining": "{count} espacios restantes"
+      },
+      "cycleDetails": {
+        "completed": "Operación completada y ganancias calculadas",
+        "active": "En ejecución y acumulando progreso del ciclo",
+        "processing": "Operación completada, distribución de ganancias pendiente",
+        "scheduled": "Programado, aún no acumula",
+        "notStarted": "El ciclo no ha comenzado"
+      },
+      "tpiaDetails": {
+        "cycleActive": "El ciclo está activo y acumulando",
+        "cycleAssigned": "Ciclo asignado pero aún no acumula",
+        "waitingFormation": "Esperando la formación del cluster GDC",
+        "cycleStatusNotAccruing": "{status} - aún no acumula",
+        "gdcFill": "Llenado del GDC",
+        "gdcFillValue": "{current}/{total} espacios"
+      }
+    },
     "purchase": {
       "title": "Adquirir TPIA",
-      "subtitle": "Asegure su bloque de inversión digital respaldado por materias primas",
+      "subtitle": "Asegure su bloque de inversión digital asegurado",
       "backToDashboard": "Volver al Tablero",
       "config": {
         "title": "Configuración del Activo",
         "subtitle": "Personalice su inversión",
-        "commodityLabel": "Seleccionar Materia Prima",
+        "commodityLabel": "Despliegue Comercial",
+        "commodityInfo": "Glotrade gestiona el despliegue comercial fuera de línea en segundo plano. Su tablero muestra el estado de su TPIA, el progreso del ciclo, la protección y el valor.",
         "modeLabel": "Modo de Ganancia Estratégica",
         "quantityLabel": "Volumen de Asignación",
         "blockCount": "Número de Bloques",
@@ -1885,7 +1943,7 @@
         "protectionsTitle": "PROTECCIONES DEL ACTIVO",
         "protections": {
           "insurance": "Certificado de Cobertura de Seguro",
-          "commodity": "Respaldo Físico de Materia Prima",
+          "commodity": "Despliegue comercial fuera de línea gestionado",
           "node": "Asignación de Nodo de Cluster",
           "compounding": "Capitalización Escala Automatizada",
           "preservation": "100% Preservación de Capital"
@@ -1959,7 +2017,7 @@
       "footer": {
         "noticeTitle": "AVISO DE ARCHIVO OFICIAL",
         "noticeText": "Este libro mayor de cuenta es un registro oficial de actividades en la Plataforma Internacional de Glotrade.",
-        "disclaimer": "Todas las entradas están verificadas por cruce con el movimiento físico de materias primas y los protocolos de custodia de activos digitales. Informe de discrepancias a {email} dentro de las 48 horas operativas.",
+        "disclaimer": "Todas las entradas se verifican con el despliegue comercial interno y los protocolos de custodia de activos digitales. Informe de discrepancias a {email} dentro de las 48 horas operativas.",
         "verified": "LIBRO MAYOR SEGURO VERIFICADO",
         "totalArchive": "ARCHIVO TOTAL DEL PORTAFOLIO",
         "endOfRecord": "PLATAFORMA INTERNACIONAL GLOTRADE • FIN DE DATOS REGISTRADOS"
@@ -1989,6 +2047,15 @@
       "cycle": {
         "title": "Ciclo Activo",
         "subtitle": "Crecimiento en curso",
+        "scheduledTitle": "Ciclo Programado",
+        "updateTitle": "Actualización del Ciclo",
+        "formationTitle": "Formación GDC",
+        "scheduledSubtitle": "Esperando activación",
+        "updateSubtitle": "Seguimiento del estado del ciclo",
+        "formationSubtitle": "Esperando la finalización del GDC",
+        "formationDescription": "Este TPIA está asignado al GDC-{number}. Su ciclo comercial de 37 días comienza cuando el GDC alcanza {current}/{total} espacios y se activa.",
+        "slotsFilled": "{current} de {total} espacios llenos",
+        "remaining": "{count} restantes",
         "openDate": "Fecha de Apertura",
         "projectedClose": "Cierre Proyectado",
         "targetLabel": "Objetivo de ROI del Ciclo",
@@ -2028,8 +2095,8 @@
         "position": "Posición del Nodo",
         "posLabel": "Posición del Nodo",
         "posValue": "Bloque {pos} de {total}",
-        "commodity": "Respaldo de Materia Prima",
-        "defaultCommodity": "Materias Primas Mixtas"
+        "commodity": "Despliegue Comercial",
+        "defaultCommodity": "Gestionado por Glotrade"
       }
     },
     "certificate": {
@@ -2046,11 +2113,12 @@
         "entityLabel": "ENTIDAD DE ACTIVO IDENTIFICADA"
       },
       "content": {
-        "confirmation": "Este documento confirma la cobertura de seguro registrada para el bloque de inversión {id}. Totalmente respaldado por reservas físicas de materias primas bajo el marco de gestión de riesgos de múltiples capas GDIP.",
+        "confirmation": "Este documento confirma la cobertura de seguro registrada para el bloque de inversión {id} bajo el marco de gestión de riesgos de múltiples capas GDIP.",
         "backing": "Esta cobertura está suscrita por el asegurador principal que se enumera a continuación.",
         "coverageLabel": "MAGNITUD DE LA COBERTURA",
-        "backingLabel": "RESPALDO DE ACTIVOS",
-        "backingValue": "{qty} {unit} {type}",
+        "backingLabel": "RESPALDO ASEGURADO",
+        "backingValue": "Respaldo comercial fuera de línea gestionado activo",
+        "pendingBackingValue": "Respaldo comercial fuera de línea gestionado pendiente de activación del ciclo",
         "windowLabel": "VENTANA EFECTIVA",
         "logisticsLabel": "CENTRO LOGÍSTICO",
         "defaultHub": "RESERVA ESTRATÉGICA DE GLOTRADE"
@@ -2070,17 +2138,18 @@
       "printButton": "Imprimir Certificado"
     },
     "commodity": {
-      "title": "Respaldo de Materia Prima",
-      "subtitle": "Activos físicos que respaldan su inversión TPIA",
+      "title": "Despliegue Comercial",
+      "subtitle": "Glotrade gestiona la actividad comercial fuera de línea de su TPIA en segundo plano.",
+      "managedNotice": "La vista del socio se centra en el estado del TPIA, el progreso del ciclo, la protección del seguro y el valor. Las materias primas específicas del comercio fuera de línea son gestionadas internamente por Glotrade y no se seleccionan en la plataforma.",
       "back": "Volver",
       "summary": {
-        "types": "Tipos de Materias Primas",
-        "total": "Total de Materias Primas",
+        "types": "Tipos de Despliegue",
+        "total": "Total de Despliegues",
         "quantity": "Cantidad Total",
         "value": "Valor Total"
       },
       "card": {
-        "idLabel": "ID de Materia Prima:",
+        "idLabel": "ID de Despliegue:",
         "quantityLabel": "Cantidad:",
         "marketPriceLabel": "Precio de Mercado:",
         "unitPriceLabel": "Precio por Unidad:",
@@ -2096,8 +2165,8 @@
         "poor": "Pobre"
       },
       "empty": {
-        "title": "No se Encontró Respaldo de Materia Prima",
-        "subtitle": "Las materias primas se asignarán una vez que su GDC comience a operar"
+        "title": "El Despliegue Comercial Aún No Está Activo",
+        "subtitle": "El estado de despliegue de su TPIA se actualizará a medida que avance el ciclo GDC"
       },
       "error": {
         "title": "Error",
@@ -2115,7 +2184,15 @@
       "info": {
         "hqLabel": "UBICACIÓN DE LA SEDE",
         "nodeLabel": "NODO DIGITAL",
-        "commLabel": "COMUNICACIÓN"
+        "commLabel": "COMUNICACIÓN",
+        "addressLine1": "Abuja, Federal Capital Territory",
+        "addressLine2": "Federal Republic of Nigeria",
+        "website": "www.glotrade.online",
+        "nodeId": "GDIP Ledger",
+        "supportEmail": "support@glotrade.online",
+        "supportPhone": "Lagos: (+234)902-900-4712 | Abuja: (+234)702-460-0924",
+        "supportPhoneLagos": "Lagos: (+234)902-900-4712",
+        "supportPhoneAbuja": "Abuja: (+234)702-460-0924"
       },
       "partner": {
         "billedLabel": "FACTURADO A LA ENTIDAD",
@@ -2133,19 +2210,21 @@
         "item": {
           "name": "Bloque de Comercio Estratégico GDIP",
           "status": "Activo Totalmente Colateralizado",
-          "blockId": "ID del Bloque",
-          "nodeId": "ID del Nodo",
-          "configLabel": "CONFIGURACIÓN DE ACTIVOS",
-          "backing": "RESPALDO COLATERAL",
-          "unit": "UNIDAD DE BLOQUE",
+          "blockId": "TPIA ID",
+          "nodeId": "GDC ID",
+          "configLabel": "DESPLIEGUE COMERCIAL",
+          "deploymentBacking": "Despliegue comercial fuera de línea gestionado bajo protección GDIP",
+          "backing": "RESPALDO ASEGURADO",
+          "unit": "TPIA",
           "settledStatus": "Liquidado 100%",
-          "defaultType": "Materias Primas Mixtas"
+          "defaultType": "Gestionado por Glotrade"
         }
       },
       "mobile": {
-        "blockLabel": "ID del Bloque",
+        "blockLabel": "TPIA ID",
         "qtyLabel": "Cant",
-        "valueLabel": "Valor"
+        "valueLabel": "Valor",
+        "unitAbbr": "TPIA"
       },
       "summary": {
         "subtotal": "VALOR NETO SECUNDARIO",
@@ -2156,8 +2235,8 @@
         "title": "ARCHIVO DE LIQUIDACIÓN",
         "text1": "Esta secuencia de transacciones se finalizó a través del",
         "ledgerSystem": "Sistema de Libro Mayor Interno de Glotrade",
-        "text2": "El respaldo de activos está totalmente garantizado por existencias de materias primas físicamente verificadas.",
-        "verifiedLabel": "Respaldo de Activos Verificado",
+        "text2": "El despliegue comercial es gestionado fuera de línea por Glotrade bajo controles de protección GDIP.",
+        "verifiedLabel": "Respaldo Asegurado Verificado",
         "idLabel": "ID de ARCHIVO ELECTRÓNICO",
         "officialLabel": "DOCUMENTO OFICIAL DEL LIBRO MAYOR",
         "endOfRecord": "PLATAFORMA INTERNACIONAL GLOTRADE • FIN DE DATOS REGISTRADOS"

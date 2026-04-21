@@ -1665,6 +1665,26 @@
     }
   },
   "gdip": {
+    "common": {
+      "cycleActive": "周期活跃",
+      "cycleScheduled": "周期已排期",
+      "cycleNotStarted": "周期未开始",
+      "waitingForGDC": "等待 GDC 完成",
+      "waitingForGDCFilled": "等待 GDC 完成：已填充 {current}/{total}",
+      "slotsRemaining": "剩余 {count} 个名额",
+      "slotsRemainingBeforeActivation": "激活前还剩 {count} 个名额",
+      "gdcCompleteAwaitingActivation": "GDC 已完成，等待周期激活",
+      "scheduledNotAccruing": "已排期，尚未累计收益",
+      "processingResults": "正在处理结果",
+      "completed": "已完成",
+      "notStarted": "未开始",
+      "notAccruingYet": "尚未累计收益",
+      "pendingClose": "等待结算",
+      "cycleProgress": "周期进度",
+      "accruedProfit": "累计利润",
+      "activationStatus": "激活状态",
+      "exportCsv": "导出 CSV"
+    },
     "layout": {
       "restricted": {
         "title": "分销商/承保合作伙伴访问受限",
@@ -1709,7 +1729,15 @@
         "profitMode": "获利模式",
         "cycleProgress": "周期进度",
         "waitingCycle": "等待下一个交易周期",
+        "startsAfterActivation": "激活后开始",
         "viewDetails": "区块详情"
+      },
+      "cycleGuide": {
+        "title": "TPIA 周期如何开始",
+        "description": "购买后，您的 TPIA 会分配到一个 10 个名额的 GDC。只有当该 GDC 填满并激活后，37 天交易周期才会开始。",
+        "pending": "待处理：等待 GDC 填满",
+        "scheduled": "已排期：GDC 已完成",
+        "active": "活跃：周期进行中"
       },
       "error": {
         "title": "错误",
@@ -1718,7 +1746,7 @@
     },
     "cycles": {
       "title": "生命周期跟踪",
-      "subtitle": "实时大宗商品交易周期和业绩指标",
+      "subtitle": "托管交易周期和业绩指标",
       "backToDashboard": "返回仪表板",
       "stats": {
         "globalCycles": "全球周期",
@@ -1744,7 +1772,7 @@
       "card": {
         "sequenceIdentifier": "序列标识符",
         "performance": "{rating} 业绩",
-        "node": "{type} 节点",
+        "node": "托管交易部署",
         "clusters": "GDC-{number} • {count} 个集群",
         "daysRemaining": "剩余天数",
         "growthVelocity": "增长速度",
@@ -1768,11 +1796,11 @@
     },
     "tpias": {
       "title": "活动资产",
-      "subtitle": "管理和跟踪您的大宗商品集群私人投资组合",
+      "subtitle": "管理和跟踪您的私人 TPIA 投资组合",
       "backToDashboard": "返回仪表板",
       "filters": {
         "searchLabel": "过滤搜索",
-        "searchPlaceholder": "搜索 ID、大宗商品、证书...",
+        "searchPlaceholder": "搜索 ID 或证书...",
         "statusLabel": "状态过滤",
         "modeLabel": "获利策略",
         "results": "找到 {count} 个结果",
@@ -1797,7 +1825,7 @@
       },
       "card": {
         "assetIdentifier": "资产标识符",
-        "node": "{type} 节点",
+        "node": "托管交易部署",
         "purchase": "购买",
         "netValue": "净值",
         "clusterLocation": "集群位置",
@@ -1808,14 +1836,44 @@
         "growthVelocity": "增长速度"
       }
     },
+    "admin": {
+      "formationWatch": {
+        "title": "GDC 组建监控",
+        "subtitle": "正在组建的集群需等待足够 TPIA 后才能激活周期。",
+        "subtitleDetailed": "按等待时间和剩余 TPIA 名额排列正在组建的集群。",
+        "needAttention": "{count} 个需要关注",
+        "allNormal": "全部正常",
+        "lastRefreshed": "上次刷新 {time}",
+        "filled": "已填充 {current}/{total}",
+        "tpiasFilled": "已填充 {current}/{total} 个 TPIA",
+        "days": "{count} 天",
+        "slotsRemaining": "剩余 {count} 个名额"
+      },
+      "cycleDetails": {
+        "completed": "交易已完成，利润已计算",
+        "active": "正在执行并累计周期进度",
+        "processing": "交易已完成，利润分配待处理",
+        "scheduled": "已排期，尚未累计收益",
+        "notStarted": "周期尚未开始"
+      },
+      "tpiaDetails": {
+        "cycleActive": "周期已活跃并正在累计",
+        "cycleAssigned": "周期已分配但尚未累计收益",
+        "waitingFormation": "等待 GDC 集群组建",
+        "cycleStatusNotAccruing": "{status} - 尚未累计收益",
+        "gdcFill": "GDC 填充",
+        "gdcFillValue": "{current}/{total} 个名额"
+      }
+    },
     "purchase": {
       "title": "获取 TPIA",
-      "subtitle": "保护您的大宗商品支撑数字投资区块",
+      "subtitle": "保障您的受保数字投资区块",
       "backToDashboard": "返回仪表板",
       "config": {
         "title": "资产配置",
         "subtitle": "定制您的投资",
-        "commodityLabel": "选择集群大宗商品",
+        "commodityLabel": "交易部署",
+        "commodityInfo": "Glotrade 在后台管理线下交易部署。您的仪表板会显示 TPIA 状态、周期进度、保障和价值。",
         "modeLabel": "战略收益模式",
         "quantityLabel": "分配容量",
         "blockCount": "区块数量",
@@ -1857,7 +1915,7 @@
         "protectionsTitle": "资产保护",
         "protections": {
           "insurance": "保险覆盖证书",
-          "commodity": "实物大宗商品支撑",
+          "commodity": "托管线下交易部署",
           "node": "集群节点分配",
           "compounding": "自动规模复利",
           "preservation": "100% 本金保护"
@@ -1931,7 +1989,7 @@
       "footer": {
         "noticeTitle": "官方存档通知",
         "noticeText": "此账户账本是 Glotrade 全球平台活动的官方记录。",
-        "disclaimer": "所有分录均经过实物大宗商品变动和数字资产托管协议的交叉验证。如发现差异，请在 48 小时内报告至 {email}。",
+        "disclaimer": "所有分录均经过内部交易部署和数字资产托管协议的交叉验证。如发现差异，请在 48 小时内报告至 {email}。",
         "verified": "安全账本已验证",
         "totalArchive": "总投资组合存档",
         "endOfRecord": "GLOTRADE 全球平台 • 记录数据结束"
@@ -1961,6 +2019,15 @@
       "cycle": {
         "title": "活跃周期",
         "subtitle": "增长进行中",
+        "scheduledTitle": "周期已排期",
+        "updateTitle": "周期更新",
+        "formationTitle": "GDC 组建",
+        "scheduledSubtitle": "等待激活",
+        "updateSubtitle": "周期状态跟踪",
+        "formationSubtitle": "等待 GDC 完成",
+        "formationDescription": "此 TPIA 已分配到 GDC-{number}。当该 GDC 达到 {current}/{total} 个名额并被激活后，37 天交易周期才会开始。",
+        "slotsFilled": "已填充 {current}/{total} 个名额",
+        "remaining": "剩余 {count}",
         "openDate": "开启日期",
         "projectedClose": "预计结束",
         "targetLabel": "周期收益目标",
@@ -2000,8 +2067,8 @@
         "position": "节点位置",
         "posLabel": "节点位置",
         "posValue": "{total} 个区块中的第 {pos} 个",
-        "commodity": "大宗商品支撑",
-        "defaultCommodity": "混合大宗商品"
+        "commodity": "交易部署",
+        "defaultCommodity": "由 Glotrade 管理"
       }
     },
     "certificate": {
@@ -2018,11 +2085,12 @@
         "entityLabel": "已识别资产实体"
       },
       "content": {
-        "confirmation": "本文件确认投资区块 {id} 的注册保险覆盖。由 GDIP 多层风险管理框架下的实物商品储备提供全额支持。",
+        "confirmation": "本文件确认投资区块 {id} 已纳入 GDIP 多层风险管理框架下的注册保险覆盖。",
         "backing": "此保险由下列主保险商承保。",
         "coverageLabel": "保险覆盖额度",
-        "backingLabel": "资产支持",
-        "backingValue": "{qty} {unit} {type}",
+        "backingLabel": "受保支持",
+        "backingValue": "托管线下交易支持已生效",
+        "pendingBackingValue": "托管线下交易支持等待周期激活",
         "windowLabel": "有效时间段",
         "logisticsLabel": "物流枢纽",
         "defaultHub": "GLOTRADE 战略储备"
@@ -2042,8 +2110,9 @@
       "printButton": "打印证书"
     },
     "commodity": {
-      "title": "大宗商品支撑",
-      "subtitle": "支撑您 TPIA 投资的实物资产",
+      "title": "交易部署",
+      "subtitle": "Glotrade 在后台管理您的 TPIA 线下交易活动。",
+      "managedNotice": "合作伙伴视图专注于 TPIA 状态、周期进度、保险保障和价值。具体线下交易商品由 Glotrade 内部管理，不在平台上选择。",
       "back": "返回",
       "summary": {
         "types": "商品类型",
@@ -2068,12 +2137,12 @@
         "poor": "较差"
       },
       "empty": {
-        "title": "未找到大宗商品支撑",
-        "subtitle": "一旦您的 GDC 开始交易，大宗商品将被分配"
+        "title": "交易部署尚未激活",
+        "subtitle": "您的 TPIA 部署状态将随着 GDC 周期推进而更新"
       },
       "error": {
         "title": "错误",
-        "loadFailed": "加载大宗商品支撑失败",
+        "loadFailed": "加载交易部署状态失败",
         "goBack": "返回"
       }
     },
@@ -2087,7 +2156,15 @@
       "info": {
         "hqLabel": "总部位置",
         "nodeLabel": "数字节点",
-        "commLabel": "通讯"
+        "commLabel": "通讯",
+        "addressLine1": "Abuja, Federal Capital Territory",
+        "addressLine2": "Federal Republic of Nigeria",
+        "website": "www.glotrade.online",
+        "nodeId": "GDIP Ledger",
+        "supportEmail": "support@glotrade.online",
+        "supportPhone": "Lagos: (+234)902-900-4712 | Abuja: (+234)702-460-0924",
+        "supportPhoneLagos": "Lagos: (+234)902-900-4712",
+        "supportPhoneAbuja": "Abuja: (+234)702-460-0924"
       },
       "partner": {
         "billedLabel": "账单抬头",
@@ -2105,19 +2182,21 @@
         "item": {
           "name": "GDIP 战略贸易区块",
           "status": "全额抵押资产",
-          "blockId": "区块 ID",
-          "nodeId": "节点 ID",
-          "configLabel": "资产配置",
-          "backing": "抵押支持",
-          "unit": "区块单位",
+          "blockId": "TPIA ID",
+          "nodeId": "GDC ID",
+          "configLabel": "交易部署",
+          "deploymentBacking": "GDIP 保障下的托管线下交易部署",
+          "backing": "受保支持",
+          "unit": "TPIA",
           "settledStatus": "100% 已结算",
-          "defaultType": "混合商品"
+          "defaultType": "由 Glotrade 管理"
         }
       },
       "mobile": {
-        "blockLabel": "区块 ID",
+        "blockLabel": "TPIA ID",
         "qtyLabel": "数量",
-        "valueLabel": "价值"
+        "valueLabel": "价值",
+        "unitAbbr": "TPIA"
       },
       "summary": {
         "subtotal": "净次级价值",
@@ -2128,8 +2207,8 @@
         "title": "结算存档",
         "text1": "此交易序列已通过",
         "ledgerSystem": "GloTrade 内部账本系统",
-        "text2": "资产支持由经物理验证的实物商品库存提供全额抵押。",
-        "verifiedLabel": "资产支持已验证",
+        "text2": "交易部署由 Glotrade 在线下管理，并受 GDIP 保障控制。",
+        "verifiedLabel": "受保支持已验证",
         "idLabel": "电子存档 ID",
         "officialLabel": "官方账本文件",
         "endOfRecord": "GLOTRADE 全球平台 • 记录数据结束"

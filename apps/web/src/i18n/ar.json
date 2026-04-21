@@ -1664,6 +1664,26 @@
     }
   },
   "gdip": {
+    "common": {
+      "cycleActive": "الدورة نشطة",
+      "cycleScheduled": "الدورة مجدولة",
+      "cycleNotStarted": "الدورة لم تبدأ",
+      "waitingForGDC": "بانتظار اكتمال GDC",
+      "waitingForGDCFilled": "بانتظار اكتمال GDC: تم ملء {current}/{total}",
+      "slotsRemaining": "{count} فتحات متبقية",
+      "slotsRemainingBeforeActivation": "{count} فتحات متبقية قبل التنشيط",
+      "gdcCompleteAwaitingActivation": "اكتمل GDC، بانتظار تنشيط الدورة",
+      "scheduledNotAccruing": "مجدولة، لا تتراكم بعد",
+      "processingResults": "معالجة النتائج",
+      "completed": "مكتمل",
+      "notStarted": "لم تبدأ",
+      "notAccruingYet": "لا تتراكم بعد",
+      "pendingClose": "الإغلاق معلق",
+      "cycleProgress": "تقدم الدورة",
+      "accruedProfit": "الأرباح المتراكمة",
+      "activationStatus": "حالة التنشيط",
+      "exportCsv": "تصدير CSV"
+    },
     "layout": {
       "restricted": {
         "title": "وصول الموزعين/الشركاء المؤمن عليهم مقيد",
@@ -1708,7 +1728,15 @@
         "profitMode": "وضع الربح",
         "cycleProgress": "تقدم الدورة",
         "waitingCycle": "بانتظار دورة التداول القادمة",
+        "startsAfterActivation": "يبدأ بعد التنشيط",
         "viewDetails": "تفاصيل الكتلة"
+      },
+      "cycleGuide": {
+        "title": "كيف تبدأ دورات TPIA",
+        "description": "يتم تعيين TPIA الخاص بك إلى GDC من 10 فتحات بعد الشراء. تبدأ دورة التداول لمدة 37 يوماً فقط بعد اكتمال ذلك GDC وتنشيطه.",
+        "pending": "معلق: بانتظار ملء GDC",
+        "scheduled": "مجدول: GDC مكتمل",
+        "active": "نشط: الدورة قيد التقدم"
       },
       "error": {
         "title": "خطأ",
@@ -1717,7 +1745,7 @@
     },
     "cycles": {
       "title": "تتبع دورة الحياة",
-      "subtitle": "دورات تداول السلع في الوقت الفعلي ومقاييس الأداء",
+      "subtitle": "دورات تداول مُدارة ومقاييس الأداء",
       "backToDashboard": "العودة إلى لوحة التحكم",
       "stats": {
         "globalCycles": "الدورات العالمية",
@@ -1743,7 +1771,7 @@
       "card": {
         "sequenceIdentifier": "معرف التسلسل",
         "performance": "أداء {rating}",
-        "node": "عقدة {type}",
+        "node": "نشر تجاري مُدار",
         "clusters": "GDC-{number} • {count} مجموعات",
         "daysRemaining": "الأيام المتبقية",
         "growthVelocity": "سرعة النمو",
@@ -1767,11 +1795,11 @@
     },
     "tpias": {
       "title": "الحيازات النشطة",
-      "subtitle": "إدارة وتتبع محفظتك الخاصة من مجموعات السلع",
+      "subtitle": "إدارة وتتبع محفظة TPIA الخاصة بك",
       "backToDashboard": "العودة إلى لوحة التحكم",
       "filters": {
         "searchLabel": "تصفية البحث",
-        "searchPlaceholder": "البحث عن المعرفات، السلع، الشهادات...",
+        "searchPlaceholder": "البحث عن المعرفات أو الشهادات...",
         "statusLabel": "تصفية الحالة",
         "modeLabel": "استراتيجية الربح",
         "results": "تم العثور على {count} نتائج",
@@ -1796,7 +1824,7 @@
       },
       "card": {
         "assetIdentifier": "معرف الأصول",
-        "node": "عقدة {type}",
+        "node": "نشر تجاري مُدار",
         "purchase": "شراء",
         "netValue": "صافي القيمة",
         "clusterLocation": "موقع المجموعة",
@@ -1807,14 +1835,44 @@
         "growthVelocity": "سرعة النمو"
       }
     },
+    "admin": {
+      "formationWatch": {
+        "title": "مراقبة تشكيل GDC",
+        "subtitle": "مجموعات قيد التشكيل تنتظر ما يكفي من TPIA قبل تنشيط الدورة.",
+        "subtitleDetailed": "المجموعات قيد التشكيل مرتبة حسب وقت الانتظار وفتحات TPIA المتبقية.",
+        "needAttention": "{count} تحتاج إلى انتباه",
+        "allNormal": "كل شيء طبيعي",
+        "lastRefreshed": "آخر تحديث {time}",
+        "filled": "تم ملء {current}/{total}",
+        "tpiasFilled": "تم ملء {current}/{total} TPIA",
+        "days": "{count} أيام",
+        "slotsRemaining": "{count} فتحات متبقية"
+      },
+      "cycleDetails": {
+        "completed": "اكتملت عملية التداول وتم حساب الأرباح",
+        "active": "قيد التنفيذ وتتراكم تقدم الدورة",
+        "processing": "اكتملت عملية التداول، توزيع الأرباح معلق",
+        "scheduled": "مجدولة، لا تتراكم بعد",
+        "notStarted": "لم تبدأ الدورة"
+      },
+      "tpiaDetails": {
+        "cycleActive": "الدورة نشطة وتتراكم",
+        "cycleAssigned": "تم تعيين الدورة لكنها لا تتراكم بعد",
+        "waitingFormation": "بانتظار تشكيل مجموعة GDC",
+        "cycleStatusNotAccruing": "{status} - لا تتراكم بعد",
+        "gdcFill": "ملء GDC",
+        "gdcFillValue": "{current}/{total} فتحات"
+      }
+    },
     "purchase": {
       "title": "الحصول على TPIA",
-      "subtitle": "تأمين كتلة الاستثمار الرقمي المدعومة بالسلع",
+      "subtitle": "تأمين كتلة الاستثمار الرقمي المؤمن",
       "backToDashboard": "العودة إلى لوحة التحكم",
       "config": {
         "title": "تكوين الأصول",
         "subtitle": "تخصيص استثمارك",
-        "commodityLabel": "اختر السلعة",
+        "commodityLabel": "النشر التجاري",
+        "commodityInfo": "تدير Glotrade النشر التجاري خارج المنصة في الخلفية. تعرض لوحة التحكم حالة TPIA وتقدم الدورة والحماية والقيمة.",
         "modeLabel": "وضع الربح الاستراتيجي",
         "quantityLabel": "حجم التخصيص",
         "blockCount": "عدد الكتل",
@@ -1856,7 +1914,7 @@
         "protectionsTitle": "حمايات الأصول",
         "protections": {
           "insurance": "شهادة التغطية التأمينية",
-          "commodity": "دعم السلع المادي",
+          "commodity": "نشر تجاري خارج المنصة مُدار",
           "node": "تخصيص عقدة المجموعة",
           "compounding": "تراكم آلي واسع النطاق",
           "preservation": "حفظ رأس المال بنسبة 100%"
@@ -1930,7 +1988,7 @@
       "footer": {
         "noticeTitle": "إشعار الأرشيف الرسمي",
         "noticeText": "دفتر أستاذ الحساب هذا هو سجل رسمي للأنشطة على منصة جلوتريد الدولية.",
-        "disclaimer": "يتم التحقق من جميع القيود من خلال مطابقتها مع حركة السلع المادية وبروتوكولات عهدة الأصول الرقمية. يرجى الإبلاغ عن أي اختلافات إلى {email} خلال 48 ساعة.",
+        "disclaimer": "يتم التحقق من جميع القيود من خلال النشر التجاري الداخلي وبروتوكولات عهدة الأصول الرقمية. يرجى الإبلاغ عن أي اختلافات إلى {email} خلال 48 ساعة.",
         "verified": "تم التحقق من دفتر الأستاذ الآمن",
         "totalArchive": "إجمالي أرشيف المحفظة",
         "endOfRecord": "منصة جلوتريد الدولية • نهاية السجلات"
@@ -1960,6 +2018,15 @@
       "cycle": {
         "title": "الدورة النشطة",
         "subtitle": "النمو قيد التقدم",
+        "scheduledTitle": "الدورة مجدولة",
+        "updateTitle": "تحديث الدورة",
+        "formationTitle": "تشكيل GDC",
+        "scheduledSubtitle": "بانتظار التنشيط",
+        "updateSubtitle": "تتبع حالة الدورة",
+        "formationSubtitle": "بانتظار اكتمال GDC",
+        "formationDescription": "تم تعيين هذا TPIA إلى GDC-{number}. تبدأ دورة التداول لمدة 37 يوماً بعد أن يصل GDC إلى {current}/{total} فتحات ويتم تنشيطه.",
+        "slotsFilled": "تم ملء {current} من {total} فتحات",
+        "remaining": "{count} متبقية",
         "openDate": "تاريخ الفتح",
         "projectedClose": "الإغلاق المتوقع",
         "targetLabel": "عائد الدورة المستهدف",
@@ -1999,8 +2066,8 @@
         "position": "موقع العقدة",
         "posLabel": "موقع العقدة",
         "posValue": "كتلة {pos} من {total}",
-        "commodity": "دعم السلع",
-        "defaultCommodity": "سلع مختلطة"
+        "commodity": "النشر التجاري",
+        "defaultCommodity": "تديره Glotrade"
       }
     },
     "certificate": {
@@ -2017,11 +2084,12 @@
         "entityLabel": "كيان الأصول المحدد"
       },
       "content": {
-        "confirmation": "تؤكد هذه الوثيقة تغطية التأمين المسجلة لكتلة الاستثمار {id}. مدعومة بالكامل باحتياطيات السلع المادية بموجب إطار إدارة المخاطر متعدد الطبقات GDIP.",
+        "confirmation": "تؤكد هذه الوثيقة تغطية التأمين المسجلة لكتلة الاستثمار {id} بموجب إطار إدارة المخاطر متعدد الطبقات GDIP.",
         "backing": "هذه التغطية مكتتبة من قبل المؤمن الرئيسي المدرج أدناه.",
         "coverageLabel": "حجم التغطية",
-        "backingLabel": "دعم الأصول",
-        "backingValue": "{qty} {unit} {type}",
+        "backingLabel": "الدعم المؤمن",
+        "backingValue": "دعم تجاري مُدار خارج المنصة نشط",
+        "pendingBackingValue": "دعم تجاري مُدار خارج المنصة بانتظار تفعيل الدورة",
         "windowLabel": "النافذة الفعالة",
         "logisticsLabel": "المركز اللوجستي",
         "defaultHub": "الاحتياطي الاستراتيجي لجلوتريد"
@@ -2041,17 +2109,18 @@
       "printButton": "طباعة الشهادة"
     },
     "commodity": {
-      "title": "دعم السلع",
-      "subtitle": "الأصول المادية التي تدعم استثمار TPIA الخاص بك",
+      "title": "النشر التجاري",
+      "subtitle": "تدير Glotrade نشاط التداول خارج المنصة الخاص بـ TPIA في الخلفية.",
+      "managedNotice": "تركز واجهة الشريك على حالة TPIA وتقدم الدورة والحماية التأمينية والقيمة. تتم إدارة سلع التداول المحددة خارج المنصة داخلياً بواسطة Glotrade ولا يتم اختيارها على المنصة.",
       "back": "رجوع",
       "summary": {
-        "types": "أنواع السلع",
-        "total": "إجمالي السلع",
+        "types": "أنواع النشر",
+        "total": "إجمالي عمليات النشر",
         "quantity": "إجمالي الكمية",
         "value": "إجمالي القيمة"
       },
       "card": {
-        "idLabel": "معرف السلعة: ",
+        "idLabel": "معرف النشر: ",
         "quantityLabel": "الكمية: ",
         "marketPriceLabel": "سعر السوق: ",
         "unitPriceLabel": "سعر الوحدة: ",
@@ -2068,11 +2137,11 @@
       },
       "empty": {
         "title": "لم يتم العثور على دعم سلعي",
-        "subtitle": "سيتم تخصيص السلع بمجرد بدء تشغيل GDC الخاص بك"
+        "subtitle": "سيتم تحديث حالة نشر TPIA مع تقدم دورة GDC"
       },
       "error": {
         "title": "خطأ",
-        "loadFailed": "فشل تحميل دعم السلع",
+        "loadFailed": "فشل تحميل حالة النشر التجاري",
         "goBack": "رجوع"
       }
     },
@@ -2086,7 +2155,15 @@
       "info": {
         "hqLabel": "موقع المقر",
         "nodeLabel": "العقدة الرقمية",
-        "commLabel": "التواصل"
+        "commLabel": "التواصل",
+        "addressLine1": "Abuja, Federal Capital Territory",
+        "addressLine2": "Federal Republic of Nigeria",
+        "website": "www.glotrade.online",
+        "nodeId": "GDIP Ledger",
+        "supportEmail": "support@glotrade.online",
+        "supportPhone": "Lagos: (+234)902-900-4712 | Abuja: (+234)702-460-0924",
+        "supportPhoneLagos": "Lagos: (+234)902-900-4712",
+        "supportPhoneAbuja": "Abuja: (+234)702-460-0924"
       },
       "partner": {
         "billedLabel": "فاتورة إلى الكيان",
@@ -2104,19 +2181,21 @@
         "item": {
           "name": "كتلة التجارة الاستراتيجية GDIP",
           "status": "أصل مضمون بالكامل",
-          "blockId": "معرف الكتلة",
-          "nodeId": "معرف العقدة",
-          "configLabel": "تكوين الأصول",
-          "backing": "دعم الضمان",
-          "unit": "وحدة الكتلة",
+          "blockId": "TPIA ID",
+          "nodeId": "GDC ID",
+          "configLabel": "النشر التجاري",
+          "deploymentBacking": "نشر تجاري مُدار خارج المنصة تحت حماية GDIP",
+          "backing": "الدعم المؤمن",
+          "unit": "TPIA",
           "settledStatus": "تمت التسوية بنسبة 100%",
-          "defaultType": "سلع مختلطة"
+          "defaultType": "تديره Glotrade"
         }
       },
       "mobile": {
-        "blockLabel": "معرف الكتلة",
+        "blockLabel": "TPIA ID",
         "qtyLabel": "الكمية",
-        "valueLabel": "القيمة"
+        "valueLabel": "القيمة",
+        "unitAbbr": "TPIA"
       },
       "summary": {
         "subtotal": "صافي القيمة الفرعية",
@@ -2127,8 +2206,8 @@
         "title": "أرشيف التسوية",
         "text1": "تم الانتهاء من تسلسل المعاملة هذا عبر",
         "ledgerSystem": "نظام دفتر الأستاذ الداخلي لشركة GloTrade",
-        "text2": "دعم الأصول مضمون بالكامل بمخزونات السلع التي تم التحقق منها ماديًا.",
-        "verifiedLabel": "تم التحقق من دعم الأصول",
+        "text2": "تدير Glotrade النشر التجاري خارج المنصة ضمن ضوابط حماية GDIP.",
+        "verifiedLabel": "تم التحقق من الدعم المؤمن",
         "idLabel": "معرف الأرشيف الإلكتروني",
         "officialLabel": "وثيقة دفتر الأستاذ الرسمية",
         "endOfRecord": "منصة جلوتريد الدولية • نهاية السجلات"

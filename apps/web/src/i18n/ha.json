@@ -1624,6 +1624,26 @@
     }
   },
   "gdip": {
+    "common": {
+      "cycleActive": "Zagaye yana aiki",
+      "cycleScheduled": "An tsara zagaye",
+      "cycleNotStarted": "Zagaye bai fara ba",
+      "waitingForGDC": "Ana jiran kammala GDC",
+      "waitingForGDCFilled": "Ana jiran kammala GDC: an cika {current}/{total}",
+      "slotsRemaining": "Gurare {count} sun rage",
+      "slotsRemainingBeforeActivation": "Gurare {count} sun rage kafin kunnawa",
+      "gdcCompleteAwaitingActivation": "GDC ya cika, ana jiran kunna zagaye",
+      "scheduledNotAccruing": "An tsara, bai fara tara riba ba tukuna",
+      "processingResults": "Ana sarrafa sakamako",
+      "completed": "An kammala",
+      "notStarted": "Bai fara ba",
+      "notAccruingYet": "Bai fara tara riba ba tukuna",
+      "pendingClose": "Ana jiran rufewa",
+      "cycleProgress": "Ci Gaban Zagaye",
+      "accruedProfit": "Ribar da aka Tara",
+      "activationStatus": "Matsayin Kunnawa",
+      "exportCsv": "Fitar da CSV"
+    },
     "layout": {
       "restricted": {
         "title": "An takaita damar diloli/abokan hulda masu inshora",
@@ -1668,7 +1688,15 @@
         "profitMode": "Yanayin Riba",
         "cycleProgress": "Ci Gaban Zagaye",
         "waitingCycle": "Ana jiran zagayen ciniki na gaba",
+        "startsAfterActivation": "Zai fara bayan kunnawa",
         "viewDetails": "Cikakken Bayani"
+      },
+      "cycleGuide": {
+        "title": "Yadda zagayen TPIA ke farawa",
+        "description": "Bayan saye, ana sanya TPIA ɗinku cikin GDC mai gurare 10. Zagayen kasuwanci na kwanaki 37 yana farawa ne kawai bayan GDC ɗin ya cika kuma an kunna shi.",
+        "pending": "Ana jira: cika GDC",
+        "scheduled": "An tsara: GDC ya cika",
+        "active": "Yana aiki: zagaye na gudana"
       },
       "error": {
         "title": "Kuskure",
@@ -1677,7 +1705,7 @@
     },
     "cycles": {
       "title": "Bibiyar Zagayen Rayuwa",
-      "subtitle": "Zagayen kasuwancin kayayyaki na gaskiya da mizanin aiki",
+      "subtitle": "Zagayen kasuwanci da ake gudanarwa da mizanin aiki",
       "backToDashboard": "Koma Dashboard",
       "stats": {
         "globalCycles": "Zagayen Duniya",
@@ -1703,7 +1731,7 @@
       "card": {
         "sequenceIdentifier": "ALAMAR JERIN",
         "performance": "Aiki {rating}",
-        "node": "Node {type}",
+        "node": "Gudanar da Kasuwanci",
         "clusters": "GDC-{number} • Clusters {count}",
         "daysRemaining": "KWANAKI DA SUKA RAGE",
         "growthVelocity": "Saurin Girma",
@@ -1731,7 +1759,7 @@
       "backToDashboard": "Koma Dashboard",
       "filters": {
         "searchLabel": "Tace Bincike",
-        "searchPlaceholder": "Nemi ID, Kayan Kasuwanci, Shaidu...",
+        "searchPlaceholder": "Nemi ID ko shaidu...",
         "statusLabel": "Tace Matsayi",
         "modeLabel": "Tsarin Riba",
         "results": "An sami sakamako {count}",
@@ -1756,7 +1784,7 @@
       },
       "card": {
         "assetIdentifier": "ALAMAR KADARORI",
-        "node": "Node {type}",
+        "node": "Gudanar da Kasuwanci",
         "purchase": "Saya",
         "netValue": "Matsayin Daraja",
         "clusterLocation": "Wurin Cluster",
@@ -1767,14 +1795,44 @@
         "growthVelocity": "Saurin Girma"
       }
     },
+    "admin": {
+      "formationWatch": {
+        "title": "Sa Ido Kan Ginin GDC",
+        "subtitle": "Clusters da ake ginawa suna jiran isassun TPIA kafin kunna zagaye.",
+        "subtitleDetailed": "Clusters da ake ginawa bisa lokacin jira da guraren TPIA da suka rage.",
+        "needAttention": "{count} na bukatar kulawa",
+        "allNormal": "Duk yana daidai",
+        "lastRefreshed": "An sabunta ƙarshe {time}",
+        "filled": "An cika {current}/{total}",
+        "tpiasFilled": "An cika TPIA {current}/{total}",
+        "days": "Kwanaki {count}",
+        "slotsRemaining": "Gurare {count} sun rage"
+      },
+      "cycleDetails": {
+        "completed": "An kammala ciniki kuma an ƙididdige riba",
+        "active": "Ana aiwatarwa kuma ana tara ci gaban zagaye",
+        "processing": "An kammala ciniki, ana jiran raba riba",
+        "scheduled": "An tsara, bai fara tara riba ba tukuna",
+        "notStarted": "Zagaye bai fara ba"
+      },
+      "tpiaDetails": {
+        "cycleActive": "Zagaye yana aiki kuma yana tara riba",
+        "cycleAssigned": "An sanya zagaye amma bai fara tara riba ba tukuna",
+        "waitingFormation": "Ana jiran ginin cluster GDC",
+        "cycleStatusNotAccruing": "{status} - bai fara tara riba ba tukuna",
+        "gdcFill": "Cikar GDC",
+        "gdcFillValue": "Gurare {current}/{total}"
+      }
+    },
     "purchase": {
       "title": "Sami TPIA",
-      "subtitle": "Kiyaye jarin ku na dijital da kayayyakin kasuwanci suka mara wa baya",
+      "subtitle": "Kiyaye rukunin jarin dijital ɗinku mai inshora",
       "backToDashboard": "Koma Dashboard",
       "config": {
         "title": "Tsarin Kadarori",
         "subtitle": "Keɓance jarin ku",
-        "commodityLabel": "Zaɓi Kayan Kasuwanci",
+        "commodityLabel": "Gudanar da Kasuwanci",
+        "commodityInfo": "Glotrade ce ke gudanar da kasuwancin waje a bayan fage. Dashboard ɗinku yana nuna matsayin TPIA, ci gaban zagaye, kariya, da daraja.",
         "modeLabel": "Tsarin Samun Riba",
         "quantityLabel": "Yawan Rabon Da Aka Yi",
         "blockCount": "Yawan Tubali",
@@ -1816,7 +1874,7 @@
         "protectionsTitle": "KARIYAR KADARORI",
         "protections": {
           "insurance": "Shaidar Inshora",
-          "commodity": "Goyon Bayan Kayan Kasuwanci",
+          "commodity": "Gudanar da kasuwancin waje",
           "node": "Rabon Cluster Node",
           "compounding": "Tara Riba Ta atomatik",
           "preservation": "100% Kare Babban Jari"
@@ -1890,7 +1948,7 @@
       "footer": {
         "noticeTitle": "SANARWAR AJIYA TA HUKUMA",
         "noticeText": "Wannan littafin lissafin bayani ne na hukuma na ayyukan da aka yi a Dandalin Duniya na Glotrade.",
-        "disclaimer": "Dukkan bayanan an tantance su ta hanyar duba tafiyar kayayyaki da kuma tsarin tsaron kadarorin dijital. Sanar da mu duk wani kuskure zuwa {email} a cikin sa'o'i 48.",
+        "disclaimer": "Dukkan bayanan an tantance su ta hanyar tsarin kasuwanci na ciki da tsarin tsaron kadarorin dijital. Sanar da mu duk wani kuskure zuwa {email} a cikin sa'o'i 48.",
         "verified": "LITTAFIN LISSAFI INGATTACCE",
         "totalArchive": "JIMLAR TARIHIN JARI",
         "endOfRecord": "DANDALIN DUNIYA NA GLOTRADE • KARSHEN BAYANAI"
@@ -1920,6 +1978,15 @@
       "cycle": {
         "title": "Zagaye na Yanzu",
         "subtitle": "Ana samun ci gaba",
+        "scheduledTitle": "An Tsara Zagaye",
+        "updateTitle": "Sabunta Zagaye",
+        "formationTitle": "Ginin GDC",
+        "scheduledSubtitle": "Ana jiran kunnawa",
+        "updateSubtitle": "Bibiyar matsayin zagaye",
+        "formationSubtitle": "Ana jiran kammala GDC",
+        "formationDescription": "An sanya wannan TPIA zuwa GDC-{number}. Zagayen kasuwanci na kwanaki 37 zai fara bayan GDC ya kai gurare {current}/{total} kuma an kunna shi.",
+        "slotsFilled": "An cika gurare {current} daga cikin {total}",
+        "remaining": "{count} sun rage",
         "openDate": "Ranar Buɗewa",
         "projectedClose": "Ranar Rufewa",
         "targetLabel": "Manufar Ribar Zagaye",
@@ -1959,8 +2026,8 @@
         "position": "Wurin Node",
         "posLabel": "Wurin Node",
         "posValue": "Tubali {pos} cikin {total}",
-        "commodity": "Goyon Bayan Kayan Kasuwanci",
-        "defaultCommodity": "Kayan Kasuwanci Dabam-dabam"
+        "commodity": "Gudanar da Kasuwanci",
+        "defaultCommodity": "Glotrade ce ke gudanarwa"
       }
     },
     "certificate": {
@@ -1977,11 +2044,12 @@
         "entityLabel": "MALLAKIN KADARORI"
       },
       "content": {
-        "confirmation": "Wannan takarda ta tabbatar da rajistar inshora don rukunin jari {id}. Yana samun cikakken goyon baya daga albarkatun kayayyaki a ƙarƙashin tsarin gudanar da kasada na GDIP multi-layer.",
+        "confirmation": "Wannan takarda ta tabbatar da rajistar inshora don rukunin jari {id} a ƙarƙashin tsarin gudanar da kasada na GDIP multi-layer.",
         "backing": "Wannan inshora ne babban kamfanin inshorar da aka jera a ƙasa ya rubuta shi.",
         "coverageLabel": "GIRMAN INSHORA",
-        "backingLabel": "GOYON BAYAN KADARORI",
-        "backingValue": "{qty} {unit} {type}",
+        "backingLabel": "GOYON BAYAN INSHORA",
+        "backingValue": "Goyon bayan kasuwancin waje da ake gudanarwa yana aiki",
+        "pendingBackingValue": "Goyon bayan kasuwancin waje da ake gudanarwa yana jiran kunna zagaye",
         "windowLabel": "LOKACIN DA YAKE AIKI",
         "logisticsLabel": "WURIN AJIYA",
         "defaultHub": "AJIYA TA MUSAMMAN TA GLOTRADE"
@@ -2001,8 +2069,9 @@
       "printButton": "Buga Shaidar"
     },
     "commodity": {
-      "title": "Goyon Bayan Kayan Kasuwanci",
-      "subtitle": "Kayayyakin gaske da suka mara wa jarin ku na TPIA baya",
+      "title": "Gudanar da Kasuwanci",
+      "subtitle": "Glotrade ce ke gudanar da harkar kasuwancin waje na TPIA ɗinku a bayan fage.",
+      "managedNotice": "Bangaren abokin hulɗa yana nuna matsayin TPIA, ci gaban zagaye, kariyar inshora, da daraja. Takamaiman kayayyakin kasuwancin waje Glotrade ce ke sarrafawa a ciki, ba a zaɓarsu a dandalin ba.",
       "back": "Koma Baya",
       "summary": {
         "types": "Nau'ikan Kayayyaki",
@@ -2011,7 +2080,7 @@
         "value": "Jimlar Daraja"
       },
       "card": {
-        "idLabel": "Lambar Kayan Kasuwanci: ",
+        "idLabel": "Lambar Gudanarwa: ",
         "quantityLabel": "Yawa: ",
         "marketPriceLabel": "Farashin Kasuwa: ",
         "unitPriceLabel": "Farashin Guda Daya: ",
@@ -2028,7 +2097,7 @@
       },
       "empty": {
         "title": "Ba a sami goyon bayan kayan kasuwanci ba",
-        "subtitle": "Za a raba muku kayayyaki da zarar GDC ɗinku ya fara aiki"
+        "subtitle": "Za a sabunta matsayin gudanar da TPIA ɗinku yayin da zagayen GDC ke ci gaba"
       },
       "error": {
         "title": "Kuskure",
@@ -2046,7 +2115,15 @@
       "info": {
         "hqLabel": "WURIN SHEKWARI",
         "nodeLabel": "DIJITAL NODE",
-        "commLabel": "SADARWA"
+        "commLabel": "SADARWA",
+        "addressLine1": "Abuja, Federal Capital Territory",
+        "addressLine2": "Federal Republic of Nigeria",
+        "website": "www.glotrade.online",
+        "nodeId": "GDIP Ledger",
+        "supportEmail": "support@glotrade.online",
+        "supportPhone": "Lagos: (+234)902-900-4712 | Abuja: (+234)702-460-0924",
+        "supportPhoneLagos": "Lagos: (+234)902-900-4712",
+        "supportPhoneAbuja": "Abuja: (+234)702-460-0924"
       },
       "partner": {
         "billedLabel": "AN BIYA GA WANNAN",
@@ -2064,19 +2141,21 @@
         "item": {
           "name": "Rukunin Kasuwancin Estrateji na GDIP",
           "status": "Kadarorin da ke da Cikakken Lamuni",
-          "blockId": "Lambar Rukuni",
-          "nodeId": "Lambar Node",
-          "configLabel": "TSARIN KADARORI",
-          "backing": "GOYON BAYAN LAMUNI",
-          "unit": "RAKA'AR RUKUNI",
+          "blockId": "TPIA ID",
+          "nodeId": "GDC ID",
+          "configLabel": "GUDANAR DA KASUWANCI",
+          "deploymentBacking": "Gudanar da kasuwancin waje ƙarƙashin kariyar GDIP",
+          "backing": "GOYON BAYAN INSHORA",
+          "unit": "TPIA",
           "settledStatus": "An Kammala 100%",
-          "defaultType": "Haɗaɗɗun Kayayyaki"
+          "defaultType": "Glotrade ce ke gudanarwa"
         }
       },
       "mobile": {
-        "blockLabel": "Lambar Rukuni",
+        "blockLabel": "TPIA ID",
         "qtyLabel": "Yawa",
-        "valueLabel": "Daraja"
+        "valueLabel": "Daraja",
+        "unitAbbr": "TPIA"
       },
       "summary": {
         "subtotal": "TSARIN DARARA",
@@ -2087,8 +2166,8 @@
         "title": "AJIYAR KAMMALAWA",
         "text1": "An kammala wannan jerin hada-hadar ta hanyar",
         "ledgerSystem": "Tsarin Ledger na Cikin Gida na GloTrade",
-        "text2": "Goyon bayan kadarori yana da cikakken lamuni ta hanyar kayayyakin da aka tantance ta zahiri.",
-        "verifiedLabel": "An Tabbatar da Goyon Baya",
+        "text2": "Glotrade ce ke gudanar da kasuwancin waje ƙarƙashin ka'idojin kariyar GDIP.",
+        "verifiedLabel": "An Tabbatar da Goyon Bayan Inshora",
         "idLabel": "ID NA AJIYA",
         "officialLabel": "TAKARDA TA HUKUMA",
         "endOfRecord": "DANDALIN DUNIYA NA GLOTRADE • KARSHEN BAYANAI"

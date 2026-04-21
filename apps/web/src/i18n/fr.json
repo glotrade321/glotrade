@@ -1742,6 +1742,26 @@
     }
   },
   "gdip": {
+    "common": {
+      "cycleActive": "Cycle actif",
+      "cycleScheduled": "Cycle planifié",
+      "cycleNotStarted": "Cycle non commencé",
+      "waitingForGDC": "En attente de finalisation du GDC",
+      "waitingForGDCFilled": "En attente de finalisation du GDC : {current}/{total} remplis",
+      "slotsRemaining": "{count} emplacements restants",
+      "slotsRemainingBeforeActivation": "{count} emplacements restants avant activation",
+      "gdcCompleteAwaitingActivation": "GDC complet, en attente d'activation du cycle",
+      "scheduledNotAccruing": "Planifié, pas encore en accumulation",
+      "processingResults": "Traitement des résultats",
+      "completed": "Terminé",
+      "notStarted": "Non commencé",
+      "notAccruingYet": "Pas encore en accumulation",
+      "pendingClose": "Clôture en attente",
+      "cycleProgress": "Progression du Cycle",
+      "accruedProfit": "Profit Accumulé",
+      "activationStatus": "Statut d'Activation",
+      "exportCsv": "Exporter CSV"
+    },
     "layout": {
       "restricted": {
         "title": "Accès Distributeurs/Partenaires Assurés Restreint",
@@ -1786,7 +1806,15 @@
         "profitMode": "Mode de Profit",
         "cycleProgress": "Progression du Cycle",
         "waitingCycle": "En attente du prochain cycle de trading",
+        "startsAfterActivation": "Commence après activation",
         "viewDetails": "Détails du Bloc"
+      },
+      "cycleGuide": {
+        "title": "Comment commencent les cycles TPIA",
+        "description": "Votre TPIA est attribué à un GDC de 10 emplacements après l'achat. Le cycle de commerce de 37 jours ne commence qu'une fois ce GDC complet et activé.",
+        "pending": "En attente : remplissage du GDC",
+        "scheduled": "Planifié : GDC complet",
+        "active": "Actif : cycle en cours"
       },
       "error": {
         "title": "Erreur",
@@ -1795,7 +1823,7 @@
     },
     "cycles": {
       "title": "Suivi du Cycle de Vie",
-      "subtitle": "Cycles de trading de matières premières en temps réel et mesures de performance",
+      "subtitle": "Cycles de trading gérés et mesures de performance",
       "backToDashboard": "Retour au Tableau de Bord",
       "stats": {
         "globalCycles": "Cycles Globaux",
@@ -1821,7 +1849,7 @@
       "card": {
         "sequenceIdentifier": "IDENTIFIANT DE SÉQUENCE",
         "performance": "Performance {rating}",
-        "node": "Nœud {type}",
+        "node": "Déploiement de commerce géré",
         "clusters": "GDC-{number} • {count} Clusters",
         "daysRemaining": "JOURS RESTANTS",
         "growthVelocity": "Vélocité de Croissance",
@@ -1845,11 +1873,11 @@
     },
     "tpias": {
       "title": "Avoirs Actifs",
-      "subtitle": "Gérez et suivez votre portefeuille privé de clusters de matières premières",
+      "subtitle": "Gérez et suivez votre portefeuille TPIA privé",
       "backToDashboard": "Retour au Tableau de Bord",
       "filters": {
         "searchLabel": "Filtrer la Recherche",
-        "searchPlaceholder": "Rechercher IDs, Matières Premières, Certificats...",
+        "searchPlaceholder": "Rechercher IDs ou certificats...",
         "statusLabel": "Filtre de Statut",
         "modeLabel": "Stratégie de Profit",
         "results": "{count} Résultats Trouvés",
@@ -1874,7 +1902,7 @@
       },
       "card": {
         "assetIdentifier": "IDENTIFIANT D'ACTIF",
-        "node": "Nœud {type}",
+        "node": "Déploiement de commerce géré",
         "purchase": "Achat",
         "netValue": "Valeur Nette",
         "clusterLocation": "Emplacement du Cluster",
@@ -1885,14 +1913,44 @@
         "growthVelocity": "Vélocité de Croissance"
       }
     },
+    "admin": {
+      "formationWatch": {
+        "title": "Surveillance de Formation GDC",
+        "subtitle": "Clusters en formation attendant assez de TPIA avant l'activation du cycle.",
+        "subtitleDetailed": "Clusters en formation classés par temps d'attente et emplacements TPIA restants.",
+        "needAttention": "{count} nécessitent une attention",
+        "allNormal": "Tout est normal",
+        "lastRefreshed": "Dernière actualisation {time}",
+        "filled": "{current}/{total} remplis",
+        "tpiasFilled": "{current}/{total} TPIA remplis",
+        "days": "{count} jours",
+        "slotsRemaining": "{count} emplacements restants"
+      },
+      "cycleDetails": {
+        "completed": "Commerce terminé et profits calculés",
+        "active": "En exécution et en accumulation de progression du cycle",
+        "processing": "Commerce terminé, distribution des profits en attente",
+        "scheduled": "Planifié, pas encore en accumulation",
+        "notStarted": "Le cycle n'a pas commencé"
+      },
+      "tpiaDetails": {
+        "cycleActive": "Le cycle est actif et accumule",
+        "cycleAssigned": "Cycle attribué mais pas encore en accumulation",
+        "waitingFormation": "En attente de formation du cluster GDC",
+        "cycleStatusNotAccruing": "{status} - pas encore en accumulation",
+        "gdcFill": "Remplissage GDC",
+        "gdcFillValue": "{current}/{total} emplacements"
+      }
+    },
     "purchase": {
       "title": "Acquérir un TPIA",
-      "subtitle": "Sécurisez votre bloc d'investissement numérique adossé à des matières premières",
+      "subtitle": "Sécurisez votre bloc d'investissement numérique assuré",
       "backToDashboard": "Retour au Tableau de Bord",
       "config": {
         "title": "Configuration de l'Actif",
         "subtitle": "Personnalisez votre investissement",
-        "commodityLabel": "Sélectionner la Matière Première",
+        "commodityLabel": "Déploiement de Commerce",
+        "commodityInfo": "Glotrade gère le déploiement de commerce hors ligne en arrière-plan. Votre tableau de bord affiche le statut de votre TPIA, la progression du cycle, la protection et la valeur.",
         "modeLabel": "Mode de Gains Stratégiques",
         "quantityLabel": "Volume d'Allocation",
         "blockCount": "Nombre de Blocs",
@@ -1927,7 +1985,7 @@
         "protectionsTitle": "PROTECTIONS DES ACTIFS",
         "protections": {
           "insurance": "Certificat de Couverture d'Assurance",
-          "commodity": "Adossement Physique à la Matière Première",
+          "commodity": "Déploiement de commerce hors ligne géré",
           "node": "Assignation de Nœud Cluster",
           "compounding": "Capitalisation à Échelle Automatisée",
           "preservation": "Préservation du Capital à 100%"
@@ -2008,7 +2066,7 @@
       "footer": {
         "noticeTitle": "AVIS D'ARCHIVE OFFICIEL",
         "noticeText": "Ce grand livre de compte est un enregistrement officiel des activités sur la Plateforme Internationale Glotrade.",
-        "disclaimer": "Toutes les entrées sont vérifiées par recoupement avec les mouvements physiques de matières premières et les protocoles de garde d'actifs numériques. Signalez les divergences à {email} dans les 48 heures opérationnelles.",
+        "disclaimer": "Toutes les entrées sont vérifiées avec le déploiement de commerce interne et les protocoles de garde d'actifs numériques. Signalez les divergences à {email} dans les 48 heures opérationnelles.",
         "verified": "GRAND LIVRE SÉCURISÉ VÉRIFIÉ",
         "totalArchive": "ARCHIVE TOTALE DU PORTEFEUILLE",
         "endOfRecord": "PLATEFORME INTERNATIONALE GLOTRADE • FIN DES DONNÉES ENREGISTRÉES"
@@ -2038,6 +2096,15 @@
       "cycle": {
         "title": "Cycle Actif",
         "subtitle": "Croissance en cours",
+        "scheduledTitle": "Cycle Planifié",
+        "updateTitle": "Mise à Jour du Cycle",
+        "formationTitle": "Formation GDC",
+        "scheduledSubtitle": "En attente d'activation",
+        "updateSubtitle": "Suivi du statut du cycle",
+        "formationSubtitle": "En attente de finalisation du GDC",
+        "formationDescription": "Ce TPIA est attribué au GDC-{number}. Son cycle de commerce de 37 jours commence lorsque le GDC atteint {current}/{total} emplacements et est activé.",
+        "slotsFilled": "{current} sur {total} emplacements remplis",
+        "remaining": "{count} restants",
         "openDate": "Date d'Ouverture",
         "projectedClose": "Clôture Projetée",
         "targetLabel": "Cible de ROI du Cycle",
@@ -2077,8 +2144,8 @@
         "position": "Position du Nœud",
         "posLabel": "Position du Nœud",
         "posValue": "Bloc {pos} sur {total}",
-        "commodity": "Adossement à la Matière Première",
-        "defaultCommodity": "Matières Premières Mixtes"
+        "commodity": "Déploiement de Commerce",
+        "defaultCommodity": "Géré par Glotrade"
       }
     },
     "certificate": {
@@ -2095,11 +2162,12 @@
         "entityLabel": "ENTITÉ D'ACTIF IDENTIFIÉE"
       },
       "content": {
-        "confirmation": "Ce document confirme la couverture d'assurance enregistrée pour le bloc d'investissement {id}. Entièrement adossé à des réserves physiques de matières premières sous le cadre de gestion des risques multi-couches GDIP.",
+        "confirmation": "Ce document confirme la couverture d'assurance enregistrée pour le bloc d'investissement {id} dans le cadre de gestion des risques multi-couches GDIP.",
         "backing": "Cette couverture est souscrite par l'assureur principal listé ci-dessous.",
         "coverageLabel": "MAGNITUDE DE LA COUVERTURE",
-        "backingLabel": "ADOSSEMENT DE L'ACTIF",
-        "backingValue": "{qty} {unit} {type}",
+        "backingLabel": "ADOSSEMENT ASSURÉ",
+        "backingValue": "Adossement de commerce hors ligne géré actif",
+        "pendingBackingValue": "Adossement de commerce hors ligne géré en attente d'activation du cycle",
         "windowLabel": "FENÊTRE EFFECTIVE",
         "logisticsLabel": "HUB LOGISTIQUE",
         "defaultHub": "RÉSERVE STRATÉGIQUE GLOTRADE"
@@ -2119,12 +2187,13 @@
       "printButton": "Imprimer le Certificat"
     },
     "commodity": {
-      "title": "Adossement à la Matière Première",
-      "subtitle": "Actifs physiques adossés à votre investissement TPIA",
+      "title": "Déploiement de Commerce",
+      "subtitle": "Glotrade gère l'activité de commerce hors ligne de votre TPIA en arrière-plan.",
+      "managedNotice": "Votre vue partenaire se concentre sur le statut du TPIA, la progression du cycle, la protection d'assurance et la valeur. Les matières premières précises du commerce hors ligne sont gérées en interne par Glotrade et ne sont pas sélectionnées sur la plateforme.",
       "back": "Retour",
       "summary": {
-        "types": "Types de Matières Premières",
-        "total": "Total des Matières Premières",
+        "types": "Types de Déploiement",
+        "total": "Déploiements Totaux",
         "quantity": "Quantité Totale",
         "value": "Valeur Totale"
       },
@@ -2146,7 +2215,7 @@
       },
       "empty": {
         "title": "Aucun Adossement Trouvé",
-        "subtitle": "Les matières premières seront allouées une fois que votre GDC aura commencé à trader"
+        "subtitle": "Le statut de déploiement de votre TPIA sera mis à jour à mesure que le cycle GDC progresse"
       },
       "error": {
         "title": "Erreur",
@@ -2164,7 +2233,15 @@
       "info": {
         "hqLabel": "EMPLACEMENT DU SIÈGE",
         "nodeLabel": "NŒUD NUMÉRIQUE",
-        "commLabel": "COMMUNICATION"
+        "commLabel": "COMMUNICATION",
+        "addressLine1": "Abuja, Federal Capital Territory",
+        "addressLine2": "Federal Republic of Nigeria",
+        "website": "www.glotrade.online",
+        "nodeId": "GDIP Ledger",
+        "supportEmail": "support@glotrade.online",
+        "supportPhone": "Lagos: (+234)902-900-4712 | Abuja: (+234)702-460-0924",
+        "supportPhoneLagos": "Lagos: (+234)902-900-4712",
+        "supportPhoneAbuja": "Abuja: (+234)702-460-0924"
       },
       "partner": {
         "billedLabel": "FACTURÉ À L'ENTITÉ",
@@ -2182,19 +2259,21 @@
         "item": {
           "name": "Bloc de Commerce Stratégique GDIP",
           "status": "Actif Entièrement Collatéralisé",
-          "blockId": "ID du Bloc",
-          "nodeId": "ID du Nœud",
-          "configLabel": "CONFIGURATION DE L'ACTIF",
-          "backing": "ADOSSEMENT COLLATÉRAL",
-          "unit": "UNITÉ DE BLOC",
+          "blockId": "TPIA ID",
+          "nodeId": "GDC ID",
+          "configLabel": "DÉPLOIEMENT DE COMMERCE",
+          "deploymentBacking": "Déploiement de commerce hors ligne géré sous protection GDIP",
+          "backing": "ADOSSEMENT ASSURÉ",
+          "unit": "TPIA",
           "settledStatus": "Réglé à 100%",
-          "defaultType": "Matières Premières Mixtes"
+          "defaultType": "Géré par Glotrade"
         }
       },
       "mobile": {
-        "blockLabel": "ID du Bloc",
+        "blockLabel": "TPIA ID",
         "qtyLabel": "Qté",
-        "valueLabel": "Valeur"
+        "valueLabel": "Valeur",
+        "unitAbbr": "TPIA"
       },
       "summary": {
         "subtotal": "VALEUR NETTE SECONDAIRE",
@@ -2205,8 +2284,8 @@
         "title": "ARCHIVE DE RÈGLEMENT",
         "text1": "Cette séquence de transaction a été finalisée via le",
         "ledgerSystem": "Système de Grand Livre Interne Glotrade",
-        "text2": "L'adossement de l'actif est entièrement collatéralisé par des stocks de matières premières physiquement vérifiés.",
-        "verifiedLabel": "Adossement d'Actif Vérifié",
+        "text2": "Le déploiement de commerce est géré hors ligne par Glotrade sous les contrôles de protection GDIP.",
+        "verifiedLabel": "Adossement Assuré Vérifié",
         "idLabel": "ID D'ARCHIVE ÉLECTRONIQUE",
         "officialLabel": "DOCUMENT DE GRAND LIVRE OFFICIEL",
         "endOfRecord": "PLATEFORME INTERNATIONALE GLOTRADE • FIN DES DONNÉES ENREGISTRÉES"

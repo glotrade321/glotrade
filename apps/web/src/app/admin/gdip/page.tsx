@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Shield, TrendingUp, Users, Target, Activity, Calendar } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet } from "@/utils/api";
+import { translate } from "@/utils/translate";
 import TPIADetailsModal from "@/components/admin/gdip/TPIADetailsModal";
 import GDCDetailsModal from "@/components/admin/gdip/GDCDetailsModal";
 import CycleDetailsModal from "@/components/admin/gdip/CycleDetailsModal";
@@ -31,6 +32,11 @@ interface GDC {
     totalCapital: number;
     cyclesCompleted: number;
     averageROI: number;
+    primaryCommodity?: string;
+    createdAt?: string;
+    slotsRemaining?: number;
+    daysInFormation?: number;
+    attentionLevel?: "normal" | "medium" | "high";
 }
 
 interface TradeCycle {
@@ -56,6 +62,7 @@ export default function AdminGDIPDashboard() {
     const [selectedTPIAId, setSelectedTPIAId] = useState<string | null>(null);
     const [selectedGDCId, setSelectedGDCId] = useState<string | null>(null);
     const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
+    const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
 
     useEffect(() => {
         fetchDashboardData();
@@ -76,7 +83,7 @@ export default function AdminGDIPDashboard() {
             const allCycles = cyclesRes.data || [];
             const tpias = tpiasRes.data || [];
 
-            setGDCs(allGDCs.slice(0, 10));
+            setGDCs(allGDCs);
             setRecentCycles(allCycles.slice(0, 10));
 
             // Sort TPIAs by date (newest first)
@@ -107,6 +114,7 @@ export default function AdminGDIPDashboard() {
                 }, 0),
                 averageROI: avgROI,
             });
+            setLastRefreshedAt(new Date());
 
         } catch (err: any) {
             console.error("Error fetching dashboard data:", err);
@@ -127,6 +135,85 @@ export default function AdminGDIPDashboard() {
             month: "short",
             day: "numeric",
         });
+    };
+
+    const formatTime = (date: Date) => {
+        return date.toLocaleTimeString("en-NG", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
+
+    const formingGDCs = gdcs
+        .filter((gdc) => gdc.status === "forming")
+        .sort((a, b) => (b.daysInFormation || 0) - (a.daysInFormation || 0));
+    const attentionGDCs = formingGDCs.filter((gdc) => gdc.attentionLevel === "high" || gdc.attentionLevel === "medium");
+
+    const getFillPercentage = (gdc: GDC) => {
+        if (!gdc.capacity) return 0;
+        return Math.min(100, Math.max(0, (gdc.currentFill / gdc.capacity) * 100));
+    };
+
+    const getAttentionClass = (level?: string) => {
+        switch (level) {
+            case "high":
+                return "bg-red-50 text-red-700 border-red-100";
+            case "medium":
+                return "bg-amber-50 text-amber-700 border-amber-100";
+            default:
+                return "bg-green-50 text-green-700 border-green-100";
+        }
+    };
+
+    const escapeCsvValue = (value: string | number | undefined) => {
+        const stringValue = String(value ?? "");
+        if (/[",\n]/.test(stringValue)) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+
+        return stringValue;
+    };
+
+    const exportFormationWatch = () => {
+        const headers = [
+            "GDC",
+            "Status",
+            "Attention Level",
+            "Days In Formation",
+            "Current Fill",
+            "Capacity",
+            "Slots Remaining",
+            "Fill Percentage",
+            "Total Capital",
+            "Deployment Category",
+            "Created At"
+        ];
+
+        const rows = formingGDCs.map((gdc) => [
+            `GDC-${gdc.gdcNumber}`,
+            gdc.status,
+            gdc.attentionLevel || "normal",
+            gdc.daysInFormation || 0,
+            gdc.currentFill,
+            gdc.capacity,
+            gdc.slotsRemaining ?? Math.max(gdc.capacity - gdc.currentFill, 0),
+            `${getFillPercentage(gdc).toFixed(0)}%`,
+            gdc.totalCapital,
+            gdc.primaryCommodity || "",
+            gdc.createdAt ? new Date(gdc.createdAt).toISOString() : ""
+        ]);
+
+        const csvRows = [
+            headers.join(","),
+            ...rows.map((row) => row.map(escapeCsvValue).join(","))
+        ];
+        const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `gdc-formation-watch-${new Date().toISOString().split("T")[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
     if (loading) {
@@ -254,9 +341,67 @@ export default function AdminGDIPDashboard() {
                         <div className="p-2 bg-yellow-100 rounded-lg group-hover:bg-yellow-200 transition-colors">
                             <Shield className="w-5 h-5 text-yellow-600" />
                         </div>
-                        <span className="font-medium text-sm sm:text-base">Commodities</span>
+                        <span className="font-medium text-sm sm:text-base">Trade Categories</span>
                     </button>
                 </div>
+
+                {formingGDCs.length > 0 && (
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-6 mb-8">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-900">{translate("gdip.admin.formationWatch.title")}</h2>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    {translate("gdip.admin.formationWatch.subtitle")}
+                                </p>
+                                {lastRefreshedAt && (
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
+                                        {translate("gdip.admin.formationWatch.lastRefreshed", { time: formatTime(lastRefreshedAt) })}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <button
+                                    onClick={() => router.push("/admin/gdip/gdcs")}
+                                    className={`w-fit px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-widest ${attentionGDCs.length > 0 ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-green-50 text-green-700 border-green-100"}`}
+                                >
+                                    {attentionGDCs.length > 0 ? translate("gdip.admin.formationWatch.needAttention", { count: attentionGDCs.length }) : translate("gdip.admin.formationWatch.allNormal")}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={exportFormationWatch}
+                                    className="w-fit px-4 py-2 rounded-xl border border-blue-100 bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-widest hover:bg-blue-100 transition-colors"
+                                >
+                                    {translate("gdip.common.exportCsv")}
+                                </button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {formingGDCs.slice(0, 3).map((gdc) => (
+                                <button
+                                    key={gdc._id}
+                                    onClick={() => setSelectedGDCId(gdc._id)}
+                                    className="text-left rounded-2xl border border-gray-100 bg-gray-50 p-4 hover:bg-white hover:border-blue-100 transition-all"
+                                >
+                                    <div className="flex items-start justify-between gap-3 mb-3">
+                                        <div>
+                                            <h3 className="font-bold text-gray-900">GDC-{gdc.gdcNumber}</h3>
+                                            <p className="text-xs text-gray-500 font-medium">{translate("gdip.admin.formationWatch.tpiasFilled", { current: gdc.currentFill, total: gdc.capacity })}</p>
+                                        </div>
+                                        <span className={`px-2 py-1 rounded-lg border text-[10px] font-bold uppercase ${getAttentionClass(gdc.attentionLevel)}`}>
+                                            {translate("gdip.admin.formationWatch.days", { count: gdc.daysInFormation || 0 })}
+                                        </span>
+                                    </div>
+                                    <div className="h-2 bg-white rounded-full overflow-hidden border border-gray-100 p-0.5">
+                                        <div className="h-full rounded-full bg-blue-500" style={{ width: `${getFillPercentage(gdc)}%` }} />
+                                    </div>
+                                    <p className="mt-3 text-[10px] text-gray-500 font-black uppercase tracking-widest">
+                                        {translate("gdip.admin.formationWatch.slotsRemaining", { count: gdc.slotsRemaining ?? Math.max(gdc.capacity - gdc.currentFill, 0) })}
+                                    </p>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Recent Activity Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

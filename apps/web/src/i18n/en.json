@@ -1841,6 +1841,26 @@
     }
   },
   "gdip": {
+    "common": {
+      "cycleActive": "Cycle active",
+      "cycleScheduled": "Cycle scheduled",
+      "cycleNotStarted": "Cycle not started",
+      "waitingForGDC": "Waiting for GDC completion",
+      "waitingForGDCFilled": "Waiting for GDC completion: {current}/{total} filled",
+      "slotsRemaining": "{count} slots remaining",
+      "slotsRemainingBeforeActivation": "{count} slots remaining before activation",
+      "gdcCompleteAwaitingActivation": "GDC complete, awaiting cycle activation",
+      "scheduledNotAccruing": "Scheduled, not accruing yet",
+      "processingResults": "Processing results",
+      "completed": "Completed",
+      "notStarted": "Not started",
+      "notAccruingYet": "Not accruing yet",
+      "pendingClose": "Pending close",
+      "cycleProgress": "Cycle Progress",
+      "accruedProfit": "Accrued Profit",
+      "activationStatus": "Activation Status",
+      "exportCsv": "Export CSV"
+    },
     "layout": {
       "restricted": {
         "title": "Distributor/Insured Partners Access Restricted",
@@ -1870,8 +1890,8 @@
         "cycles": "Market Cycles"
       },
       "activeHoldings": {
-        "title": "Active Holdings",
-        "subtitle": "Recent performance tracking",
+        "title": "My TPIA Holdings",
+        "subtitle": "Cycle and GDC formation tracking",
         "manage": "Manage Portfolio",
         "emptyTitle": "Portfolio Empty",
         "emptySubtitle": "Start your investment journey by purchasing your first TPIA",
@@ -1884,8 +1904,16 @@
         "netValue": "Net Value",
         "profitMode": "Profit Mode",
         "cycleProgress": "Cycle Progress",
-        "waitingCycle": "Waiting for next trade cycle",
+        "waitingCycle": "Waiting for GDC completion",
+        "startsAfterActivation": "Starts after activation",
         "viewDetails": "Block Details"
+      },
+      "cycleGuide": {
+        "title": "How TPIA cycles start",
+        "description": "Your TPIA is assigned to a 10-slot GDC after purchase. The 37-day trade cycle starts only after that GDC is complete and activated.",
+        "pending": "Pending: waiting for GDC fill",
+        "scheduled": "Scheduled: GDC complete",
+        "active": "Active: cycle in progress"
       },
       "error": {
         "title": "Error",
@@ -1894,12 +1922,12 @@
     },
     "cycles": {
       "title": "Lifecycle Tracking",
-      "subtitle": "Real-time commodity trading cycles and performance metrics",
+      "subtitle": "Track scheduled, active, and completed GDC trade cycles",
       "backToDashboard": "Back to Dashboard",
       "stats": {
         "globalCycles": "Global Cycles",
         "matured": "Matured",
-        "activeVelocity": "Active Velocity",
+        "activeVelocity": "Active Cycles",
         "avgGrowth": "Avg Growth"
       },
       "filters": {
@@ -1920,12 +1948,15 @@
       "card": {
         "sequenceIdentifier": "SEQUENCE IDENTIFIER",
         "performance": "{rating} Performance",
-        "node": "{type} Node",
+        "node": "Managed Trade Deployment",
         "clusters": "GDC-{number} • {count} Clusters",
         "daysRemaining": "DAYS REMAINING",
         "growthVelocity": "Growth Velocity",
         "sequenceComplete": "Sequence Complete",
         "active": "{percent}% Active",
+        "scheduled": "Scheduled, not accruing yet",
+        "processing": "Processing cycle results",
+        "notStarted": "Not Started",
         "inauguration": "Inauguration",
         "cycleWindow": "Cycle Window",
         "days": "{count} Days",
@@ -1935,6 +1966,8 @@
         "floorTarget": "Floor Target",
         "roi": "ROI",
         "accruedYield": "Accrued Yield",
+        "activationStatus": "Activation Status",
+        "notAccruingYet": "Cycle is not accruing yet",
         "actualYield": "Actual Yield",
         "netGrowth": "Net Growth",
         "payoutArchitecture": "Payout Architecture",
@@ -1943,12 +1976,12 @@
       }
     },
     "tpias": {
-      "title": "Active Holdings",
-      "subtitle": "Manage and track your private portfolio of commodity clusters",
+      "title": "My TPIA Holdings",
+      "subtitle": "Track GDC formation, cycle activation, and active portfolio progress",
       "backToDashboard": "Back to Dashboard",
       "filters": {
         "searchLabel": "Filter Search",
-        "searchPlaceholder": "Search IDs, Commodities, Certificates...",
+        "searchPlaceholder": "Search IDs or Certificates...",
         "statusLabel": "Status Filter",
         "modeLabel": "Profit Strategy",
         "results": "Found {count} Results",
@@ -1956,7 +1989,7 @@
         "statusOptions": {
           "all": "EVERY STATUS",
           "pending": "PENDING ACTIVATION",
-          "active": "ACTIVE PORTFOLIO",
+          "active": "ACTIVE TPIAS",
           "matured": "MATURED ASSETS",
           "suspended": "SUSPENDED"
         },
@@ -1973,7 +2006,7 @@
       },
       "card": {
         "assetIdentifier": "ASSET IDENTIFIER",
-        "node": "{type} Node",
+        "node": "Managed Trade Deployment",
         "purchase": "Purchase",
         "netValue": "Net Value",
         "clusterLocation": "Cluster Location",
@@ -1984,14 +2017,44 @@
         "growthVelocity": "Growth Velocity"
       }
     },
+    "admin": {
+      "formationWatch": {
+        "title": "GDC Formation Watch",
+        "subtitle": "Forming clusters waiting for enough TPIAs before cycle activation.",
+        "subtitleDetailed": "Forming clusters ranked by waiting time and remaining TPIA slots.",
+        "needAttention": "{count} need attention",
+        "allNormal": "All normal",
+        "lastRefreshed": "Last refreshed {time}",
+        "filled": "{current}/{total} filled",
+        "tpiasFilled": "{current}/{total} TPIAs filled",
+        "days": "{count} days",
+        "slotsRemaining": "{count} slots remaining"
+      },
+      "cycleDetails": {
+        "completed": "Trade completed and profits calculated",
+        "active": "Currently executing and accruing cycle progress",
+        "processing": "Trade completed, profit distribution pending",
+        "scheduled": "Scheduled, not accruing yet",
+        "notStarted": "Cycle has not started"
+      },
+      "tpiaDetails": {
+        "cycleActive": "Cycle is active and accruing",
+        "cycleAssigned": "Cycle assigned but not accruing yet",
+        "waitingFormation": "Waiting for GDC cluster formation",
+        "cycleStatusNotAccruing": "{status} - not accruing yet",
+        "gdcFill": "GDC Fill",
+        "gdcFillValue": "{current}/{total} slots"
+      }
+    },
     "purchase": {
       "title": "Acquire TPIA",
-      "subtitle": "Secure your commodity-backed Digital Investment Block",
+      "subtitle": "Secure your insured digital investment block",
       "backToDashboard": "Back to Dashboard",
       "config": {
         "title": "Asset Configuration",
         "subtitle": "Customize your investment",
-        "commodityLabel": "Select Cluster Commodity",
+        "commodityLabel": "Trade Deployment",
+        "commodityInfo": "Glotrade manages offline trade deployment behind the scenes. Your dashboard shows your TPIA status, cycle progress, protection, and value.",
         "modeLabel": "Strategic Earnings Mode",
         "quantityLabel": "Allocation Volume",
         "blockCount": "Block Count",
@@ -2026,7 +2089,7 @@
         "protectionsTitle": "ASSET PROTECTIONS",
         "protections": {
           "insurance": "Insurance Coverage Certificate",
-          "commodity": "Physical Commodity Backing",
+          "commodity": "Managed Offline Trade Deployment",
           "node": "Cluster Node Assignment",
           "compounding": "Automated Scale Compounding",
           "preservation": "100% Capital Preservation"
@@ -2107,7 +2170,7 @@
       "footer": {
         "noticeTitle": "OFFICIAL ARCHIVE NOTICE",
         "noticeText": "This account ledger is an official record of activities on the Glotrade International Platform.",
-        "disclaimer": "All entries are cross-verified with physical commodity movement and digital asset custody protocols. Report discrepancies to {email} within 48 operational hours.",
+        "disclaimer": "All entries are cross-verified with internal trade deployment and digital asset custody protocols. Report discrepancies to {email} within 48 operational hours.",
         "verified": "SECURE LEDGER VERIFIED",
         "totalArchive": "TOTAL PORTFOLIO ARCHIVE",
         "endOfRecord": "GLOTRADE INTERNATIONAL PLATFORM • END OF RECORDED DATA"
@@ -2137,6 +2200,15 @@
       "cycle": {
         "title": "Active Cycle",
         "subtitle": "Growth in progress",
+        "scheduledTitle": "Cycle Scheduled",
+        "updateTitle": "Cycle Update",
+        "formationTitle": "GDC Formation",
+        "scheduledSubtitle": "Waiting for activation",
+        "updateSubtitle": "Cycle status tracking",
+        "formationSubtitle": "Waiting for GDC completion",
+        "formationDescription": "This TPIA is assigned to GDC-{number}. Its 37-day trade cycle starts after the GDC reaches {current}/{total} slots and is activated.",
+        "slotsFilled": "{current} of {total} slots filled",
+        "remaining": "{count} remaining",
         "openDate": "Open Date",
         "projectedClose": "Projected Close",
         "targetLabel": "Cycle ROI Target",
@@ -2176,8 +2248,8 @@
         "position": "Node Position",
         "posLabel": "Node Position",
         "posValue": "Block {pos} of {total}",
-        "commodity": "Commodity Backing",
-        "defaultCommodity": "Mixed Commodities"
+        "commodity": "Trade Deployment",
+        "defaultCommodity": "Managed by Glotrade"
       }
     },
     "certificate": {
@@ -2194,11 +2266,12 @@
         "entityLabel": "ASSET ENTITY IDENTIFIED"
       },
       "content": {
-        "confirmation": "This document confirms registered insurance coverage for the investment block {id}. Fully backed by physical commodity reserves under the GDIP multi-layer risk management framework.",
+        "confirmation": "This document confirms registered insurance coverage for the investment block {id} under the GDIP multi-layer risk management framework.",
         "backing": "This coverage is underwritten by the primary insurer listed below.",
         "coverageLabel": "COVERAGE MAGNITUDE",
-        "backingLabel": "ASSET BACKING",
-        "backingValue": "{qty} {unit} {type}",
+        "backingLabel": "INSURED BACKING",
+        "backingValue": "Managed offline trade backing active",
+        "pendingBackingValue": "Managed offline trade backing pending cycle activation",
         "windowLabel": "EFFECTIVE WINDOW",
         "logisticsLabel": "LOGISTICS HUB",
         "defaultHub": "GLOTRADE STRATEGIC RESERVE"
@@ -2218,17 +2291,18 @@
       "printButton": "Print Certificate"
     },
     "commodity": {
-      "title": "Commodity Backing",
-      "subtitle": "Physical assets backing your TPIA investment",
+      "title": "Trade Deployment",
+      "subtitle": "Glotrade manages offline trade activity for your TPIA behind the scenes.",
+      "managedNotice": "Your partner view focuses on TPIA status, cycle progress, insurance protection, and value. Specific offline trade commodities are managed internally by Glotrade and are not selected on the platform.",
       "back": "Back",
       "summary": {
-        "types": "Commodity Types",
-        "total": "Total Commodities",
+        "types": "Deployment Types",
+        "total": "Total Deployments",
         "quantity": "Total Quantity",
         "value": "Total Value"
       },
       "card": {
-        "idLabel": "Commodity ID:",
+        "idLabel": "Deployment ID:",
         "quantityLabel": "Quantity:",
         "marketPriceLabel": "Market Price:",
         "unitPriceLabel": "Price per Unit:",
@@ -2244,8 +2318,8 @@
         "poor": "Poor"
       },
       "empty": {
-        "title": "No Commodity Backing Found",
-        "subtitle": "Commodities will be allocated once your GDC starts trading"
+        "title": "Trade Deployment Not Active Yet",
+        "subtitle": "Your TPIA deployment status will update as the GDC cycle progresses"
       },
       "error": {
         "title": "Error",
@@ -2263,7 +2337,15 @@
       "info": {
         "hqLabel": "HQ LOCATION",
         "nodeLabel": "DIGITAL NODE",
-        "commLabel": "COMMUNICATION"
+        "commLabel": "COMMUNICATION",
+        "addressLine1": "Abuja, Federal Capital Territory",
+        "addressLine2": "Federal Republic of Nigeria",
+        "website": "www.glotrade.online",
+        "nodeId": "GDIP Ledger",
+        "supportEmail": "support@glotrade.online",
+        "supportPhone": "Lagos: (+234)902-900-4712 | Abuja: (+234)702-460-0924",
+        "supportPhoneLagos": "Lagos: (+234)902-900-4712",
+        "supportPhoneAbuja": "Abuja: (+234)702-460-0924"
       },
       "partner": {
         "billedLabel": "BILLED TO ENTITY",
@@ -2281,19 +2363,21 @@
         "item": {
           "name": "GDIP Strategic Trade Block",
           "status": "Fully Collateralized Asset",
-          "blockId": "Block ID",
-          "nodeId": "Node ID",
-          "configLabel": "ASSET CONFIGURATION",
-          "backing": "COLLATERAL BACKING",
-          "unit": "BLOCK UNIT",
+          "blockId": "TPIA ID",
+          "nodeId": "GDC ID",
+          "configLabel": "TRADE DEPLOYMENT",
+          "deploymentBacking": "Managed offline trade deployment under GDIP protection",
+          "backing": "INSURED BACKING",
+          "unit": "TPIA",
           "settledStatus": "Settled 100%",
-          "defaultType": "Mixed Commodities"
+          "defaultType": "Managed by Glotrade"
         }
       },
       "mobile": {
-        "blockLabel": "Block ID",
+        "blockLabel": "TPIA ID",
         "qtyLabel": "Qty",
-        "valueLabel": "Value"
+        "valueLabel": "Value",
+        "unitAbbr": "TPIA"
       },
       "summary": {
         "subtotal": "NET SUB-VALUE",
@@ -2304,8 +2388,8 @@
         "title": "SETTLEMENT ARCHIVE",
         "text1": "This transaction sequence was finalized via the",
         "ledgerSystem": "Glotrade Internal Ledger System",
-        "text2": "Asset backing is fully collateralized by physically verified commodity stocks.",
-        "verifiedLabel": "Asset Backing Verified",
+        "text2": "Trade deployment is managed offline by Glotrade under GDIP protection controls.",
+        "verifiedLabel": "Insured Backing Verified",
         "idLabel": "ELECTRONIC ARCHIVE ID",
         "officialLabel": "OFFICIAL LEDGER DOCUMENT",
         "endOfRecord": "GLOTRADE INTERNATIONAL PLATFORM • END OF RECORDED DATA"

@@ -211,9 +211,9 @@ export default function GDCDetailsPage() {
                         <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Cluster Details</h3>
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
-                                <span className="text-gray-600">Primary Commodity</span>
+                                <span className="text-gray-600">Deployment Category</span>
                                 <span className="font-bold text-gray-900 flex items-center gap-1.5">
-                                    <span className="text-lg">🌾</span> {gdc.primaryCommodity}
+                                    {gdc.primaryCommodity || "Managed"}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">

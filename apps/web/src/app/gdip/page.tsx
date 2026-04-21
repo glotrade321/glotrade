@@ -60,6 +60,12 @@ interface TPIA {
         status: string;
         targetProfitRate: number;
     };
+    gdcFill?: {
+        currentFill: number;
+        capacity: number;
+        slotsRemaining: number;
+        status: string;
+    };
 }
 
 export default function GDIPDashboardPage() {
@@ -115,6 +121,31 @@ export default function GDIPDashboardPage() {
     const calculateROI = () => {
         if (!summary || summary.totalInvested === 0) return 0;
         return ((summary.totalProfitEarned / summary.totalInvested) * 100).toFixed(2);
+    };
+
+    const isActiveCycle = (tpia: TPIA) => tpia.currentCycleId?.status === "active";
+
+    const calculateCycleProgress = (tpia: TPIA) => {
+        if (!isActiveCycle(tpia) || !tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) return 0;
+
+        const start = new Date(tpia.currentCycleId.startDate).getTime();
+        const end = new Date(tpia.currentCycleId.endDate).getTime();
+        const now = Date.now();
+
+        if (Number.isNaN(start) || Number.isNaN(end) || end <= start) return 0;
+        return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+    };
+
+    const getCycleMessage = (tpia: TPIA) => {
+        if (isActiveCycle(tpia)) return translate("gdip.common.cycleActive");
+        if (tpia.currentCycleId?.status === "scheduled") return translate("gdip.common.cycleScheduled");
+        if (tpia.status === "pending") {
+            if (tpia.gdcFill) {
+                return translate("gdip.common.waitingForGDCFilled", { current: tpia.gdcFill.currentFill, total: tpia.gdcFill.capacity });
+            }
+            return translate("gdip.common.waitingForGDC");
+        }
+        return translate("gdip.common.cycleNotStarted");
     };
 
     if (loading) {
@@ -242,6 +273,26 @@ export default function GDIPDashboardPage() {
                     </div>
                 )}
 
+                {/* Cycle Start Guidance */}
+                <div className="mb-10 rounded-3xl border border-blue-100 bg-blue-50/70 p-5 sm:p-6">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                        <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                            <ShieldCheck className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-2">
+                            <h2 className="text-lg font-black text-gray-900 tracking-tight">{translate("gdip.dashboard.cycleGuide.title")}</h2>
+                            <p className="text-sm font-medium text-gray-600 leading-relaxed">
+                                {translate("gdip.dashboard.cycleGuide.description")}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[10px] font-black uppercase tracking-widest">
+                                <span className="rounded-xl bg-white px-3 py-2 text-amber-700 border border-amber-100">{translate("gdip.dashboard.cycleGuide.pending")}</span>
+                                <span className="rounded-xl bg-white px-3 py-2 text-indigo-700 border border-indigo-100">{translate("gdip.dashboard.cycleGuide.scheduled")}</span>
+                                <span className="rounded-xl bg-white px-3 py-2 text-emerald-700 border border-emerald-100">{translate("gdip.dashboard.cycleGuide.active")}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Quick Actions */}
                 <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 mb-10 shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-5">
@@ -338,7 +389,11 @@ export default function GDIPDashboardPage() {
                                         </div>
                                         <div className="bg-gray-50 p-2.5 rounded-2xl border border-gray-100 space-y-1">
                                             <p className="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.estReturn")}</p>
-                                            <p className="text-[11px] sm:text-sm font-black text-emerald-600 leading-none">+{formatCurrency(tpia.estimatedProfit || 0, 0)}</p>
+                                            {isActiveCycle(tpia) ? (
+                                                <p className="text-[11px] sm:text-sm font-black text-emerald-600 leading-none">+{formatCurrency(tpia.estimatedProfit || 0, 0)}</p>
+                                            ) : (
+                                                <p className="text-[10px] sm:text-xs font-black text-gray-500 leading-tight">{translate("gdip.dashboard.tpiaCard.startsAfterActivation")}</p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -357,41 +412,28 @@ export default function GDIPDashboardPage() {
                                     </div>
 
                                     {/* Cycle Progress */}
-                                    {tpia.status === "active" && tpia.currentCycleId ? (
+                                    {isActiveCycle(tpia) ? (
                                         <div className="pt-2">
                                             <div className="flex justify-between items-end mb-2">
                                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.cycleProgress")}</p>
                                                 <p className="text-[10px] font-black text-blue-600 uppercase">
-                                                    {(() => {
-                                                        if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) return "0";
-                                                        const start = new Date(tpia.currentCycleId.startDate).getTime();
-                                                        const end = new Date(tpia.currentCycleId.endDate).getTime();
-                                                        const now = Date.now();
-                                                        if (isNaN(start) || isNaN(end) || end <= start) return "0";
-                                                        return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100)).toFixed(1);
-                                                    })()}%
+                                                    {calculateCycleProgress(tpia).toFixed(1)}%
                                                 </p>
                                             </div>
                                             <div className="h-3 bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-50">
                                                 <div
                                                     className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000"
-                                                    style={{
-                                                        width: `${(() => {
-                                                            if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) return 0;
-                                                            const start = new Date(tpia.currentCycleId.startDate).getTime();
-                                                            const end = new Date(tpia.currentCycleId.endDate).getTime();
-                                                            const now = Date.now();
-                                                            if (isNaN(start) || isNaN(end) || end <= start) return 0;
-                                                            return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-                                                        })()}%`
-                                                    }}
+                                                    style={{ width: `${calculateCycleProgress(tpia)}%` }}
                                                 ></div>
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="pt-2">
                                             <div className="p-3 bg-yellow-50 rounded-2xl border border-yellow-100 text-center">
-                                                <p className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.waitingCycle")}</p>
+                                                <p className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">{getCycleMessage(tpia)}</p>
+                                                {tpia.gdcFill && tpia.gdcFill.slotsRemaining > 0 && (
+                                                    <p className="mt-1 text-[9px] font-bold text-amber-600 uppercase tracking-widest">{translate("gdip.common.slotsRemaining", { count: tpia.gdcFill.slotsRemaining })}</p>
+                                                )}
                                             </div>
                                         </div>
                                     )}

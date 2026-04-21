@@ -55,8 +55,8 @@ export default function AdminCommoditiesPage() {
                 setCommodities(response.data);
             }
         } catch (err: any) {
-            console.error("Error fetching commodities:", err);
-            setError("Failed to load commodities");
+            console.error("Error fetching trade deployment categories:", err);
+            setError("Failed to load trade deployment categories");
         } finally {
             setLoading(false);
         }
@@ -101,17 +101,17 @@ export default function AdminCommoditiesPage() {
 
             if (editingCommodity) {
                 await apiPatch(`/api/v1/gdip/admin/commodities/types/${editingCommodity._id}`, formData);
-                setSuccess("Commodity updated successfully");
+                setSuccess("Trade deployment category updated successfully");
             } else {
                 await apiPost("/api/v1/gdip/admin/commodities/types", formData);
-                setSuccess("Commodity created successfully");
+                setSuccess("Trade deployment category created successfully");
             }
 
             setIsModalOpen(false);
             setIsEditConfirmModalOpen(false);
             fetchCommodities();
         } catch (err: any) {
-            setError(err.message || "Failed to save commodity");
+            setError(err.message || "Failed to save trade deployment category");
         } finally {
             setSaving(false);
         }
@@ -132,7 +132,7 @@ export default function AdminCommoditiesPage() {
             setCommodities(prev => prev.map(c =>
                 c._id === commodityForStatusToggle._id ? { ...c, isActive: newStatus } : c
             ));
-            setSuccess(`Commodity ${newStatus ? "enabled" : "disabled"} successfully`);
+            setSuccess(`Trade deployment category ${newStatus ? "enabled" : "disabled"} successfully`);
             setIsStatusModalOpen(false);
             setCommodityForStatusToggle(null);
         } catch (err: any) {
@@ -154,11 +154,11 @@ export default function AdminCommoditiesPage() {
             setSaving(true);
             await apiDelete(`/api/v1/gdip/admin/commodities/types/${commodityToDelete._id}`);
             setCommodities(prev => prev.filter(c => c._id !== commodityToDelete._id));
-            setSuccess("Commodity deleted successfully");
+            setSuccess("Trade deployment category deleted successfully");
             setIsDeleteModalOpen(false);
             setCommodityToDelete(null);
         } catch (err: any) {
-            setError("Failed to delete commodity");
+            setError("Failed to delete trade deployment category");
         } finally {
             setSaving(false);
         }
@@ -177,15 +177,15 @@ export default function AdminCommoditiesPage() {
                             <ChevronLeft className="w-4 h-4" />
                             Back to GDIP Admin
                         </button>
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Manage Commodities</h1>
-                        <p className="text-gray-600">Configure commodity types and icons available for partner purchase</p>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Trade Deployment Categories</h1>
+                        <p className="text-gray-600">Internal operations catalog for offline GDIP trade deployment. Partners and manual purchase admins do not choose these during TPIA purchase.</p>
                     </div>
                     <button
                         onClick={() => handleOpenModal()}
                         className="flex items-center gap-2 bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:bg-blue-700 transition-all shadow-sm font-bold text-sm sm:text-base whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
-                        <span className="hidden sm:inline">Add Commodity</span><span className="sm:hidden">Add</span>
+                        <span className="hidden sm:inline">Add Category</span><span className="sm:hidden">Add</span>
                     </button>
                 </div>
 
@@ -206,7 +206,7 @@ export default function AdminCommoditiesPage() {
                 {/* Commodities List - Desktop */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hidden md:block">
                     <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h2 className="font-bold text-gray-900">Available Commodity Types</h2>
+                        <h2 className="font-bold text-gray-900">Internal Trade Deployment Categories</h2>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -227,13 +227,13 @@ export default function AdminCommoditiesPage() {
                                             <div className="flex justify-center mb-4">
                                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                                             </div>
-                                            Loading commodities...
+                                            Loading trade deployment categories...
                                         </td>
                                     </tr>
                                 ) : commodities.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center text-gray-500 italic">
-                                            No commodity types found.
+                                            No trade deployment categories found.
                                         </td>
                                     </tr>
                                 ) : (
@@ -300,7 +300,7 @@ export default function AdminCommoditiesPage() {
                         </div>
                     ) : commodities.length === 0 ? (
                         <div className="bg-white rounded-xl shadow-sm p-8 text-center text-gray-500 italic">
-                            No commodity types found.
+                            No trade deployment categories found.
                         </div>
                     ) : (
                         commodities.map((item) => (
@@ -356,7 +356,7 @@ export default function AdminCommoditiesPage() {
                         <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
                             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                                 <h3 className="text-xl font-bold text-gray-900">
-                                    {editingCommodity ? "Edit Commodity" : "Add New Commodity"}
+                                    {editingCommodity ? "Edit Trade Category" : "Add Trade Category"}
                                 </h3>
                                 <button
                                     onClick={() => setIsModalOpen(false)}
@@ -376,8 +376,8 @@ export default function AdminCommoditiesPage() {
                                         <p className="text-xs font-bold text-blue-900 mb-0.5">Configuration Note</p>
                                         <p className="text-[10px] text-blue-700 leading-relaxed">
                                             {editingCommodity
-                                                ? "Updating this commodity will change its display across the platform. This affects both current and future view contexts."
-                                                : "New commodities will be immediately available for partner purchase once activated."}
+                                                ? "Updating this category changes internal operational labels used for GDIP deployment records."
+                                                : "New categories are for internal offline trade planning only. They are not shown as partner purchase choices."}
                                         </p>
                                     </div>
                                 </div>
@@ -396,7 +396,7 @@ export default function AdminCommoditiesPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Display Label</label>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Internal Display Label</label>
                                     <input
                                         type="text"
                                         required
@@ -425,7 +425,7 @@ export default function AdminCommoditiesPage() {
                                         onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                                         className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
                                     />
-                                    <label htmlFor="isActive" className="text-sm font-bold text-gray-700">Available for purchase</label>
+                                    <label htmlFor="isActive" className="text-sm font-bold text-gray-700">Active for internal deployment planning</label>
                                 </div>
 
                                 <div className="pt-4 flex gap-3">
@@ -441,7 +441,7 @@ export default function AdminCommoditiesPage() {
                                         disabled={saving}
                                         className="flex-1 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all disabled:opacity-50"
                                     >
-                                        {saving ? "Saving..." : "Save Commodity"}
+                                        {saving ? "Saving..." : "Save Category"}
                                     </button>
                                 </div>
                             </form>
@@ -457,7 +457,7 @@ export default function AdminCommoditiesPage() {
                                 <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <Trash2 className="w-10 h-10 text-red-500" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Delete Commodity?</h3>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Delete Trade Category?</h3>
                                 <p className="text-gray-600 mb-6">
                                     Are you sure you want to delete <span className="font-bold text-gray-900">{commodityToDelete.label}</span> ({commodityToDelete.icon})?
                                     This action cannot be undone.
@@ -469,7 +469,7 @@ export default function AdminCommoditiesPage() {
                                         Important Note
                                     </h4>
                                     <p className="text-amber-700 text-xs">
-                                        Deleting this commodity will remove it from the partner selection list. Existing investments and historic cycles will not be affected.
+                                        Deleting this category removes it from internal deployment planning lists. Existing TPIAs and historic cycles will not be affected.
                                     </p>
                                 </div>
 
@@ -519,8 +519,8 @@ export default function AdminCommoditiesPage() {
                                 </h3>
                                 <p className="text-gray-600 mb-6 font-medium text-sm">
                                     {commodityForStatusToggle.isActive
-                                        ? `Partners will no longer be able to select ${commodityForStatusToggle.label} for new purchases.`
-                                        : `${commodityForStatusToggle.label} will be available for partners to select immediately.`
+                                        ? `${commodityForStatusToggle.label} will no longer be active for internal deployment planning.`
+                                        : `${commodityForStatusToggle.label} will be active for internal deployment planning.`
                                     }
                                 </p>
 
@@ -529,15 +529,15 @@ export default function AdminCommoditiesPage() {
                                     <ul className="text-gray-600 text-[11px] space-y-1.5 list-disc ml-4">
                                         {commodityForStatusToggle.isActive ? (
                                             <>
-                                                <li>Hides from new TPIA purchase options</li>
+                                                <li>Hides from internal deployment planning lists</li>
                                                 <li>Existing active investments will remain active</li>
                                                 <li>Historical data remains visible in reports</li>
                                             </>
                                         ) : (
                                             <>
-                                                <li>Available in partner purchase selection</li>
-                                                <li>Visible in active dashboard filters</li>
-                                                <li>Ready for immediate investment cycles</li>
+                                                <li>Available for internal deployment planning</li>
+                                                <li>Not exposed as a partner purchase choice</li>
+                                                <li>Ready for operational reporting and cycle records</li>
                                             </>
                                         )}
                                     </ul>
@@ -620,9 +620,8 @@ export default function AdminCommoditiesPage() {
                         Admin Tip
                     </h3>
                     <p className="text-blue-700 text-sm leading-relaxed">
-                        Commodity types defined here populate the selection options on the partner's TPIA Purchase page.
-                        Deactivating a commodity will hide it from new purchases but won't affect existing investments.
-                        Ensure each commodity has a descriptive icon and clear label.
+                        These categories are for Glotrade operations only. They help internal teams classify offline trade deployment and cycle records, but partners and manual purchase admins do not select them when creating a TPIA.
+                        Deactivating a category removes it from future internal planning without changing existing investments.
                     </p>
                 </div>
             </div>

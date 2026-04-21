@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet } from "@/utils/api";
 import { formatCurrency } from "@/utils/format";
+import { translate } from "@/utils/translate";
 
 interface GDC {
     _id: string;
@@ -21,6 +22,10 @@ interface GDC {
     primaryCommodity: string;
     formedAt?: string;
     nextCycleStartDate?: string;
+    createdAt?: string;
+    slotsRemaining?: number;
+    daysInFormation?: number;
+    attentionLevel?: "normal" | "medium" | "high";
 }
 
 export default function AdminGDCsPage() {
@@ -89,6 +94,88 @@ export default function AdminGDCsPage() {
         return (gdc.currentFill / gdc.capacity) * 100;
     };
 
+    const formingGDCs = gdcs
+        .filter((gdc) => gdc.status === "forming")
+        .sort((a, b) => (b.daysInFormation || 0) - (a.daysInFormation || 0));
+    const attentionGDCs = formingGDCs.filter((gdc) => gdc.attentionLevel === "high" || gdc.attentionLevel === "medium");
+    const averageFormationFill = formingGDCs.length
+        ? formingGDCs.reduce((sum, gdc) => sum + getFillPercentage(gdc), 0) / formingGDCs.length
+        : 0;
+
+    const getAttentionColor = (level?: string) => {
+        switch (level) {
+            case "high":
+                return "bg-red-50 text-red-700 border-red-100";
+            case "medium":
+                return "bg-amber-50 text-amber-700 border-amber-100";
+            default:
+                return "bg-emerald-50 text-emerald-700 border-emerald-100";
+        }
+    };
+
+    const escapeCsvValue = (value: string | number | undefined) => {
+        const stringValue = String(value ?? "");
+        if (/[",\n]/.test(stringValue)) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+
+        return stringValue;
+    };
+
+    const exportFormationWatch = () => {
+        const rows = formingGDCs.map((gdc) => ({
+            gdc: `GDC-${gdc.gdcNumber}`,
+            status: gdc.status,
+            attentionLevel: gdc.attentionLevel || "normal",
+            daysInFormation: gdc.daysInFormation || 0,
+            currentFill: gdc.currentFill,
+            capacity: gdc.capacity,
+            slotsRemaining: gdc.slotsRemaining ?? Math.max(gdc.capacity - gdc.currentFill, 0),
+            fillPercentage: `${getFillPercentage(gdc).toFixed(0)}%`,
+            totalCapital: gdc.totalCapital,
+            primaryCommodity: gdc.primaryCommodity,
+            createdAt: gdc.createdAt ? new Date(gdc.createdAt).toISOString() : ""
+        }));
+
+        const headers = [
+            "GDC",
+            "Status",
+            "Attention Level",
+            "Days In Formation",
+            "Current Fill",
+            "Capacity",
+            "Slots Remaining",
+            "Fill Percentage",
+            "Total Capital",
+            "Deployment Category",
+            "Created At"
+        ];
+        const csvRows = [
+            headers.join(","),
+            ...rows.map((row) => [
+                row.gdc,
+                row.status,
+                row.attentionLevel,
+                row.daysInFormation,
+                row.currentFill,
+                row.capacity,
+                row.slotsRemaining,
+                row.fillPercentage,
+                row.totalCapital,
+                row.primaryCommodity,
+                row.createdAt
+            ].map(escapeCsvValue).join(","))
+        ];
+
+        const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `gdc-formation-watch-${new Date().toISOString().split("T")[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
     if (loading) {
         return (
             <AdminLayout>
@@ -127,9 +214,9 @@ export default function AdminGDCsPage() {
                             <p className="text-2xl sm:text-3xl font-black text-gray-900">{gdcs.length}</p>
                         </div>
                         <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
-                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Active</p>
-                            <p className="text-2xl sm:text-3xl font-black text-green-500">
-                                {gdcs.filter((g) => g.status === "active").length}
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Forming</p>
+                            <p className="text-2xl sm:text-3xl font-black text-amber-500">
+                                {formingGDCs.length}
                             </p>
                         </div>
                         <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
@@ -139,13 +226,59 @@ export default function AdminGDCsPage() {
                             </p>
                         </div>
                         <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
-                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Average ROI</p>
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Formation Fill</p>
                             <p className="text-2xl sm:text-3xl font-black text-indigo-500">
-                                {(
-                                    gdcs.reduce((sum, g) => sum + g.averageROI, 0) / gdcs.length || 0
-                                ).toFixed(2)}
+                                {averageFormationFill.toFixed(0)}
                                 %
                             </p>
+                        </div>
+                    </div>
+                )}
+
+                {formingGDCs.length > 0 && (
+                    <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 mb-8 shadow-sm">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                            <div>
+                                <h2 className="text-lg font-black text-gray-900 tracking-tight">{translate("gdip.admin.formationWatch.title")}</h2>
+                                <p className="text-sm text-gray-500 font-medium">{translate("gdip.admin.formationWatch.subtitleDetailed")}</p>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className={`w-fit px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest ${attentionGDCs.length > 0 ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-emerald-50 text-emerald-700 border-emerald-100"}`}>
+                                    {attentionGDCs.length > 0 ? translate("gdip.admin.formationWatch.needAttention", { count: attentionGDCs.length }) : translate("gdip.admin.formationWatch.allNormal")}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={exportFormationWatch}
+                                    className="w-fit px-3 py-1.5 rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                                >
+                                    {translate("gdip.common.exportCsv")}
+                                </button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {formingGDCs.slice(0, 3).map((gdc) => (
+                                <button
+                                    key={gdc._id}
+                                    onClick={() => router.push(`/admin/gdip/gdc/${gdc._id}`)}
+                                    className="text-left rounded-2xl border border-gray-100 bg-gray-50 p-4 hover:bg-white hover:border-indigo-100 hover:shadow-sm transition-all"
+                                >
+                                    <div className="flex items-start justify-between gap-3 mb-4">
+                                        <div>
+                                            <p className="text-sm font-black text-gray-900">GDC-{gdc.gdcNumber}</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.admin.formationWatch.filled", { current: gdc.currentFill, total: gdc.capacity })}</p>
+                                        </div>
+                                        <span className={`px-2 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${getAttentionColor(gdc.attentionLevel)}`}>
+                                            {translate("gdip.admin.formationWatch.days", { count: gdc.daysInFormation || 0 })}
+                                        </span>
+                                    </div>
+                                    <div className="h-2.5 bg-white rounded-full overflow-hidden p-0.5 border border-gray-100">
+                                        <div className="h-full rounded-full bg-indigo-500" style={{ width: `${getFillPercentage(gdc)}%` }} />
+                                    </div>
+                                    <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                        {translate("gdip.admin.formationWatch.slotsRemaining", { count: gdc.slotsRemaining ?? Math.max(gdc.capacity - gdc.currentFill, 0) })}
+                                    </p>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 )}
@@ -205,9 +338,9 @@ export default function AdminGDCsPage() {
 
                                     {/* Component Tag */}
                                     <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-lg">🌾</div>
+                                        <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-xs font-black text-indigo-600">D</div>
                                         <div className="space-y-0.5">
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Primary Commodity</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Deployment Category</p>
                                             <p className="text-sm font-bold text-gray-800">{gdc.primaryCommodity}</p>
                                         </div>
                                     </div>
@@ -225,6 +358,16 @@ export default function AdminGDCsPage() {
                                                 style={{ width: `${getFillPercentage(gdc)}%` }}
                                             ></div>
                                         </div>
+                                        {gdc.status === "forming" && (
+                                            <div className="flex items-center justify-between gap-3">
+                                                <span className={`px-2 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${getAttentionColor(gdc.attentionLevel)}`}>
+                                                    {gdc.daysInFormation || 0} days forming
+                                                </span>
+                                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                                    {gdc.slotsRemaining ?? Math.max(gdc.capacity - gdc.currentFill, 0)} slots left
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Metrics Grid */}

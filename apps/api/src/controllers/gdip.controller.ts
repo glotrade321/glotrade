@@ -3,6 +3,7 @@ import { AuthRequest } from "../middleware/auth";
 import GDIPService from "../services/GDIPService";
 import TradeCycleService from "../services/TradeCycleService";
 import { Schema } from "mongoose";
+import User from "../models/User";
 
 /**
  * GDIP Controller - Handles API requests for Trusted Insured Partners platform
@@ -14,21 +15,17 @@ export class GDIPController {
      */
     static async purchaseTPIA(req: AuthRequest, res: Response) {
         try {
-            const { commodityType, profitMode, purchasePrice, quantity } = req.body;
+            const { profitMode, quantity } = req.body;
             const partnerId = req.user?._id;
 
             if (!partnerId) {
                 return res.status(401).json({ error: "Unauthorized" });
             }
 
-            if (!commodityType) {
-                return res.status(400).json({ error: "Commodity type is required" });
-            }
-
             const qty = parseInt(quantity as string) || 1;
             const tpias = await GDIPService.purchaseBulk(
                 partnerId as unknown as Schema.Types.ObjectId,
-                commodityType,
+                undefined,
                 profitMode || "TPM",
                 qty
             );
@@ -42,6 +39,246 @@ export class GDIPController {
             console.error("Error purchasing TPIA:", error);
             res.status(500).json({
                 error: error.message || "Failed to purchase TPIA"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Search partners for assisted/manual TPIA purchases
+     * GET /api/gdip/admin/partners/search
+     */
+    static async searchPartners(req: AuthRequest, res: Response) {
+        try {
+            const query = String(req.query.query || "").trim();
+            const limit = Math.min(parseInt(String(req.query.limit || "10"), 10) || 10, 20);
+
+            if (query.length < 2) {
+                return res.json({
+                    success: true,
+                    data: []
+                });
+            }
+
+            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const searchRegex = new RegExp(escapedQuery, "i");
+            const users = await User.find({
+                role: { $in: ["buyer", "seller"] },
+                isDeleted: { $ne: true },
+                $or: [
+                    { email: searchRegex },
+                    { username: searchRegex },
+                    { firstName: searchRegex },
+                    { lastName: searchRegex },
+                    { phone: searchRegex },
+                    { "businessInfo.companyName": searchRegex }
+                ]
+            })
+                .select("_id username firstName lastName email phone role isBlocked kycStatus businessInfo.companyName")
+                .limit(limit)
+                .lean();
+
+            res.json({
+                success: true,
+                data: users.map((user: any) => ({
+                    _id: user._id,
+                    username: user.username,
+                    name: user.businessInfo?.companyName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username,
+                    email: user.email,
+                    phone: user.phone,
+                    role: user.role,
+                    isBlocked: user.isBlocked,
+                    kycStatus: user.kycStatus
+                }))
+            });
+        } catch (error: any) {
+            console.error("Error searching GDIP partners:", error);
+            res.status(500).json({
+                error: error.message || "Failed to search partners"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Create a TPIA purchase for a partner who paid by bank deposit
+     * POST /api/gdip/admin/tpia/manual-purchase
+     */
+    static async manualPurchaseTPIA(req: AuthRequest, res: Response) {
+        try {
+            const {
+                partnerId,
+                profitMode = "TPM",
+                quantity = 1,
+                amountReceived,
+                bankReference,
+                depositedAt,
+                note
+            } = req.body;
+            const managerId = (req.user as any)?._id || (req.user as any)?.id;
+
+            if (!managerId) {
+                return res.status(401).json({ error: "Unauthorized" });
+            }
+
+            if (!partnerId || !bankReference || !depositedAt) {
+                return res.status(400).json({
+                    error: "Partner, bank reference, and deposit date are required"
+                });
+            }
+
+            if (!["TPM", "EPS"].includes(profitMode)) {
+                return res.status(400).json({
+                    error: "Valid profit mode required (TPM or EPS)"
+                });
+            }
+
+            const qty = parseInt(String(quantity), 10);
+            const receivedAmount = Number(amountReceived);
+            const depositDate = new Date(depositedAt);
+
+            if (!Number.isInteger(qty) || qty < 1 || qty > 10) {
+                return res.status(400).json({ error: "Quantity must be between 1 and 10" });
+            }
+
+            if (!Number.isFinite(receivedAmount) || receivedAmount <= 0) {
+                return res.status(400).json({ error: "Valid amount received is required" });
+            }
+
+            if (Number.isNaN(depositDate.getTime())) {
+                return res.status(400).json({ error: "Valid deposit date is required" });
+            }
+
+            const tpias = await GDIPService.createManualPurchase(
+                partnerId as unknown as Schema.Types.ObjectId,
+                profitMode,
+                qty,
+                receivedAmount,
+                bankReference,
+                depositDate,
+                managerId as unknown as Schema.Types.ObjectId,
+                note
+            );
+
+            res.status(201).json({
+                success: true,
+                message: qty > 1 ? `Manual purchase created for ${tpias.length} TPIA blocks` : "Manual TPIA purchase created",
+                data: tpias
+            });
+        } catch (error: any) {
+            console.error("Error creating manual TPIA purchase:", error);
+            res.status(500).json({
+                error: error.message || "Failed to create manual TPIA purchase"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Preview next GDC slots for an assisted/manual TPIA purchase
+     * GET /api/gdip/admin/tpia/manual-purchase/preview
+     */
+    static async previewManualPurchase(req: AuthRequest, res: Response) {
+        try {
+            const qty = parseInt(String(req.query.quantity || "1"), 10);
+
+            if (!Number.isInteger(qty) || qty < 1 || qty > 10) {
+                return res.status(400).json({ error: "Quantity must be between 1 and 10" });
+            }
+
+            const assignments = await GDIPService.previewNextAssignments(qty);
+
+            res.json({
+                success: true,
+                data: assignments
+            });
+        } catch (error: any) {
+            console.error("Error previewing manual TPIA purchase:", error);
+            res.status(500).json({
+                error: error.message || "Failed to preview manual TPIA purchase"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Correct manual bank deposit details for a pending TPIA
+     * PATCH /api/gdip/admin/tpia/:tpiaId/manual-payment
+     */
+    static async updateManualPaymentDetails(req: AuthRequest, res: Response) {
+        try {
+            const { tpiaId } = req.params;
+            const { bankReference, depositedAt, note, reason } = req.body;
+            const managerId = (req.user as any)?._id || (req.user as any)?.id;
+
+            if (!managerId) {
+                return res.status(401).json({ error: "Unauthorized" });
+            }
+
+            if (!bankReference || !depositedAt || !reason) {
+                return res.status(400).json({
+                    error: "Bank reference, deposit date, and correction reason are required"
+                });
+            }
+
+            const depositDate = new Date(depositedAt);
+            if (Number.isNaN(depositDate.getTime())) {
+                return res.status(400).json({ error: "Valid deposit date is required" });
+            }
+
+            const tpia = await GDIPService.updateManualPaymentDetails(
+                tpiaId as unknown as Schema.Types.ObjectId,
+                {
+                    bankReference,
+                    depositedAt: depositDate,
+                    note
+                },
+                managerId as unknown as Schema.Types.ObjectId,
+                reason
+            );
+
+            res.json({
+                success: true,
+                message: "Manual payment details updated",
+                data: tpia
+            });
+        } catch (error: any) {
+            console.error("Error updating manual payment details:", error);
+            res.status(500).json({
+                error: error.message || "Failed to update manual payment details"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Void a mistaken manual TPIA purchase before the GDC cycle starts
+     * POST /api/gdip/admin/tpia/:tpiaId/void
+     */
+    static async voidManualPurchase(req: AuthRequest, res: Response) {
+        try {
+            const { tpiaId } = req.params;
+            const { reason } = req.body;
+            const managerId = (req.user as any)?._id || (req.user as any)?.id;
+
+            if (!managerId) {
+                return res.status(401).json({ error: "Unauthorized" });
+            }
+
+            if (!reason || !String(reason).trim()) {
+                return res.status(400).json({ error: "Void reason is required" });
+            }
+
+            const tpia = await GDIPService.voidManualPurchase(
+                tpiaId as unknown as Schema.Types.ObjectId,
+                managerId as unknown as Schema.Types.ObjectId,
+                String(reason)
+            );
+
+            res.json({
+                success: true,
+                message: "Manual TPIA purchase voided",
+                data: tpia
+            });
+        } catch (error: any) {
+            console.error("Error voiding manual TPIA purchase:", error);
+            res.status(500).json({
+                error: error.message || "Failed to void manual TPIA purchase"
             });
         }
     }
@@ -313,9 +550,9 @@ export class GDIPController {
 
             const gdcs = await GDC.find().sort({ gdcNumber: 1 });
 
-            // Fetch all active cycles to calculate estimated profit
+            // Fetch active cycles to calculate estimated profit. Scheduled cycles should not accrue.
             const activeCycles = await TradeCycle.find({
-                status: { $in: ["active", "scheduled"] }
+                status: "active"
             });
 
             // Map cycles to GDCs
@@ -347,6 +584,19 @@ export class GDIPController {
                 const gdcObj = gdc.toObject();
                 gdcObj.totalProfitGenerated = (gdc.totalProfitGenerated || 0) + estimatedProfit;
                 gdcObj.estimatedProfit = estimatedProfit; // Also sending separately just in case
+                gdcObj.fillPercentage = gdc.capacity ? Math.round((gdc.currentFill / gdc.capacity) * 100) : 0;
+                gdcObj.slotsRemaining = Math.max((gdc.capacity || 0) - (gdc.currentFill || 0), 0);
+
+                if (gdc.status === "forming") {
+                    const createdAt = gdc.createdAt ? new Date(gdc.createdAt).getTime() : Date.now();
+                    const daysInFormation = Math.max(0, Math.floor((Date.now() - createdAt) / (1000 * 60 * 60 * 24)));
+                    gdcObj.daysInFormation = daysInFormation;
+                    gdcObj.attentionLevel = daysInFormation >= 30 ? "high" : daysInFormation >= 14 ? "medium" : "normal";
+                } else {
+                    gdcObj.daysInFormation = 0;
+                    gdcObj.attentionLevel = "normal";
+                }
+
                 return gdcObj;
             });
 
@@ -428,9 +678,8 @@ export class GDIPController {
             const cyclesWithProfit = cycles.map((cycle: any) => {
                 let currentProfit = 0;
 
-                // Calculate accrued profit for active/scheduled(started) cycles
-                if ((cycle.status === 'active' || cycle.status === 'scheduled') &&
-                    cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
+                // Only active cycles accrue. Scheduled cycles are assigned but not earning yet.
+                if (cycle.status === 'active' && cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
 
                     const start = new Date(cycle.startDate).getTime();
                     const end = new Date(cycle.endDate).getTime();
@@ -482,9 +731,27 @@ export class GDIPController {
                 return res.status(404).json({ error: "Trade cycle not found" });
             }
 
+            let currentProfit = 0;
+            if (cycle.status === "active" && cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
+                const start = new Date(cycle.startDate).getTime();
+                const end = new Date(cycle.endDate).getTime();
+                const now = Date.now();
+
+                if (now > start && now < end) {
+                    const progress = (now - start) / (end - start);
+                    const totalTarget = (cycle.targetProfitRate / 100) * cycle.totalCapital;
+                    currentProfit = totalTarget * progress;
+                } else if (now >= end) {
+                    currentProfit = (cycle.targetProfitRate / 100) * cycle.totalCapital;
+                }
+            }
+
             res.json({
                 success: true,
-                data: cycle
+                data: {
+                    ...cycle.toObject(),
+                    currentProfit
+                }
             });
         } catch (error: any) {
             console.error("Error fetching cycle details:", error);

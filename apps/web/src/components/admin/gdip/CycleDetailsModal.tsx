@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Calendar, Activity, TrendingUp, DollarSign, Package } from "lucide-react";
 import { apiGet } from "@/utils/api";
+import { translate } from "@/utils/translate";
 
 interface CycleDetailsModalProps {
     cycleId: string;
@@ -23,6 +24,7 @@ interface TradeCycle {
     salePrice?: number;
     actualProfitRate: number;
     estimatedProfitRate: number;
+    currentProfit?: number;
     tradingCosts: number;
     totalCapital: number;
     profitDistributed: boolean;
@@ -70,6 +72,14 @@ export default function CycleDetailsModal({ cycleId, onClose }: CycleDetailsModa
         });
     };
 
+    const getStatusDescription = (status: string) => {
+        if (status === "completed") return translate("gdip.admin.cycleDetails.completed");
+        if (status === "active") return translate("gdip.admin.cycleDetails.active");
+        if (status === "processing") return translate("gdip.admin.cycleDetails.processing");
+        if (status === "scheduled") return translate("gdip.admin.cycleDetails.scheduled");
+        return translate("gdip.admin.cycleDetails.notStarted");
+    };
+
     if (!cycleId) return null;
 
     return (
@@ -110,9 +120,7 @@ export default function CycleDetailsModal({ cycleId, onClose }: CycleDetailsModa
                                 <div>
                                     <p className="font-bold text-gray-900 capitalize">{cycle.status} Cycle</p>
                                     <p className="text-sm text-gray-600">
-                                        {cycle.status === "completed" ? "Trade completed and profits calculated" :
-                                            cycle.status === "active" ? "Currently executing trade operations" :
-                                                "Scheduled for execution"}
+                                        {getStatusDescription(cycle.status)}
                                     </p>
                                 </div>
                             </div>
@@ -172,9 +180,13 @@ export default function CycleDetailsModal({ cycleId, onClose }: CycleDetailsModa
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
-                                        <span className="text-gray-900 font-medium">Net Profit</span>
+                                        <span className="text-gray-900 font-medium">
+                                            {cycle.status === "active" ? translate("gdip.common.accruedProfit") : "Net Profit"}
+                                        </span>
                                         <span className="font-bold text-green-600">
-                                            {cycle.salePrice
+                                            {cycle.status === "active"
+                                                ? formatCurrency(cycle.currentProfit || 0)
+                                                : cycle.salePrice
                                                 ? formatCurrency(cycle.salePrice - cycle.purchasePrice - cycle.tradingCosts)
                                                 : "Pending"}
                                         </span>

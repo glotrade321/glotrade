@@ -50,7 +50,7 @@ export interface ITPIA extends Document {
   warehouseCertificateNumber?: string;
 
   // Lifecycle Status
-  status: "pending" | "active" | "matured" | "suspended" | "liquidated";
+  status: "pending" | "active" | "matured" | "suspended" | "liquidated" | "voided";
   activatedAt?: Date;
   maturityDate?: Date; // 13 months from activation (optional)
 
@@ -63,6 +63,35 @@ export interface ITPIA extends Document {
   };
 
   // Audit Trail
+  purchaseSource?: "wallet" | "manual_bank_deposit";
+  manualPayment?: {
+    amountReceived: number;
+    bankReference: string;
+    depositedAt: Date;
+    recordedBy?: Schema.Types.ObjectId;
+    recordedAt: Date;
+    note?: string;
+  };
+  manualPaymentCorrections?: {
+    correctedBy?: Schema.Types.ObjectId;
+    correctedAt: Date;
+    reason: string;
+    previous: {
+      bankReference?: string;
+      depositedAt?: Date;
+      note?: string;
+    };
+    next: {
+      bankReference?: string;
+      depositedAt?: Date;
+      note?: string;
+    };
+  }[];
+  voidedAt?: Date;
+  voidedBy?: Schema.Types.ObjectId;
+  voidReason?: string;
+  originalTpiaNumber?: number;
+  originalTpiaId?: string;
   purchasedAt: Date;
   createdBy?: Schema.Types.ObjectId; // Admin who created
   notes?: string;
@@ -194,7 +223,7 @@ const tpiaSchema = new Schema<ITPIA>(
     warehouseCertificateNumber: String,
     status: {
       type: String,
-      enum: ["pending", "active", "matured", "suspended", "liquidated"],
+      enum: ["pending", "active", "matured", "suspended", "liquidated", "voided"],
       default: "pending",
       index: true
     },
@@ -206,6 +235,64 @@ const tpiaSchema = new Schema<ITPIA>(
       purchaseAgreement: String,
       commodityAllocation: String
     },
+    purchaseSource: {
+      type: String,
+      enum: ["wallet", "manual_bank_deposit"],
+      default: "wallet",
+      index: true
+    },
+    manualPayment: {
+      amountReceived: Number,
+      bankReference: {
+        type: String,
+        trim: true
+      },
+      depositedAt: Date,
+      recordedBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      },
+      recordedAt: Date,
+      note: String
+    },
+    manualPaymentCorrections: [
+      new Schema(
+        {
+          correctedBy: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+          },
+          correctedAt: {
+            type: Date,
+            default: Date.now
+          },
+          reason: {
+            type: String,
+            required: true,
+            trim: true
+          },
+          previous: {
+            bankReference: String,
+            depositedAt: Date,
+            note: String
+          },
+          next: {
+            bankReference: String,
+            depositedAt: Date,
+            note: String
+          }
+        },
+        { _id: false }
+      )
+    ],
+    voidedAt: Date,
+    voidedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    },
+    voidReason: String,
+    originalTpiaNumber: Number,
+    originalTpiaId: String,
     purchasedAt: {
       type: Date,
       required: true,
@@ -245,5 +332,6 @@ tpiaSchema.index({ partnerId: 1, status: 1 });
 tpiaSchema.index({ gdcId: 1, positionInGDC: 1 });
 tpiaSchema.index({ status: 1, nextCycleStartDate: 1 });
 tpiaSchema.index({ createdAt: -1 });
+tpiaSchema.index({ "manualPayment.bankReference": 1 }, { sparse: true });
 
 export default mongoose.model<ITPIA>("TPIA", tpiaSchema);

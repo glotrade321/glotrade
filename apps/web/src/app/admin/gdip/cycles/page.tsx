@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { apiGet, apiPost } from "@/utils/api";
 import { formatCurrency } from "@/utils/format";
+import { translate } from "@/utils/translate";
 
 interface TradeCycle {
     _id: string;
     cycleId: string;
     cycleNumber: number;
+    gdcId: string;
     gdcNumber: number;
     tpiaCount: number;
     startDate: string;
@@ -21,6 +23,7 @@ interface TradeCycle {
     totalProfitGenerated: number;
     profitDistributed: boolean;
     performanceRating?: string;
+    currentProfit?: number;
 }
 
 export default function AdminCyclesPage() {
@@ -115,6 +118,26 @@ export default function AdminCyclesPage() {
             month: "short",
             day: "numeric",
         });
+    };
+
+    const getCycleProgress = (cycle: TradeCycle) => {
+        if (cycle.status === "completed") return 100;
+        if (cycle.status !== "active") return 0;
+
+        const start = new Date(cycle.startDate).getTime();
+        const end = new Date(cycle.endDate).getTime();
+        const now = Date.now();
+
+        if (isNaN(start) || isNaN(end) || end <= start) return 0;
+        return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+    };
+
+    const getCycleStateText = (cycle: TradeCycle) => {
+        if (cycle.status === "active") return translate("gdip.cycles.card.active", { percent: getCycleProgress(cycle).toFixed(1) });
+        if (cycle.status === "scheduled") return translate("gdip.common.scheduledNotAccruing");
+        if (cycle.status === "processing") return translate("gdip.common.processingResults");
+        if (cycle.status === "completed") return translate("gdip.common.completed");
+        return translate("gdip.common.notStarted");
     };
 
     const getStatusColor = (status: string) => {
@@ -273,7 +296,7 @@ export default function AdminCyclesPage() {
                                             </button>
                                         )}
                                         <button
-                                            onClick={() => router.push(`/admin/gdip/gdc/placeholder-id`)} // This would ideally link to GDC details
+                                            onClick={() => router.push(`/admin/gdip/gdc/${cycle.gdcId}`)}
                                             className="p-2.5 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-colors border border-gray-100"
                                             title="View Cluster Details"
                                         >
@@ -324,12 +347,34 @@ export default function AdminCyclesPage() {
                                                 <span className="px-1.5 py-0.5 bg-green-50 text-[10px] text-green-600 rounded font-bold animate-pulse">FIXED</span>
                                             </div>
                                         </div>
+                                    ) : cycle.status === "active" ? (
+                                        <div className="space-y-1.5 bg-green-50/50 p-2 rounded-xl border border-green-50">
+                                            <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest">{translate("gdip.common.accruedProfit")}</p>
+                                            <p className="text-xs font-black text-green-700">+{formatCurrency(cycle.currentProfit || 0)}</p>
+                                        </div>
                                     ) : (
-                                        <div className="space-y-1.5 bg-blue-50/50 p-2 rounded-xl border border-blue-50">
-                                            <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Est. Profit Gap</p>
-                                            <p className="text-xs font-bold text-blue-600">Pending Close</p>
+                                        <div className="space-y-1.5 bg-amber-50/50 p-2 rounded-xl border border-amber-50">
+                                            <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{translate("gdip.common.activationStatus")}</p>
+                                            <p className="text-xs font-bold text-amber-700">
+                                                {cycle.status === "scheduled" ? translate("gdip.common.notAccruingYet") : translate("gdip.common.pendingClose")}
+                                            </p>
                                         </div>
                                     )}
+                                </div>
+
+                                <div className="mt-6 pt-6 border-t border-gray-100">
+                                    <div className="flex items-center justify-between gap-4 mb-2">
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{translate("gdip.common.cycleProgress")}</span>
+                                        <span className={`text-[10px] font-black uppercase tracking-widest ${cycle.status === "active" ? "text-green-600" : cycle.status === "scheduled" ? "text-amber-600" : "text-gray-500"}`}>
+                                            {getCycleStateText(cycle)}
+                                        </span>
+                                    </div>
+                                    <div className="h-2.5 bg-white rounded-full overflow-hidden p-0.5 border border-gray-100">
+                                        <div
+                                            className={`h-full rounded-full transition-all duration-1000 ${cycle.status === "completed" ? "bg-blue-500" : cycle.status === "active" ? "bg-green-500" : "bg-amber-400"}`}
+                                            style={{ width: `${getCycleProgress(cycle)}%` }}
+                                        />
+                                    </div>
                                 </div>
 
                                 {cycle.status === "completed" && (

@@ -130,6 +130,9 @@ export default function InsuranceCertificatePage() {
     }
 
     const { tpia, insurance } = data;
+    const assetBackingText = tpia.commodityQuantity > 0
+        ? translate("gdip.certificate.content.backingValue")
+        : translate("gdip.certificate.content.pendingBackingValue");
 
     return (
         <div className="min-h-screen bg-white">
@@ -248,7 +251,7 @@ export default function InsuranceCertificatePage() {
                                         <Package className="w-5 h-5 text-blue-600 mt-1" />
                                         <div>
                                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">{translate("gdip.certificate.content.backingLabel")}</p>
-                                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{translate("gdip.certificate.content.backingValue", { qty: tpia.commodityQuantity, unit: tpia.commodityUnit, type: tpia.commodityType })}</p>
+                                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{assetBackingText}</p>
                                         </div>
                                     </div>
                                 </div>
