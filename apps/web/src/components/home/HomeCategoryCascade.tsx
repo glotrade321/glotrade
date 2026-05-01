@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
@@ -8,6 +9,11 @@ import { apiGet } from "@/utils/api";
 type Category = { _id: string; name: string; slug: string; parentId?: string };
 type CategoriesResponse = { status: string; data: Category[] };
 type Product = { _id: string; title: string; price: number; currency: string; images?: string[]; brand?: string; discount?: number; rating?: number; category?: string };
+type SearchResponse = { status: string; data: { products: Product[]; total: number; page: number; totalPages: number } };
+
+const HOME_BATCH_SIZE = 24;
+const HOME_AUTOLOAD_CAP = 72;
+const HOME_MAX_VISIBLE = 72;
 
 export default function HomeCategoryCascade({ items }: { items: Product[] }) {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -15,6 +21,12 @@ export default function HomeCategoryCascade({ items }: { items: Product[] }) {
   const [l2, setL2] = useState<Category | undefined>();
   const [l3, setL3] = useState<Category | undefined>();
   const [locale, setLocale] = useState<Locale>("en");
+  const [loadedItems, setLoadedItems] = useState<Product[]>(items);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(items.length === HOME_BATCH_SIZE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [autoloadStopped, setAutoloadStopped] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setLocale(getStoredLocale());
@@ -68,11 +80,125 @@ export default function HomeCategoryCascade({ items }: { items: Product[] }) {
   }, [l1, l2, l3, childrenMap]);
 
   const filtered = useMemo(() => {
-    if (!allowedCategoryNames) return items;
-    return items.filter((p) => (p.category ? allowedCategoryNames.has(p.category) : false));
-  }, [items, allowedCategoryNames]);
+    if (!allowedCategoryNames) return loadedItems;
+    return loadedItems.filter((p) => (p.category ? allowedCategoryNames.has(p.category) : false));
+  }, [loadedItems, allowedCategoryNames]);
+
+  const activeCategory = l3?.slug || l2?.slug || l1?.slug;
+  const shouldShowBrowseAll = autoloadStopped || filtered.length >= HOME_MAX_VISIBLE;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function run() {
+      setIsLoadingMore(true);
+      try {
+        const query = {
+          limit: HOME_BATCH_SIZE,
+          page: 1,
+          ...(activeCategory ? { category: activeCategory } : {}),
+        };
+        const json = await apiGet<SearchResponse>("/api/v1/market/products", { query });
+        if (cancelled) return;
+        const nextItems = Array.isArray(json.data?.products) ? json.data.products : [];
+        const totalPages = Number(json.data?.totalPages || 1);
+        setLoadedItems(nextItems);
+        setPage(1);
+        setHasMore(totalPages > 1 || nextItems.length === HOME_BATCH_SIZE);
+        setAutoloadStopped(false);
+      } catch {
+        if (cancelled) return;
+        setLoadedItems([]);
+        setPage(1);
+        setHasMore(false);
+        setAutoloadStopped(false);
+      } finally {
+        if (!cancelled) setIsLoadingMore(false);
+      }
+    }
+
+    if (activeCategory) {
+      run();
+      return () => { cancelled = true; };
+    }
+
+    setLoadedItems(items);
+    setPage(1);
+    setHasMore(items.length === HOME_BATCH_SIZE);
+    setAutoloadStopped(false);
+    return () => { cancelled = true; };
+  }, [activeCategory, items]);
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || !hasMore || isLoadingMore || autoloadStopped) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry?.isIntersecting) return;
+        setPage((current) => current + 1);
+      },
+      { rootMargin: "900px 0px", threshold: 0.01 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, autoloadStopped, filtered.length]);
+
+  useEffect(() => {
+    if (page <= 1 || isLoadingMore || !hasMore) return;
+    if (loadedItems.length >= HOME_AUTOLOAD_CAP) {
+      setAutoloadStopped(true);
+      setHasMore(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function run() {
+      setIsLoadingMore(true);
+      try {
+        const query = {
+          limit: HOME_BATCH_SIZE,
+          page,
+          ...(activeCategory ? { category: activeCategory } : {}),
+        };
+        const json = await apiGet<SearchResponse>("/api/v1/market/products", { query });
+        if (cancelled) return;
+        const nextItems = Array.isArray(json.data?.products) ? json.data.products : [];
+        const totalPages = Number(json.data?.totalPages || 1);
+
+        setLoadedItems((current) => {
+          const seen = new Set(current.map((item) => item._id));
+          const merged = [...current];
+          for (const item of nextItems) {
+            if (!seen.has(item._id)) {
+              seen.add(item._id);
+              merged.push(item);
+            }
+          }
+          return merged;
+        });
+
+        const nextLoadedCount = loadedItems.length + nextItems.length;
+        const reachedCap = nextLoadedCount >= HOME_AUTOLOAD_CAP;
+        setAutoloadStopped(reachedCap);
+        setHasMore(!reachedCap && page < totalPages && nextItems.length > 0);
+      } catch {
+        if (cancelled) return;
+        setHasMore(false);
+      } finally {
+        if (!cancelled) setIsLoadingMore(false);
+      }
+    }
+
+    run();
+    return () => { cancelled = true; };
+  }, [page, hasMore, isLoadingMore, loadedItems.length, activeCategory]);
 
   const pill = (active: boolean) => `px-3 py-1.5 rounded-full border text-sm whitespace-nowrap ${active ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`;
+  const marketplaceHref = activeCategory ? `/marketplace?category=${encodeURIComponent(activeCategory)}` : "/marketplace";
 
   return (
     <section className="mb-6">
@@ -109,13 +235,41 @@ export default function HomeCategoryCascade({ items }: { items: Product[] }) {
       {filtered.length === 0 ? (
         <div className="text-sm text-neutral-500 mt-2">{translate(locale, "common.noProductsMatch")}</div>
       ) : (
-        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-          {filtered.map((p) => (
-            <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
-          ))}
-        </div>
+        <>
+          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+            {filtered.slice(0, HOME_MAX_VISIBLE).map((p) => (
+              <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
+            ))}
+          </div>
+          <div ref={sentinelRef} className="h-1" aria-hidden="true" />
+          {isLoadingMore ? (
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 opacity-80">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="overflow-hidden rounded-lg border border-neutral-200/70 bg-white/70 p-2.5 dark:border-neutral-800 dark:bg-neutral-900/60"
+                >
+                  <div className="aspect-square rounded-md bg-neutral-100/90 dark:bg-neutral-800/80 animate-pulse" />
+                  <div className="mt-3 h-2.5 w-16 rounded-full bg-neutral-100/90 dark:bg-neutral-800/80 animate-pulse" />
+                  <div className="mt-2 h-3.5 w-11/12 rounded-full bg-neutral-100/90 dark:bg-neutral-800/80 animate-pulse" />
+                  <div className="mt-2 h-3.5 w-8/12 rounded-full bg-neutral-100/90 dark:bg-neutral-800/80 animate-pulse" />
+                  <div className="mt-3 h-7 w-28 rounded-md bg-neutral-100/90 dark:bg-neutral-800/80 animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : null}
+          {shouldShowBrowseAll ? (
+            <div className="mt-5 flex justify-center">
+              <Link
+                href={marketplaceHref}
+                className="inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-800 transition hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-900"
+              >
+                {translate(locale, "home.seeMore")}
+              </Link>
+            </div>
+          ) : null}
+        </>
       )}
     </section>
   );
 }
-

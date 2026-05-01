@@ -186,7 +186,7 @@ app.get("/health", (req: any, res: any) => {
 app.get("/", (req: any, res: any) => {
   res.json({
     message: "Glotrade International API",
-    version: "1.0.0",
+    version: "1.0.1",
     documentation: process.env.NODE_ENV === 'production'
       ? 'https://glotrade-ecom.onrender.com/api-docs'
       : `http://localhost:${process.env.PORT || 8080}/api-docs`,

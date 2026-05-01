@@ -2459,6 +2459,18 @@ export default function PlatformSettingsPage() {
 
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                      Platform Release
+                    </label>
+                    <input
+                      type="text"
+                      value="1.0.1"
+                      readOnly
+                      className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                       Rate Limit (requests per minute)
                     </label>
                     <input

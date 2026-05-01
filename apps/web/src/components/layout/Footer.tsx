@@ -191,7 +191,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="text-xs text-neutral-500 text-center md:text-left">
-                        <p>&copy; {currentYear} Glotrade. {translate(locale, "footer.rights")} v1.0.0</p>
+                        <p>&copy; {currentYear} Glotrade. {translate(locale, "footer.rights")} v1.0.1</p>
                         <p className="mt-1">{translate(locale, "footer.developer")}: NEXGEN TECH INNOVATIONS LIMITED</p>
                         <p className="mt-1">{translate(locale, "footer.tagline")}</p>
                     </div>

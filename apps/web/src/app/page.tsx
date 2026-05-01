@@ -22,7 +22,10 @@ type SearchResponse = { status: string; data: { products: Product[]; total: numb
 export default async function Home() {
   let items: Product[] = [];
   try {
-    const res = await apiGet<SearchResponse>("/api/v1/market/products", { query: { limit: 24 }, next: { revalidate: 3600 } });
+    const res = await apiGet<SearchResponse>("/api/v1/market/products", {
+      query: { limit: 24, page: 1 },
+      next: { revalidate: 3600 },
+    });
     items = Array.isArray(res.data?.products) ? res.data.products : [];
   } catch { }
 
