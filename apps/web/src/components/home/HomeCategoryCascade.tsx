@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
@@ -15,18 +15,20 @@ const HOME_BATCH_SIZE = 24;
 const HOME_AUTOLOAD_CAP = 72;
 const HOME_MAX_VISIBLE = 72;
 
-export default function HomeCategoryCascade({ items }: { items: Product[] }) {
+export default function HomeCategoryCascade({ items, initialTotalPages }: { items: Product[]; initialTotalPages: number }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [l1, setL1] = useState<Category | undefined>();
   const [l2, setL2] = useState<Category | undefined>();
   const [l3, setL3] = useState<Category | undefined>();
   const [locale, setLocale] = useState<Locale>("en");
   const [loadedItems, setLoadedItems] = useState<Product[]>(items);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(items.length === HOME_BATCH_SIZE);
+  const [nextPage, setNextPage] = useState(2);
+  const [totalPages, setTotalPages] = useState(initialTotalPages);
+  const [hasMore, setHasMore] = useState(initialTotalPages > 1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [autoloadStopped, setAutoloadStopped] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const isLoadingRef = useRef(false);
 
   useEffect(() => {
     setLocale(getStoredLocale());
@@ -101,33 +103,91 @@ export default function HomeCategoryCascade({ items }: { items: Product[] }) {
         const json = await apiGet<SearchResponse>("/api/v1/market/products", { query });
         if (cancelled) return;
         const nextItems = Array.isArray(json.data?.products) ? json.data.products : [];
-        const totalPages = Number(json.data?.totalPages || 1);
+        const fetchedTotalPages = Number(json.data?.totalPages || 1);
         setLoadedItems(nextItems);
-        setPage(1);
-        setHasMore(totalPages > 1 || nextItems.length === HOME_BATCH_SIZE);
+        setNextPage(2);
+        setTotalPages(fetchedTotalPages);
+        setHasMore(fetchedTotalPages > 1);
         setAutoloadStopped(false);
       } catch {
         if (cancelled) return;
         setLoadedItems([]);
-        setPage(1);
+        setNextPage(2);
+        setTotalPages(1);
         setHasMore(false);
         setAutoloadStopped(false);
       } finally {
-        if (!cancelled) setIsLoadingMore(false);
+        if (!cancelled) {
+          isLoadingRef.current = false;
+          setIsLoadingMore(false);
+        }
       }
     }
 
     if (activeCategory) {
+      isLoadingRef.current = true;
       run();
       return () => { cancelled = true; };
     }
 
     setLoadedItems(items);
-    setPage(1);
-    setHasMore(items.length === HOME_BATCH_SIZE);
+    setNextPage(2);
+    setTotalPages(initialTotalPages);
+    setHasMore(initialTotalPages > 1);
     setAutoloadStopped(false);
     return () => { cancelled = true; };
-  }, [activeCategory, items]);
+  }, [activeCategory, items, initialTotalPages]);
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingRef.current || !hasMore || autoloadStopped) return;
+    if (loadedItems.length >= HOME_AUTOLOAD_CAP) {
+      setAutoloadStopped(true);
+      setHasMore(false);
+      return;
+    }
+    if (nextPage > totalPages) {
+      setHasMore(false);
+      return;
+    }
+
+    isLoadingRef.current = true;
+    setIsLoadingMore(true);
+    try {
+      const query = {
+        limit: HOME_BATCH_SIZE,
+        page: nextPage,
+        ...(activeCategory ? { category: activeCategory } : {}),
+      };
+      const json = await apiGet<SearchResponse>("/api/v1/market/products", { query });
+      const nextItems = Array.isArray(json.data?.products) ? json.data.products : [];
+      const fetchedTotalPages = Number(json.data?.totalPages || totalPages || 1);
+
+      let mergedCount = loadedItems.length;
+      setLoadedItems((current) => {
+        const seen = new Set(current.map((item) => item._id));
+        const merged = [...current];
+        for (const item of nextItems) {
+          if (!seen.has(item._id)) {
+            seen.add(item._id);
+            merged.push(item);
+          }
+        }
+        mergedCount = merged.length;
+        return merged;
+      });
+
+      const reachedCap = mergedCount >= HOME_AUTOLOAD_CAP;
+      setTotalPages(fetchedTotalPages);
+      setNextPage((current) => current + 1);
+      setAutoloadStopped(reachedCap);
+      setHasMore(!reachedCap && nextPage < fetchedTotalPages && nextItems.length > 0);
+    } catch {
+      setHasMore(false);
+    } finally {
+      isLoadingRef.current = false;
+      setIsLoadingMore(false);
+    }
+  }, [activeCategory, autoloadStopped, hasMore, loadedItems.length, nextPage, totalPages]);
 
   useEffect(() => {
     const node = sentinelRef.current;
@@ -137,65 +197,14 @@ export default function HomeCategoryCascade({ items }: { items: Product[] }) {
       (entries) => {
         const entry = entries[0];
         if (!entry?.isIntersecting) return;
-        setPage((current) => current + 1);
+        void loadMore();
       },
       { rootMargin: "900px 0px", threshold: 0.01 }
     );
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [hasMore, isLoadingMore, autoloadStopped, filtered.length]);
-
-  useEffect(() => {
-    if (page <= 1 || isLoadingMore || !hasMore) return;
-    if (loadedItems.length >= HOME_AUTOLOAD_CAP) {
-      setAutoloadStopped(true);
-      setHasMore(false);
-      return;
-    }
-
-    let cancelled = false;
-
-    async function run() {
-      setIsLoadingMore(true);
-      try {
-        const query = {
-          limit: HOME_BATCH_SIZE,
-          page,
-          ...(activeCategory ? { category: activeCategory } : {}),
-        };
-        const json = await apiGet<SearchResponse>("/api/v1/market/products", { query });
-        if (cancelled) return;
-        const nextItems = Array.isArray(json.data?.products) ? json.data.products : [];
-        const totalPages = Number(json.data?.totalPages || 1);
-
-        setLoadedItems((current) => {
-          const seen = new Set(current.map((item) => item._id));
-          const merged = [...current];
-          for (const item of nextItems) {
-            if (!seen.has(item._id)) {
-              seen.add(item._id);
-              merged.push(item);
-            }
-          }
-          return merged;
-        });
-
-        const nextLoadedCount = loadedItems.length + nextItems.length;
-        const reachedCap = nextLoadedCount >= HOME_AUTOLOAD_CAP;
-        setAutoloadStopped(reachedCap);
-        setHasMore(!reachedCap && page < totalPages && nextItems.length > 0);
-      } catch {
-        if (cancelled) return;
-        setHasMore(false);
-      } finally {
-        if (!cancelled) setIsLoadingMore(false);
-      }
-    }
-
-    run();
-    return () => { cancelled = true; };
-  }, [page, hasMore, isLoadingMore, loadedItems.length, activeCategory]);
+  }, [autoloadStopped, hasMore, isLoadingMore, loadMore]);
 
   const pill = (active: boolean) => `px-3 py-1.5 rounded-full border text-sm whitespace-nowrap ${active ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`;
   const marketplaceHref = activeCategory ? `/marketplace?category=${encodeURIComponent(activeCategory)}` : "/marketplace";
