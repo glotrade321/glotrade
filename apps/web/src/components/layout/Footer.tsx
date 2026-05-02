@@ -140,7 +140,7 @@ export default function Footer() {
                                         Lagos: (+234)902-900-4712
                                     </a>
                                     <a href="tel:+2347024600924" className="block hover:text-[#2EA5FF] transition-colors">
-                                        Abuja: (+234)702-460-0924
+                                        Abuja: (+234)704-460-0924
                                     </a>
                                 </div>
                             </div>
