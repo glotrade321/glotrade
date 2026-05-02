@@ -55,7 +55,7 @@ export default function UpperHeader() {
         <div className="hidden sm:flex items-center gap-3 text-white text-[10px] md:text-sm font-semibold whitespace-nowrap">
           <span>{translate(locale, "header.needHelp")} {translate(locale, "header.callUs")}</span>
           <span>Lagos: (+234)902-900-4712</span>
-          <span>Abuja: (+234)702-460-0924</span>
+          <span>Abuja: (+234)704-460-0924</span>
         </div>
 
         <div className="flex flex-1 sm:flex-none justify-center sm:justify-end items-center gap-4 md:gap-6 text-white text-[11px] md:text-sm font-semibold">
@@ -104,7 +104,7 @@ export default function UpperHeader() {
                     >
                       <span>
                         <span className="block text-[11px] uppercase tracking-[0.18em] text-white/70">Abuja</span>
-                        <span className="block text-sm font-semibold">(+234)702-460-0924</span>
+                        <span className="block text-sm font-semibold">(+234)704-460-0924</span>
                       </span>
                       <Phone size={15} className="shrink-0 text-white/85" />
                     </a>
