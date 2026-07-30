@@ -30,6 +30,7 @@ interface Product {
     category: string;
     subcategory?: string;
     images: string[];
+    imageCount?: number;
     condition: string;
     quantity: number;
     brand?: string;
@@ -77,10 +78,12 @@ interface ProductOverview {
     lowStockThreshold: number;
 }
 
-function ProductMediaBadge({ images }: { images: string[] }) {
+function ProductMediaBadge({ images, imageCount }: { images: string[]; imageCount?: number }) {
     const [sizeBytes, setSizeBytes] = useState<number | null>(null);
     const [dimensions, setDimensions] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+
+    const totalImages = imageCount !== undefined ? imageCount : (images?.length || 0);
 
     useEffect(() => {
         if (!images || images.length === 0) {
@@ -91,7 +94,13 @@ function ProductMediaBadge({ images }: { images: string[] }) {
         async function fetchDetails() {
             try {
                 setLoading(true);
-                const imageUrl = images[0];
+                // Convert relative key to full API image URL
+                const imageUrl = getOptimizedImageUrl(images[0]);
+                if (!imageUrl) {
+                    setLoading(false);
+                    return;
+                }
+
                 const res = await fetch(imageUrl);
                 if (cancelled) return;
                 
@@ -145,7 +154,7 @@ function ProductMediaBadge({ images }: { images: string[] }) {
         <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5 text-xs text-gray-900 font-medium">
                 <ImageIcon size={13} className="text-gray-500" />
-                <span>{images.length} {images.length === 1 ? "image" : "images"}</span>
+                <span>{totalImages} {totalImages === 1 ? "image" : "images"}</span>
             </div>
             {loading && sizeBytes === null ? (
                 <span className="text-[11px] text-gray-400 animate-pulse">Calculating size...</span>
@@ -655,7 +664,7 @@ export default function AdminProductsPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <ProductMediaBadge images={product.images} />
+                                                     <ProductMediaBadge images={product.images} imageCount={product.imageCount} />
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{product.category}</div>
@@ -755,7 +764,7 @@ export default function AdminProductsPage() {
                                                 </h4>
                                                 <p className="text-sm text-gray-500 mt-1">{product.category}</p>
                                                 <div className="mt-1.5">
-                                                    <ProductMediaBadge images={product.images} />
+                                                    <ProductMediaBadge images={product.images} imageCount={product.imageCount} />
                                                 </div>
                                                 {(product.createdAt || product.updatedAt) && (
                                                     <p className="text-xs text-gray-400 mt-1">

@@ -240,10 +240,10 @@ export class MarketService extends BaseService<IProduct> {
       this.model.countDocuments(queryObj),
     ]);
 
-    // Transform products to only include first image (reduce payload further)
-    // Keep shippingOptions as ProductCard needs it for free shipping badge
+    // Transform products to include imageCount and first image for listing payload
     const optimizedProducts = products.map((product: any) => ({
       ...product,
+      imageCount: Array.isArray(product.images) ? product.images.length : 0,
       images: product.images && product.images.length > 0 ? [product.images[0]] : [], // Only first image for listing
       // Keep shippingOptions - ProductCard uses it for free shipping and ETA display
     }));
