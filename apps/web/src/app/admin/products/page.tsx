@@ -77,6 +77,69 @@ interface ProductOverview {
     lowStockThreshold: number;
 }
 
+function ProductMediaBadge({ images }: { images: string[] }) {
+    const [sizeBytes, setSizeBytes] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!images || images.length === 0) return;
+        let cancelled = false;
+        async function fetchSize() {
+            try {
+                const imageUrl = images[0];
+                const res = await fetch(imageUrl, { method: "HEAD" });
+                if (cancelled) return;
+                const length = res.headers.get("content-length");
+                if (length) {
+                    setSizeBytes(parseInt(length, 10));
+                }
+            } catch {
+                // Ignore if HEAD request fails or CORS blocks
+            }
+        }
+        fetchSize();
+        return () => { cancelled = true; };
+    }, [images]);
+
+    if (!images || images.length === 0) {
+        return (
+            <div className="flex flex-col gap-0.5">
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full w-fit">
+                    <AlertTriangle size={12} /> No Images
+                </span>
+                <span className="text-[11px] text-gray-400">Target: 800×800 px</span>
+            </div>
+        );
+    }
+
+    const formatSize = (bytes: number) => {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    };
+
+    const getSizeBadgeClass = (bytes: number) => {
+        if (bytes <= 500 * 1024) return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        if (bytes <= 2 * 1024 * 1024) return "bg-amber-50 text-amber-800 border-amber-200";
+        return "bg-red-50 text-red-700 border-red-200";
+    };
+
+    return (
+        <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-1.5 text-xs text-gray-900 font-medium">
+                <ImageIcon size={13} className="text-gray-500" />
+                <span>{images.length} {images.length === 1 ? "image" : "images"}</span>
+            </div>
+            {sizeBytes !== null && (
+                <span className={`inline-flex items-center text-[11px] font-medium border px-1.5 py-0.5 rounded w-fit ${getSizeBadgeClass(sizeBytes)}`}>
+                    {formatSize(sizeBytes)}
+                    {sizeBytes > 2 * 1024 * 1024 && " (Large)"}
+                </span>
+            )}
+            <span className="text-[11px] text-gray-500 font-mono">1:1 (400p/800p)</span>
+        </div>
+    );
+}
+
 export default function AdminProductsPage() {
     const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
@@ -517,6 +580,9 @@ export default function AdminProductsPage() {
                                                 Product
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Media & Specs
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Category
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -563,6 +629,9 @@ export default function AdminProductsPage() {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <ProductMediaBadge images={product.images} />
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{product.category}</div>
@@ -661,6 +730,9 @@ export default function AdminProductsPage() {
                                                     {product.title}
                                                 </h4>
                                                 <p className="text-sm text-gray-500 mt-1">{product.category}</p>
+                                                <div className="mt-1.5">
+                                                    <ProductMediaBadge images={product.images} />
+                                                </div>
                                                 {(product.createdAt || product.updatedAt) && (
                                                     <p className="text-xs text-gray-400 mt-1">
                                                         {product.updatedAt ? `Updated ${formatDate(product.updatedAt)}` : `Created ${formatDate(product.createdAt)}`}
