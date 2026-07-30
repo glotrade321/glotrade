@@ -29,6 +29,13 @@ export default function HomeCategoryCascade({ items, initialTotalPages }: { item
   const [autoloadStopped, setAutoloadStopped] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const isLoadingRef = useRef(false);
+  const initialAllItemsRef = useRef<Product[]>(items);
+
+  useEffect(() => {
+    if (items.length > 0) {
+      initialAllItemsRef.current = items;
+    }
+  }, [items]);
 
   useEffect(() => {
     setLocale(getStoredLocale());
@@ -105,13 +112,22 @@ export default function HomeCategoryCascade({ items, initialTotalPages }: { item
         const nextItems = Array.isArray(json.data?.products) ? json.data.products : [];
         const fetchedTotalPages = Number(json.data?.totalPages || 1);
         setLoadedItems(nextItems);
+
+        if (!activeCategory && nextItems.length > 0) {
+          initialAllItemsRef.current = nextItems;
+        }
+
         setNextPage(2);
         setTotalPages(fetchedTotalPages);
         setHasMore(fetchedTotalPages > 1);
         setAutoloadStopped(false);
       } catch {
         if (cancelled) return;
-        setLoadedItems([]);
+        if (!activeCategory && initialAllItemsRef.current.length > 0) {
+          setLoadedItems(initialAllItemsRef.current);
+        } else {
+          setLoadedItems([]);
+        }
         setNextPage(2);
         setTotalPages(1);
         setHasMore(false);
@@ -124,19 +140,19 @@ export default function HomeCategoryCascade({ items, initialTotalPages }: { item
       }
     }
 
-    if (activeCategory) {
+    if (activeCategory || initialAllItemsRef.current.length === 0) {
       isLoadingRef.current = true;
       run();
       return () => { cancelled = true; };
     }
 
-    setLoadedItems(items);
+    setLoadedItems(initialAllItemsRef.current);
     setNextPage(2);
     setTotalPages(initialTotalPages);
     setHasMore(initialTotalPages > 1);
     setAutoloadStopped(false);
     return () => { cancelled = true; };
-  }, [activeCategory, items, initialTotalPages]);
+  }, [activeCategory, initialTotalPages]);
 
   const loadMore = useCallback(async () => {
     if (isLoadingRef.current || !hasMore || autoloadStopped) return;

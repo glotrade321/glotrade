@@ -25,7 +25,7 @@ export default async function Home() {
   try {
     const res = await apiGet<SearchResponse>("/api/v1/market/products", {
       query: { limit: 24, page: 1 },
-      next: { revalidate: 3600 },
+      next: { revalidate: 300 }, // from 3600 1hr
     });
     items = Array.isArray(res.data?.products) ? res.data.products : [];
     initialTotalPages = Number(res.data?.totalPages || 1);
@@ -33,7 +33,7 @@ export default async function Home() {
 
   let banners: any[] = [];
   try {
-    const bannerRes = await apiGet<{ status: string; data: { banners: any[] } }>("/api/v1/banners?active=true", { next: { revalidate: 3600 } });
+    const bannerRes = await apiGet<{ status: string; data: { banners: any[] } }>("/api/v1/banners?active=true", { next: { revalidate: 300 } }); // from 3600 1hr
     if (bannerRes.status === 'success') {
       banners = bannerRes.data.banners;
     }
