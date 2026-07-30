@@ -79,24 +79,43 @@ interface ProductOverview {
 
 function ProductMediaBadge({ images }: { images: string[] }) {
     const [sizeBytes, setSizeBytes] = useState<number | null>(null);
+    const [dimensions, setDimensions] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!images || images.length === 0) return;
+        if (!images || images.length === 0) {
+            setLoading(false);
+            return;
+        }
         let cancelled = false;
-        async function fetchSize() {
+        async function fetchDetails() {
             try {
+                setLoading(true);
                 const imageUrl = images[0];
-                const res = await fetch(imageUrl, { method: "HEAD" });
+                const res = await fetch(imageUrl);
                 if (cancelled) return;
-                const length = res.headers.get("content-length");
-                if (length) {
-                    setSizeBytes(parseInt(length, 10));
+                
+                if (res.ok) {
+                    const blob = await res.blob();
+                    if (!cancelled) {
+                        setSizeBytes(blob.size);
+                    }
+                    
+                    const img = new Image();
+                    img.src = URL.createObjectURL(blob);
+                    img.onload = () => {
+                        if (!cancelled) {
+                            setDimensions(`${img.naturalWidth}×${img.naturalHeight}px`);
+                        }
+                    };
                 }
             } catch {
-                // Ignore if HEAD request fails or CORS blocks
+                // Fetch failed or blocked
+            } finally {
+                if (!cancelled) setLoading(false);
             }
         }
-        fetchSize();
+        fetchDetails();
         return () => { cancelled = true; };
     }, [images]);
 
@@ -106,7 +125,6 @@ function ProductMediaBadge({ images }: { images: string[] }) {
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full w-fit">
                     <AlertTriangle size={12} /> No Images
                 </span>
-                <span className="text-[11px] text-gray-400">Target: 800×800 px</span>
             </div>
         );
     }
@@ -129,13 +147,19 @@ function ProductMediaBadge({ images }: { images: string[] }) {
                 <ImageIcon size={13} className="text-gray-500" />
                 <span>{images.length} {images.length === 1 ? "image" : "images"}</span>
             </div>
-            {sizeBytes !== null && (
-                <span className={`inline-flex items-center text-[11px] font-medium border px-1.5 py-0.5 rounded w-fit ${getSizeBadgeClass(sizeBytes)}`}>
+            {loading && sizeBytes === null ? (
+                <span className="text-[11px] text-gray-400 animate-pulse">Calculating size...</span>
+            ) : sizeBytes !== null ? (
+                <span className={`inline-flex items-center text-[11px] font-semibold border px-2 py-0.5 rounded w-fit ${getSizeBadgeClass(sizeBytes)}`}>
                     {formatSize(sizeBytes)}
                     {sizeBytes > 2 * 1024 * 1024 && " (Large)"}
                 </span>
+            ) : (
+                <span className="text-[11px] text-gray-400">Size N/A</span>
             )}
-            <span className="text-[11px] text-gray-500 font-mono">1:1 (400p/800p)</span>
+            {dimensions && (
+                <span className="text-[11px] text-gray-500 font-mono">{dimensions}</span>
+            )}
         </div>
     );
 }
