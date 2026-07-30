@@ -160,7 +160,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </>
           ) : null}
         </nav>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-start lg:h-[calc(100vh-120px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-start lg:min-h-[calc(100vh-120px)]">
           {/* Sync right wheel to left scroll on desktop; allow full left scroll range */}
           <SyncScroll leftId="pd-left" rightId="pd-right" bottomAlignTargetId="pd-left-end" offset={0} mode="full" />
           {/* Gallery (left) */}
@@ -175,7 +175,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
 
           {/* Summary (right) */}
-          <div id="pd-right" tabIndex={0} className="w-full lg:sticky lg:top-[76px] lg:self-start focus:outline-none">
+          <div id="pd-right" tabIndex={0} className="w-full lg:sticky lg:top-[76px] lg:max-h-[calc(100vh-100px)] lg:overflow-y-auto lg:self-start focus:outline-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight">{product.title}</h1>
 
             <div className="mt-3 sm:mt-4">
