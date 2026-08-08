@@ -2,6 +2,9 @@
 User-agent: *
 Allow: /
 
+# Disallow Next.js internal assets & image optimization
+Disallow: /_next/
+
 # Disallow auth and API paths
 Disallow: /auth/
 Disallow: /api/
@@ -22,5 +25,21 @@ Allow: /marketplace/
 Allow: /best-selling/
 Allow: /support/
 
+# Disallow Meta ad crawler from internal Next.js assets
+User-agent: meta-externalads
+Disallow: /_next/
+Disallow: /api/
+
+# Disallow aggressive SEO crawlers
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SERankingBacklinksBot
+Disallow: /
+
 # Sitemap
 Sitemap: https://glotrade.online/sitemap.xml
+
