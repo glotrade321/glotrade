@@ -23,8 +23,9 @@ export default function UpperHeader() {
 
     apiGet("/api/v1/bazaar/config")
       .then((res: any) => {
-        if (res?.data?.active !== undefined) {
-          setBazaarActive(res.data.active);
+        const isActive = res?.data?.isPortalActive ?? res?.data?.data?.isPortalActive ?? res?.data?.active;
+        if (isActive !== undefined) {
+          setBazaarActive(Boolean(isActive));
         }
       })
       .catch(() => setBazaarActive(true));

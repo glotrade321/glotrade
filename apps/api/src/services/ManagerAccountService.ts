@@ -179,6 +179,49 @@ export class ManagerAccountService {
         });
     }
 
+    private async sendRoleUpdateEmail(data: {
+        email: string;
+        firstName?: string;
+        assignedRoles: ManagerRole[];
+    }) {
+        const loginUrl = process.env.APP_ORIGIN || 'http://localhost:3000';
+        const roleLabelsList = data.assignedRoles
+            .map((r) => this.getRoleLabel(r))
+            .join(', ');
+
+        const roleWorkspacesList = data.assignedRoles
+            .map((r) => `<li><strong>${this.getRoleLabel(r)}:</strong> <a href="${loginUrl}${ROLE_WORKSPACE_PATHS[r]}" style="color: #2EA5FF;">${loginUrl}${ROLE_WORKSPACE_PATHS[r]}</a></li>`)
+            .join('');
+
+        await EmailService.sendEmail({
+            to: data.email,
+            subject: `Glotrade - Your Manager Account Roles Have Been Updated`,
+            html: `
+        <p>Hello <strong>${data.firstName || 'there'}</strong>,</p>
+        <p>An administrator has updated your manager account permissions on Glotrade.</p>
+        <div style="background: #f8f9fa; border-left: 4px solid #2EA5FF; padding: 20px; margin: 20px 0; border-radius: 5px;">
+          <h3 style="margin-top: 0; color: #2EA5FF;">📋 Assigned Manager Roles</h3>
+          <p style="margin: 10px 0;"><strong>Active Roles:</strong> ${roleLabelsList}</p>
+        </div>
+        <h3 style="color: #2EA5FF;">🔗 Assigned Workspaces</h3>
+        <ul style="padding-left: 20px;">${roleWorkspacesList}</ul>
+        <p>Log in to access your assigned management workspaces at <a href="${loginUrl}/auth/login" style="color: #2EA5FF;">${loginUrl}/auth/login</a>.</p>
+        <p>Best regards,<br><strong>The Glotrade Team</strong></p>
+      `,
+            text: [
+                `Hello ${data.firstName || 'there'},`,
+                '',
+                `An administrator has updated your manager account permissions on Glotrade.`,
+                `Assigned Roles: ${roleLabelsList}`,
+                `Login URL: ${loginUrl}/auth/login`,
+            ].join('\n'),
+            cta: {
+                label: 'Access Workspace',
+                url: `${loginUrl}/auth/login`
+            }
+        });
+    }
+
     private async sendDeletionEmail(data: {
         email: string;
         firstName?: string;
@@ -369,6 +412,15 @@ export class ManagerAccountService {
         if (updates.assignedRoles && updates.assignedRoles.length > 0) {
             user.assignedRoles = updates.assignedRoles;
             user.role = updates.assignedRoles[0] as any;
+            try {
+                await this.sendRoleUpdateEmail({
+                    email: user.email,
+                    firstName: user.firstName,
+                    assignedRoles: updates.assignedRoles,
+                });
+            } catch (err) {
+                console.error('[ManagerAccountService] Failed to send role update email:', err);
+            }
         }
         await user.save();
 

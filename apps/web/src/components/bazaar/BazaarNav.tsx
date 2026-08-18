@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X, ArrowLeft, Ticket, Calendar, MapPin } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Menu, X, ArrowLeft, Ticket, Calendar } from "lucide-react";
 import { translate } from "@/utils/translate";
+import { apiGet } from "@/utils/api";
 
 interface BazaarNavProps {
   eventTitle?: string;
@@ -14,10 +15,37 @@ interface BazaarNavProps {
 export default function BazaarNav({
   eventTitle = "GloTrade Bazaar Abuja 2026",
   eventDateLabel = "12 Sept 2026",
-  isPortalActive = true,
+  isPortalActive: propIsPortalActive,
 }: BazaarNavProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeStatus, setActiveStatus] = useState<boolean | null>(
+    propIsPortalActive !== undefined ? propIsPortalActive : null
+  );
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (propIsPortalActive !== undefined) {
+      setActiveStatus(propIsPortalActive);
+      return;
+    }
+
+    apiGet("/api/v1/bazaar/config")
+      .then((res: any) => {
+        const isActive = res?.data?.isPortalActive ?? res?.data?.data?.isPortalActive ?? true;
+        setActiveStatus(isActive);
+      })
+      .catch(() => setActiveStatus(true));
+  }, [propIsPortalActive]);
+
+  // If portal is inactive and visitor is on a sub-page, redirect to main bazaar off-season waitlist page
+  useEffect(() => {
+    if (activeStatus === false && pathname && pathname !== "/bazaar") {
+      router.replace("/bazaar");
+    }
+  }, [activeStatus, pathname, router]);
+
+  const isPortalActive = activeStatus ?? true;
 
   const navLinks = [
     { href: "/bazaar", label: translate("bazaar.navHome") || "Home" },
