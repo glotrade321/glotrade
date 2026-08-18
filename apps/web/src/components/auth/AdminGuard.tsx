@@ -30,7 +30,7 @@ export default function AdminGuard({ children, redirectTo = "/" }: AdminGuardPro
                 const isSuperAdmin = user?.isSuperAdmin === true;
 
                 // Only allow admin, superAdmin, or manager roles
-                if (userRole === "admin" || userRole === "superadmin" || userRole === "product_manager" || userRole === "order_manager" || userRole === "insured_partners_manager" || isSuperAdmin) {
+                if (userRole === "admin" || userRole === "superadmin" || userRole === "product_manager" || userRole === "order_manager" || userRole === "insured_partners_manager" || userRole === "bazaar_manager" || isSuperAdmin) {
                     setIsAdmin(true);
                     setIsChecking(false);
                 } else {

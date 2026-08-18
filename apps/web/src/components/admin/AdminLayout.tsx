@@ -29,12 +29,14 @@ const managerWorkspaceByRole: Record<string, string> = {
   product_manager: "/admin/products",
   order_manager: "/admin/orders",
   insured_partners_manager: "/admin/gdip",
+  bazaar_manager: "/admin/bazaar",
 };
 
 const managerRoleLabels: Record<string, string> = {
   product_manager: "Product Manager",
   order_manager: "Order Manager",
   insured_partners_manager: "Insured Partners Manager",
+  bazaar_manager: "Event Bazaar Manager",
 };
 
 const isManagerRole = (role?: string) => Boolean(role && managerWorkspaceByRole[role]);
@@ -64,7 +66,7 @@ const adminMenuItems: MenuItem[] = [
     label: "GloTrade Bazaar",
     href: "/admin/bazaar",
     icon: <Ticket size={20} />,
-    adminOnly: true
+    allowedRoles: ["admin", "bazaar_manager"]
   },
   {
     label: "User Management",

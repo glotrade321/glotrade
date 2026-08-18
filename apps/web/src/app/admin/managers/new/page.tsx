@@ -7,7 +7,7 @@ import { apiPost } from '@/utils/api';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/common/Modal';
 
-type ManagerRole = 'product_manager' | 'order_manager' | 'insured_partners_manager';
+type ManagerRole = 'product_manager' | 'order_manager' | 'insured_partners_manager' | 'bazaar_manager';
 
 const roleOptions: Array<{ value: ManagerRole; label: string; description: string }> = [
     {
@@ -24,6 +24,11 @@ const roleOptions: Array<{ value: ManagerRole; label: string; description: strin
         value: 'insured_partners_manager',
         label: 'Insured Partners Manager',
         description: 'Can access only Insured Partners management features.',
+    },
+    {
+        value: 'bazaar_manager',
+        label: 'Event Bazaar Manager',
+        description: 'Can access only GloTrade Bazaar event management and attendee verification features.',
     },
 ];
 
@@ -87,7 +92,7 @@ export default function CreateManagerAccountPage() {
                 <div className="bg-white rounded-lg shadow-md p-8">
                     <h1 className="text-2xl font-bold text-gray-900 mb-2">Create Manager Account</h1>
                     <p className="text-gray-600 mb-6">
-                        Create a Product, Order, or Insured Partners Manager account. Login credentials will be sent via email.
+                        Create a Product, Order, Insured Partners, or Event Bazaar Manager account. Login credentials will be sent via email.
                     </p>
 
                     {error && (

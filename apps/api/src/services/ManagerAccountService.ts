@@ -3,9 +3,9 @@ import bcrypt from 'bcryptjs';
 import { generateSecurePassword, generateUsername } from '../utils/passwordGenerator';
 import EmailService from './EmailService';
 
-export type ManagerRole = 'product_manager' | 'order_manager' | 'insured_partners_manager';
+export type ManagerRole = 'product_manager' | 'order_manager' | 'insured_partners_manager' | 'bazaar_manager';
 
-export const MANAGER_ROLES: ManagerRole[] = ['product_manager', 'order_manager', 'insured_partners_manager'];
+export const MANAGER_ROLES: ManagerRole[] = ['product_manager', 'order_manager', 'insured_partners_manager', 'bazaar_manager'];
 
 export interface CreateManagerAccountData {
     email: string;
@@ -20,6 +20,7 @@ const ROLE_LABELS: Record<ManagerRole, string> = {
     product_manager: 'Product Manager',
     order_manager: 'Order Manager',
     insured_partners_manager: 'Insured Partners Manager',
+    bazaar_manager: 'Event Bazaar Manager',
 };
 
 const ROLE_CAPABILITIES: Record<ManagerRole, string[]> = {
@@ -44,12 +45,19 @@ const ROLE_CAPABILITIES: Record<ManagerRole, string[]> = {
         'Maintain insured commodity settings',
         'Review insurance claims and commodity prices',
     ],
+    bazaar_manager: [
+        'Manage GloTrade Bazaar event configurations',
+        'Review ticket bookings, stall applications & sponsorship entries',
+        'Verify ticket QR codes and check-in attendees at the venue',
+        'Access Bazaar management & reporting dashboard',
+    ],
 };
 
 const ROLE_WORKSPACE_PATHS: Record<ManagerRole, string> = {
     product_manager: '/admin/products',
     order_manager: '/admin/orders',
     insured_partners_manager: '/admin/gdip',
+    bazaar_manager: '/admin/bazaar',
 };
 
 export class ManagerAccountService {

@@ -62,6 +62,10 @@ function LoginForm() {
         router.replace('/admin/gdip');
         return;
       }
+      if (json.data.role === 'bazaar_manager') {
+        router.replace('/admin/bazaar');
+        return;
+      }
 
       const next = search.get("next") || "/";
       router.replace(next);

@@ -230,6 +230,24 @@ export const requireInsuredPartnersManager = (req: any, res: any, next: any) => 
   next();
 };
 
+export const requireBazaarManager = (req: any, res: any, next: any) => {
+  if (!req.user) {
+    return res.status(401).json({
+      status: "error",
+      message: "Authentication required",
+    });
+  }
+
+  if (req.user.role !== "admin" && req.user.role !== "bazaar_manager" && !req.user.isSuperAdmin) {
+    return res.status(403).json({
+      status: "error",
+      message: "Bazaar management access required",
+    });
+  }
+
+  next();
+};
+
 // Middleware to require super admin role
 export const requireSuperAdmin = (req: any, res: any, next: any) => {
   if (!req.user) {
