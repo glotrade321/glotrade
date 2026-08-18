@@ -43,7 +43,7 @@ export default function UpperHeader() {
 
   if (!mounted) {
     return (
-      <div className="sticky top-0 z-[60] w-full bg-[#2EA5FF] h-[33px]" />
+      <div className="sticky top-0 z-[60] w-full bg-[#2EA5FF] h-[34px]" />
     );
   }
 
@@ -62,26 +62,26 @@ export default function UpperHeader() {
   };
 
   return (
-    <div className="sticky top-0 z-[60] w-full bg-[#2EA5FF] shadow-sm border-b">
-      <div className="w-[95%] lg:w-[95%] mx-auto flex justify-between items-center gap-4 py-1.5 px-3 md:px-0">
-        <div className="hidden sm:flex items-center gap-3 text-white text-[10px] md:text-sm font-semibold whitespace-nowrap">
+    <div className="sticky top-0 z-[60] w-full bg-[#2EA5FF] shadow-sm border-b border-white/10">
+      <div className="w-[95%] lg:w-[95%] mx-auto flex justify-between items-center gap-2 sm:gap-4 h-[34px] px-2 sm:px-3 md:px-0">
+        <div className="hidden sm:flex items-center gap-3 text-white text-[10px] md:text-sm font-semibold whitespace-nowrap shrink-0">
           <span>{translate(locale, "header.needHelp")} {translate(locale, "header.callUs")}</span>
           <span>Lagos: (+234)902-900-4712</span>
           <span>Abuja: (+234)704-460-0924</span>
         </div>
 
-        <div className="flex flex-1 sm:flex-none justify-center sm:justify-end items-center gap-4 md:gap-6 text-white text-[11px] md:text-sm font-semibold">
-          <div className="relative sm:hidden">
+        <div className="flex flex-1 sm:flex-none justify-start sm:justify-end items-center gap-2 sm:gap-4 md:gap-6 text-white text-[10px] sm:text-xs md:text-sm font-semibold overflow-x-auto no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1 whitespace-nowrap min-w-0">
+          <div className="relative sm:hidden shrink-0">
             <button
               type="button"
               onClick={() => {
                 setShowContactMenu(!showContactMenu);
                 setShowLangMenu(false);
               }}
-              className="inline-flex items-center justify-center rounded-full bg-white/10 p-2 transition-all hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full bg-white/10 p-1.5 transition-all hover:scale-105"
               aria-label="Show contact numbers"
             >
-              <Phone size={16} />
+              <Phone size={14} />
             </button>
 
             {showContactMenu && (
@@ -131,35 +131,38 @@ export default function UpperHeader() {
               href="/bazaar"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105 font-bold shadow-sm"
+              className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1 sm:gap-1.5 transition-all hover:scale-105 font-bold shadow-sm shrink-0"
             >
-              🎟️ GloTrade Bazaar
+              <span>🎟️</span>
+              <span>GloTrade Bazaar</span>
             </Link>
           )}
           <Link
             href="/gdip"
             onClick={handleGDIPClick}
-            className="bg-[#F9A407] text-white px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105 font-bold shadow-sm hover:shadow-md"
+            className="bg-[#F9A407] text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1 sm:gap-1.5 transition-all hover:scale-105 font-bold shadow-sm hover:shadow-md shrink-0"
           >
-            <ShieldCheck size={16} className="md:w-[18px] md:h-[18px]" /> {translate(locale, "navInsuredPartners")}
+            <ShieldCheck size={14} className="sm:w-[18px] sm:h-[18px]" />
+            <span>{translate(locale, "navInsuredPartners")}</span>
           </Link>
           <Link
             href="/support"
-            className="hover:underline whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105"
+            className="hover:underline whitespace-nowrap inline-flex items-center gap-1 sm:gap-1.5 transition-all hover:scale-105 shrink-0"
           >
-            <HelpCircle size={16} className="md:w-[18px] md:h-[18px]" /> {translate(locale, "navSupport")}
+            <HelpCircle size={14} className="sm:w-[18px] sm:h-[18px]" />
+            <span>{translate(locale, "navSupport")}</span>
           </Link>
 
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               type="button"
               onClick={() => {
                 setShowLangMenu(!showLangMenu);
                 setShowContactMenu(false);
               }}
-              className="inline-flex items-center gap-1.5 whitespace-nowrap transition-all hover:scale-105 bg-white/10 px-2 py-1 rounded-lg"
+              className="inline-flex items-center gap-1 sm:gap-1.5 whitespace-nowrap transition-all hover:scale-105 bg-white/10 px-2 py-0.5 sm:py-1 rounded-lg"
             >
-              <Globe size={16} className="md:w-[18px] md:h-[18px]" />
+              <Globe size={14} className="sm:w-[18px] sm:h-[18px]" />
               <span>{languageNames[locale]}</span>
               <svg className={`w-3 h-3 transition-transform ${showLangMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />

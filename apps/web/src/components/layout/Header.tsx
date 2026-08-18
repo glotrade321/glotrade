@@ -152,7 +152,7 @@ export default function Header() {
   };
 
   return (
-    <header className={`sticky top-[33px] z-50 w-full bg-[#2EA5FF] shadow-sm`}>
+    <header className={`sticky top-[34px] z-50 w-full bg-[#2EA5FF] shadow-sm`}>
       <div className="mx-auto w-[95%] px-3 md:px-4">
         <div className="flex items-center gap-3 md:gap-5 py-1">
           <div className="flex items-center gap-2">
