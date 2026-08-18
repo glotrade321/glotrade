@@ -2341,5 +2341,33 @@
     "rights": "Todos los derechos reservados.",
     "developer": "Desarrollador",
     "tagline": "Empoderando el comercio africano a través de la innovación digital."
+  },
+  "bazaar": {
+    "title": "GloTrade Bazaar",
+    "navPromo": "🎟️ GloTrade Bazaar",
+    "portalActive": "Portal de Eventos Activo",
+    "portalOffline": "Anuncio de Fuera de Temporada",
+    "buyTickets": "Comprar Entradas para el Evento",
+    "bookStall": "Reservar Stand de Expositor",
+    "becomeSponsor": "Ser Patrocinador",
+    "eventDate": "Sábado, 12 de Septiembre de 2026",
+    "eventVenue": "Harrow Park, Wuse 2, Abuja",
+    "ticketPass": "Pase de Entrada Oficial",
+    "scanAtGate": "Escanear Código QR en la Entrada",
+    "checkInSuccess": "Invitado Registrado con Éxito",
+    "emailSent": "¡Correo de Confirmación Enviado!",
+    "emailSentDesc": "Se ha enviado una copia de su pase y código QR a su correo electrónico.",
+    "navHome": "Inicio",
+    "navAbout": "Acerca de",
+    "navTickets": "Entradas",
+    "navExhibitors": "Expositores",
+    "navSponsorship": "Patrocinio",
+    "navProgramme": "Programa",
+    "navVenue": "Lugar",
+    "navGallery": "Galería",
+    "navContact": "Contacto",
+    "bookTicketsCta": "Reservar Entradas",
+    "mainPlatformLink": "Plataforma Principal GloTrade",
+    "annualFestival": "Festival Anual de Comercio y Entretenimiento"
   }
 }

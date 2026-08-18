@@ -184,6 +184,28 @@ router.post("/webhook/paystack", bodyParser.raw({ type: "*/*" }), async (req: an
     const reference = String(data?.reference || "");
     if (!reference) return res.status(200).send("ok");
 
+    // Handle Bazaar payment webhooks
+    if (data?.metadata?.type === "bazaar" || reference.startsWith("BZ-")) {
+      const { default: BazaarBooking } = await import("../models/BazaarBooking");
+      const booking = await BazaarBooking.findOne({
+        $or: [{ reference }, { paystackReference: reference }],
+      });
+      if (booking) {
+        booking.rawWebhook = payload;
+        if (evt === "charge.success" || data?.status === "success") {
+          booking.paymentStatus = "paid";
+          const { default: emailService } = await import("../services/EmailService");
+          emailService.sendBazaarConfirmationEmail(booking as any).catch((err) => {
+            console.error("Failed to send bazaar webhook confirmation email:", err);
+          });
+        } else if (evt === "charge.failed") {
+          booking.paymentStatus = "failed";
+        }
+        await booking.save();
+        return res.status(200).send("ok");
+      }
+    }
+
     const payment = await Payment.findOne({ reference });
     if (!payment) return res.status(200).send("ok");
 

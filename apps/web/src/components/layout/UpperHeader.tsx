@@ -115,6 +115,14 @@ export default function UpperHeader() {
           </div>
 
           <Link
+            href="/bazaar"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105 font-bold shadow-sm"
+          >
+            🎟️ GloTrade Bazaar
+          </Link>
+          <Link
             href="/gdip"
             onClick={handleGDIPClick}
             className="bg-[#F9A407] text-white px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105 font-bold shadow-sm hover:shadow-md"

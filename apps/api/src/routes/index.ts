@@ -11,6 +11,7 @@ import walletRoutes from "./wallet.routes";
 import withdrawalRoutes from "./withdrawal.routes";
 import webhookRoutes from "./webhook.routes";
 import bannerRoutes from "./banner.routes";
+import bazaarRoutes from "./bazaar.routes";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/wallets", walletRoutes);
 router.use("/withdrawals", withdrawalRoutes);
 router.use("/webhooks", webhookRoutes);
 router.use("/banners", bannerRoutes);
+router.use("/bazaar", bazaarRoutes);
 
 export default router;

@@ -11,11 +11,12 @@ export default function LayoutWrapper({
 }) {
     const pathname = usePathname();
 
-    // Hide headers on admin pages
+    // Hide main e-commerce headers/footers on admin and standalone bazaar event pages
     const isAdminPage = pathname?.startsWith("/admin");
+    const isBazaarPage = pathname?.startsWith("/bazaar");
 
-    if (isAdminPage) {
-        // Admin pages render full-screen without headers
+    if (isAdminPage || isBazaarPage) {
+        // Admin and Bazaar pages render full-screen with their own dedicated layouts
         return <>{children}</>;
     }
 

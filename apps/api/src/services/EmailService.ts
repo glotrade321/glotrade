@@ -286,6 +286,91 @@ export class EmailService {
             }
         });
     }
+
+    /**
+     * Send GloTrade Bazaar Ticket & Booking Confirmation Email
+     */
+    async sendBazaarConfirmationEmail(booking: {
+        customerEmail: string;
+        customerName: string;
+        ticketCode: string;
+        packageName: string;
+        amount: number;
+        reference: string;
+        type: string;
+    }): Promise<void> {
+        const isFree = booking.amount <= 0;
+        const formattedAmount = `₦${booking.amount.toLocaleString("en-NG")}`;
+        const passUrl = `${process.env.FRONTEND_URL || "https://glotrade.online"}/bazaar/callback?reference=${booking.reference}`;
+
+        const html = `
+        <div style="background-color: #0f172a; padding: 30px; border-radius: 16px; color: #f8fafc; font-family: sans-serif;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span style="background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(245, 158, 11, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                    GloTrade Bazaar Abuja 2026
+                </span>
+                <h1 style="color: #ffffff; margin-top: 12px; margin-bottom: 4px; font-size: 24px;">Booking & Ticket Confirmation</h1>
+                <p style="color: #94a3b8; font-size: 13px; margin: 0;">Saturday, 12 September 2026 • Harrow Park, Abuja</p>
+            </div>
+
+            <p style="color: #e2e8f0; font-size: 15px;">Dear <strong>${booking.customerName}</strong>,</p>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.5;">
+                Thank you for booking your entry for <strong>GloTrade Bazaar Abuja 2026</strong>! Your transaction has been confirmed. Below is your official entry ticket pass.
+            </p>
+
+            <div style="background-color: #020617; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin: 24px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <span style="font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: bold; display: block;">Official Ticket Code</span>
+                            <span style="font-size: 26px; font-family: monospace; font-weight: bold; color: #f59e0b; display: block; margin-top: 2px;">${booking.ticketCode}</span>
+                        </td>
+                        <td align="right">
+                            <span style="font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: bold; display: block;">Status</span>
+                            <span style="font-size: 12px; font-weight: bold; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 3px 8px; border-radius: 10px; text-transform: uppercase;">CONFIRMED</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <hr style="border: none; border-top: 1px solid #1e293b; margin: 16px 0;" />
+
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; color: #cbd5e1;">
+                    <tr>
+                        <td style="padding-bottom: 8px;"><strong>Package Tier:</strong></td>
+                        <td align="right" style="padding-bottom: 8px; color: #ffffff;">${booking.packageName}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 8px;"><strong>Amount Paid:</strong></td>
+                        <td align="right" style="padding-bottom: 8px; color: #f59e0b; font-weight: bold;">${isFree ? "FREE" : formattedAmount}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 8px;"><strong>Date & Time:</strong></td>
+                        <td align="right" style="padding-bottom: 8px; color: #ffffff;">12 Sept 2026 (Gate 9:00 PM)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Venue:</strong></td>
+                        <td align="right" style="color: #ffffff;">Harrow Park, Abuja</td>
+                    </tr>
+                </table>
+            </div>
+
+            <p style="font-size: 13px; color: #94a3b8; text-align: center;">
+                Please present your Ticket Code <strong>${booking.ticketCode}</strong> at the gate for fast-track entry.
+            </p>
+        </div>
+        `;
+
+        await this.sendEmail({
+            to: booking.customerEmail,
+            subject: `🎟️ Ticket Confirmed: GloTrade Bazaar Abuja 2026 (${booking.ticketCode})`,
+            text: `Hi ${booking.customerName}, your GloTrade Bazaar booking is confirmed! Ticket Code: ${booking.ticketCode}. Package: ${booking.packageName}. Date: 12 Sept 2026 at Harrow Park, Abuja. View pass: ${passUrl}`,
+            html,
+            cta: {
+                label: "View & Print Ticket Pass",
+                url: passUrl,
+            },
+        });
+    }
 }
 
 export default new EmailService();

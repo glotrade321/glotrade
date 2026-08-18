@@ -31,3 +31,5 @@ export { default as Voucher } from "./Voucher";
 export { default as Wallet } from "./Wallet";
 export { default as WalletTransaction } from "./WalletTransaction";
 export { default as WithdrawalRequest } from "./WithdrawalRequest";
+export { default as BazaarConfig } from "./BazaarConfig";
+export { default as BazaarBooking } from "./BazaarBooking";

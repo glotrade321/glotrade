@@ -20,7 +20,8 @@ import {
   Package,
   CreditCard,
   TicketPercent,
-  ChevronDown
+  ChevronDown,
+  Ticket
 } from "lucide-react";
 import { logout } from "@/utils/auth";
 
@@ -57,6 +58,12 @@ const adminMenuItems: MenuItem[] = [
     label: "Dashboard",
     href: "/admin",
     icon: <LayoutDashboard size={20} />,
+    adminOnly: true
+  },
+  {
+    label: "GloTrade Bazaar",
+    href: "/admin/bazaar",
+    icon: <Ticket size={20} />,
     adminOnly: true
   },
   {

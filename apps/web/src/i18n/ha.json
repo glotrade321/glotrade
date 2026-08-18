@@ -2272,5 +2272,33 @@
     "rights": "Duk haƙƙoƙi an kiyaye.",
     "developer": "Mai haɓakawa",
     "tagline": "Ƙarfafa kasuwancin Afirka ta hanyar kirkire-kirkire na dijital."
+  },
+  "bazaar": {
+    "title": "GloTrade Bazaar",
+    "navPromo": "🎟️ GloTrade Bazaar",
+    "portalActive": "Shafin Taron Yana Bude",
+    "portalOffline": "Sanarwar Lokacin Hutu",
+    "buyTickets": "Sayi Tikitin Taro",
+    "bookStall": "Rage Wurin Baje Koli",
+    "becomeSponsor": "Zama Mai Gudanarwa (Sponsor)",
+    "eventDate": "Asabar, 12 Satumba 2026",
+    "eventVenue": "Harrow Park, Wuse 2, Abuja",
+    "ticketPass": "Katin Shiga Na Hukumance",
+    "scanAtGate": "Duba QR Code A Kofar Shiga",
+    "checkInSuccess": "An Yi Nasarar Karbar Bawo",
+    "emailSent": "An Tura Sakon Imel Na Tabbatarwa!",
+    "emailSentDesc": "An tura kwafin katin shiga da QR code zuwa imel dinka.",
+    "navHome": "Gida",
+    "navAbout": "Game Da Taro",
+    "navTickets": "Tikitocin Taro",
+    "navExhibitors": "Masu Baje Koli",
+    "navSponsorship": "Tallafi (Sponsorship)",
+    "navProgramme": "Tsarin Taro",
+    "navVenue": "Wurin Taro",
+    "navGallery": "Hotunan Taro",
+    "navContact": "Tuntube Mu",
+    "bookTicketsCta": "Sayi Tikiti",
+    "mainPlatformLink": "Babban Shafin GloTrade",
+    "annualFestival": "Babban Biki Na Shekara-Shekara Na Kasuwanci"
   }
 }
