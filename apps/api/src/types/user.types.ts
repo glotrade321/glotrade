@@ -17,6 +17,7 @@ export interface IUserBase {
   resetToken?: string;
   resetTokenExpires?: Date;
   role: UserRole;
+  assignedRoles?: UserRole[];
   isBlocked?: boolean;
   isSuperAdmin?: boolean;
   isAdmin?: boolean;

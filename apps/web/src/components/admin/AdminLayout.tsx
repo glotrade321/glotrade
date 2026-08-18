@@ -228,9 +228,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     if (!user || user.isSuperAdmin || user.role === "admin") return;
 
-    const allowedPath = managerWorkspaceByRole[user.role] || "/admin";
-    if (!pathname.startsWith(allowedPath)) {
-      router.replace(allowedPath);
+    const userRoles: string[] = [user.role, ...(user.assignedRoles || [])];
+    const allowedPaths = userRoles.map(r => managerWorkspaceByRole[r]).filter(Boolean);
+
+    const isPathAllowed = allowedPaths.some(path => pathname.startsWith(path));
+    if (!isPathAllowed && allowedPaths.length > 0) {
+      router.replace(allowedPaths[0]);
     }
   }, [pathname, router, user]);
 
@@ -339,10 +342,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             >
               {adminMenuItems
                 .filter(item => {
-                  // Filter menu items based on user role
+                  // Filter menu items based on user role and assignedRoles
                   if (item.superAdminOnly && !user.isSuperAdmin) return false;
                   if (item.adminOnly && isManagerRole(user.role)) return false;
-                  if (item.allowedRoles && !user.isSuperAdmin && user.role !== 'admin' && !item.allowedRoles.includes(user.role)) return false;
+                  if (item.allowedRoles && !user.isSuperAdmin && user.role !== 'admin') {
+                    const userRoles = [user.role, ...(user.assignedRoles || [])];
+                    const hasRoleAccess = item.allowedRoles.some(r => userRoles.includes(r));
+                    if (!hasRoleAccess) return false;
+                  }
                   return true;
                 })
                 .map(renderMenuItem)}

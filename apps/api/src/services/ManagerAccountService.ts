@@ -13,6 +13,7 @@ export interface CreateManagerAccountData {
     lastName: string;
     phone?: string;
     role: ManagerRole;
+    assignedRoles?: ManagerRole[];
     createdBy: string;
 }
 
@@ -223,6 +224,8 @@ export class ManagerAccountService {
         const username = await this.generateUniqueUsername(data.email);
         const passwordHash = await bcrypt.hash(temporaryPassword, 10);
 
+        const assignedRoles = data.assignedRoles && data.assignedRoles.length > 0 ? data.assignedRoles : [data.role];
+
         let manager;
         try {
             manager = await User.create({
@@ -233,6 +236,7 @@ export class ManagerAccountService {
                 phone: data.phone,
                 passwordHash,
                 role: data.role,
+                assignedRoles,
                 accountCreatedByAdmin: true,
                 createdBy: data.createdBy,
                 mustChangePassword: false,
@@ -258,13 +262,14 @@ export class ManagerAccountService {
             email: manager.email,
             username: manager.username,
             role: manager.role,
+            assignedRoles: manager.assignedRoles,
         };
     }
 
     async listManagers(role?: ManagerRole) {
-        const query = role ? { role } : { role: { $in: MANAGER_ROLES } };
+        const query = role ? { $or: [{ role }, { assignedRoles: role }] } : { $or: [{ role: { $in: MANAGER_ROLES } }, { assignedRoles: { $elemMatch: { $in: MANAGER_ROLES } } }] };
         return User.find(query)
-            .select('email username firstName lastName role isBlocked lastSeen createdAt createdBy')
+            .select('email username firstName lastName role assignedRoles isBlocked lastSeen createdAt createdBy')
             .populate('createdBy', 'email username')
             .sort({ createdAt: -1 });
     }
@@ -350,9 +355,10 @@ export class ManagerAccountService {
         lastName?: string;
         phone?: string;
         isBlocked?: boolean;
+        assignedRoles?: ManagerRole[];
     }) {
         const user = await User.findById(userId);
-        if (!user || !MANAGER_ROLES.includes(user.role as ManagerRole)) {
+        if (!user || (!MANAGER_ROLES.includes(user.role as ManagerRole) && !user.assignedRoles?.some(r => MANAGER_ROLES.includes(r as ManagerRole)))) {
             throw new Error('Manager account not found');
         }
 
@@ -360,6 +366,10 @@ export class ManagerAccountService {
         if (updates.lastName) user.lastName = updates.lastName;
         if (updates.phone !== undefined) user.phone = updates.phone;
         if (updates.isBlocked !== undefined) user.isBlocked = updates.isBlocked;
+        if (updates.assignedRoles && updates.assignedRoles.length > 0) {
+            user.assignedRoles = updates.assignedRoles;
+            user.role = updates.assignedRoles[0] as any;
+        }
         await user.save();
 
         return {
@@ -370,6 +380,7 @@ export class ManagerAccountService {
             lastName: user.lastName,
             phone: user.phone,
             role: user.role,
+            assignedRoles: user.assignedRoles,
             isBlocked: user.isBlocked,
         };
     }

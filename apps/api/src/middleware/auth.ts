@@ -212,6 +212,14 @@ export const requireAdmin = (req: any, res: any, next: any) => {
   next();
 };
 
+const userHasRole = (user: any, targetRole: string) => {
+  if (!user) return false;
+  if (user.isSuperAdmin || user.role === "admin") return true;
+  if (user.role === targetRole) return true;
+  if (Array.isArray(user.assignedRoles) && user.assignedRoles.includes(targetRole)) return true;
+  return false;
+};
+
 export const requireInsuredPartnersManager = (req: any, res: any, next: any) => {
   if (!req.user) {
     return res.status(401).json({
@@ -220,7 +228,7 @@ export const requireInsuredPartnersManager = (req: any, res: any, next: any) => 
     });
   }
 
-  if (req.user.role !== "admin" && req.user.role !== "insured_partners_manager" && !req.user.isSuperAdmin) {
+  if (!userHasRole(req.user, "insured_partners_manager")) {
     return res.status(403).json({
       status: "error",
       message: "Insured Partners management access required",
@@ -238,7 +246,7 @@ export const requireBazaarManager = (req: any, res: any, next: any) => {
     });
   }
 
-  if (req.user.role !== "admin" && req.user.role !== "bazaar_manager" && !req.user.isSuperAdmin) {
+  if (!userHasRole(req.user, "bazaar_manager")) {
     return res.status(403).json({
       status: "error",
       message: "Bazaar management access required",

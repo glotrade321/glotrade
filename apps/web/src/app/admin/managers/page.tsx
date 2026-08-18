@@ -14,6 +14,7 @@ interface ManagerAccount {
     email: string;
     username: string;
     role: ManagerRole;
+    assignedRoles?: ManagerRole[];
     firstName?: string;
     lastName?: string;
     isBlocked: boolean;
@@ -233,10 +234,14 @@ export default function ManagerAccountsPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${roleBadgeClass[manager.role]}`}>
-                                                {roleLabel[manager.role]}
-                                            </span>
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-wrap gap-1">
+                                                {(manager.assignedRoles && manager.assignedRoles.length > 0 ? manager.assignedRoles : [manager.role]).map((r) => (
+                                                    <span key={r} className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${roleBadgeClass[r] || 'bg-gray-100 text-gray-800'}`}>
+                                                        {roleLabel[r] || r}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{manager.email}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
