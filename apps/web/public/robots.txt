@@ -13,24 +13,60 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /agent/
 
-# Disallow checkout and cart pages
+# Disallow checkout, cart, and user profile pages
 Disallow: /checkout/
 Disallow: /cart/
-
-# Disallow user profile pages
 Disallow: /profile/
 
-# Allow marketplace routes
+# Disallow sensitive Bazaar payment callback & QR ticket verification pages
+Disallow: /bazaar/callback
+Disallow: /bazaar/verify
+
+# Allow public GloTrade marketplace & event portal pages
 Allow: /marketplace/
 Allow: /best-selling/
 Allow: /support/
+Allow: /bazaar
+Allow: /bazaar/about
+Allow: /bazaar/tickets
+Allow: /bazaar/exhibitors
+Allow: /bazaar/sponsorship
+Allow: /bazaar/programme
+Allow: /bazaar/venue
+Allow: /bazaar/gallery
+Allow: /bazaar/contact
 
 # Disallow Meta ad crawler from internal Next.js assets
 User-agent: meta-externalads
 Disallow: /_next/
 Disallow: /api/
 
-# Disallow aggressive SEO crawlers
+# Disallow AI web scrapers & automated content bots
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+# Disallow aggressive SEO scrapers & spam bots
 User-agent: SemrushBot
 Disallow: /
 
@@ -40,6 +76,11 @@ Disallow: /
 User-agent: SERankingBacklinksBot
 Disallow: /
 
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
 # Sitemap
 Sitemap: https://glotrade.online/sitemap.xml
-
