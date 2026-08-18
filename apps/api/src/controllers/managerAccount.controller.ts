@@ -11,7 +11,7 @@ function isValidManagerRole(role: string): role is ManagerRole {
 export class ManagerAccountController {
     async createManager(req: AuthRequest, res: Response) {
         try {
-            const { email, firstName, lastName, phone, role } = req.body as Partial<CreateManagerAccountData>;
+            const { email, firstName, lastName, phone, role, assignedRoles } = req.body as Partial<CreateManagerAccountData>;
 
             if (!email || !firstName || !lastName || !role) {
                 return res.status(400).json({
@@ -41,6 +41,7 @@ export class ManagerAccountController {
                 lastName,
                 phone,
                 role,
+                assignedRoles,
                 createdBy: req.user!._id.toString(),
             });
 
@@ -93,12 +94,13 @@ export class ManagerAccountController {
 
     async updateManager(req: Request, res: Response) {
         try {
-            const { firstName, lastName, phone, isBlocked } = req.body;
+            const { firstName, lastName, phone, isBlocked, assignedRoles } = req.body;
             const result = await managerAccountService.updateManager(req.params.id, {
                 firstName,
                 lastName,
                 phone,
                 isBlocked,
+                assignedRoles,
             });
 
             res.json({

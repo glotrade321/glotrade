@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { apiDelete, apiGet, apiPost } from '@/utils/api';
+import { apiDelete, apiGet, apiPost, apiPut } from '@/utils/api';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/common/Modal';
 
@@ -33,6 +33,13 @@ const roleLabel: Record<ManagerRole, string> = {
     bazaar_manager: 'Event Bazaar Manager',
 };
 
+const roleOptions: Array<{ value: ManagerRole; label: string; description: string }> = [
+    { value: 'product_manager', label: 'Product Manager', description: 'Can access product management features.' },
+    { value: 'order_manager', label: 'Order Manager', description: 'Can access order management features.' },
+    { value: 'insured_partners_manager', label: 'Insured Partners Manager', description: 'Can access Insured Partners management features.' },
+    { value: 'bazaar_manager', label: 'Event Bazaar Manager', description: 'Can access GloTrade Bazaar event management and attendee verification.' },
+];
+
 const managerRoles: ManagerRole[] = ['product_manager', 'order_manager', 'insured_partners_manager', 'bazaar_manager'];
 
 const roleBadgeClass: Record<ManagerRole, string> = {
@@ -52,6 +59,11 @@ export default function ManagerAccountsPage() {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [deletedEmail, setDeletedEmail] = useState('');
 
+    // Edit roles modal state
+    const [editTarget, setEditTarget] = useState<ManagerAccount | null>(null);
+    const [editRoles, setEditRoles] = useState<ManagerRole[]>([]);
+    const [editLoading, setEditLoading] = useState(false);
+
     useEffect(() => {
         fetchManagers();
     }, []);
@@ -60,7 +72,7 @@ export default function ManagerAccountsPage() {
         if (typeof window === 'undefined') return;
         const params = new URLSearchParams(window.location.search);
         const role = params.get('role');
-        setRoleFilter(managerRoles.includes(role as ManagerRole) ? role as ManagerRole : 'all');
+        setRoleFilter(managerRoles.includes(role as ManagerRole) ? (role as ManagerRole) : 'all');
     }, []);
 
     const fetchManagers = async () => {
@@ -71,6 +83,38 @@ export default function ManagerAccountsPage() {
             setError(err.message || 'Failed to fetch manager accounts');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleOpenEditModal = (manager: ManagerAccount) => {
+        setEditTarget(manager);
+        const currentRoles = manager.assignedRoles && manager.assignedRoles.length > 0 ? manager.assignedRoles : [manager.role];
+        setEditRoles(currentRoles);
+    };
+
+    const toggleEditRole = (role: ManagerRole) => {
+        if (editRoles.includes(role)) {
+            if (editRoles.length === 1) return; // Keep at least 1 role
+            setEditRoles(editRoles.filter((r) => r !== role));
+        } else {
+            setEditRoles([...editRoles, role]);
+        }
+    };
+
+    const handleSaveRoles = async () => {
+        if (!editTarget || editRoles.length === 0) return;
+        setEditLoading(true);
+
+        try {
+            await apiPut(`/api/v1/admin/managers/${editTarget._id}`, {
+                assignedRoles: editRoles,
+            });
+            setEditTarget(null);
+            fetchManagers();
+        } catch (err: any) {
+            alert(err.message || 'Failed to update manager roles');
+        } finally {
+            setEditLoading(false);
         }
     };
 
@@ -124,9 +168,13 @@ export default function ManagerAccountsPage() {
         return `${Math.floor(diffHours / 24)}d ago`;
     };
 
-    const filteredManagers = roleFilter === 'all'
-        ? managers
-        : managers.filter((manager) => manager.role === roleFilter);
+    const filteredManagers =
+        roleFilter === 'all'
+            ? managers
+            : managers.filter((manager) => {
+                  const roles = manager.assignedRoles && manager.assignedRoles.length > 0 ? manager.assignedRoles : [manager.role];
+                  return roles.includes(roleFilter);
+              });
 
     const handleRoleFilterChange = (value: 'all' | ManagerRole) => {
         setRoleFilter(value);
@@ -192,7 +240,7 @@ export default function ManagerAccountsPage() {
                 {filteredManagers.length === 0 ? (
                     <div className="bg-white rounded-lg shadow-md p-12 text-center">
                         <h3 className="mt-4 text-lg font-medium text-gray-900">No Manager Accounts</h3>
-                        <p className="mt-2 text-gray-600">Get started by creating a Product, Order, or Insured Partners Manager account.</p>
+                        <p className="mt-2 text-gray-600">Get started by creating a Product, Order, Insured Partners, or Event Bazaar Manager account.</p>
                         <Link
                             href={roleFilter === 'all' ? '/admin/managers/new' : `/admin/managers/new?role=${roleFilter}`}
                             className="mt-6 inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
@@ -206,7 +254,7 @@ export default function ManagerAccountsPage() {
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Roles</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Seen</th>
@@ -235,7 +283,7 @@ export default function ManagerAccountsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-wrap gap-1">
+                                            <div className="flex flex-wrap gap-1 items-center">
                                                 {(manager.assignedRoles && manager.assignedRoles.length > 0 ? manager.assignedRoles : [manager.role]).map((r) => (
                                                     <span key={r} className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${roleBadgeClass[r] || 'bg-gray-100 text-gray-800'}`}>
                                                         {roleLabel[r] || r}
@@ -254,6 +302,13 @@ export default function ManagerAccountsPage() {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatLastSeen(manager.lastSeen)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(manager.createdAt)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button
+                                                onClick={() => handleOpenEditModal(manager)}
+                                                className="text-purple-600 hover:text-purple-900 font-semibold mr-4"
+                                                title="Edit Roles"
+                                            >
+                                                Edit Roles
+                                            </button>
                                             <button
                                                 onClick={() => handleResetPassword(manager._id, manager.email)}
                                                 className="text-blue-600 hover:text-blue-900 mr-4"
@@ -278,11 +333,68 @@ export default function ManagerAccountsPage() {
 
                 <div className="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
                     <p className="text-sm text-blue-700">
-                        <strong>Manager Access Scope:</strong> Product Managers can only access product management. Order Managers can only access order management. Insured Partners Managers can only access Insured Partners management. Event Bazaar Managers can only access GloTrade Bazaar management. They will not see other admin sections.
+                        <strong>Multi-Role Manager Support:</strong> Admins can assign multiple management roles to any existing manager account by clicking <strong>Edit Roles</strong>. Managers will see all assigned workspaces in their navigation sidebar.
                     </p>
                 </div>
             </div>
 
+            {/* Edit Roles Modal */}
+            <Modal
+                open={Boolean(editTarget)}
+                onClose={() => !editLoading && setEditTarget(null)}
+                title={<span className="inline-flex items-center gap-2 text-purple-700">Edit Manager Roles ({editTarget?.email})</span>}
+                size="md"
+                footer={(
+                    <>
+                        <button
+                            onClick={() => setEditTarget(null)}
+                            disabled={editLoading}
+                            className="flex-1 rounded-full border px-4 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleSaveRoles}
+                            disabled={editLoading || editRoles.length === 0}
+                            className="flex-1 rounded-full bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {editLoading ? 'Saving...' : 'Save Roles'}
+                        </button>
+                    </>
+                )}
+            >
+                <div className="space-y-4 p-2">
+                    <p className="text-sm text-gray-600">
+                        Select one or multiple roles to assign to <strong>{editTarget?.firstName || editTarget?.username}</strong> ({editTarget?.email}):
+                    </p>
+                    <div className="space-y-3 border border-gray-200 rounded-xl p-4 bg-gray-50/50">
+                        {roleOptions.map((option) => {
+                            const isChecked = editRoles.includes(option.value);
+                            return (
+                                <label
+                                    key={option.value}
+                                    className={`flex items-start gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
+                                        isChecked ? 'bg-purple-50 border-purple-500/50 text-purple-950' : 'bg-white border-gray-200 hover:border-gray-300'
+                                    }`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => toggleEditRole(option.value)}
+                                        className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                    />
+                                    <div>
+                                        <span className="font-semibold text-sm text-gray-900">{option.label}</span>
+                                        <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+                                    </div>
+                                </label>
+                            );
+                        })}
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Delete Modal */}
             <Modal
                 open={Boolean(deleteTarget)}
                 onClose={() => !deleteLoading && setDeleteTarget(null)}
@@ -310,7 +422,7 @@ export default function ManagerAccountsPage() {
                 <div className="space-y-4 p-2">
                     <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
                         <p className="text-sm font-medium text-rose-900">
-                            Delete {deleteTarget ? roleLabel[deleteTarget.role] : 'Manager'} <span className="break-all">{deleteTarget?.email}</span>?
+                            Delete Manager <span className="break-all">{deleteTarget?.email}</span>?
                         </p>
                         <p className="mt-2 text-sm text-rose-700">
                             This action cannot be undone. The account will be removed from the Manager Accounts list.
@@ -319,6 +431,7 @@ export default function ManagerAccountsPage() {
                 </div>
             </Modal>
 
+            {/* Success Delete Modal */}
             <Modal
                 open={Boolean(deletedEmail)}
                 onClose={() => setDeletedEmail('')}
