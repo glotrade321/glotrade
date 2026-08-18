@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { setStoredLocale, translate, getStoredLocale, Locale, languageNames, locales } from "@/utils/i18n";
 import { useRouter } from "next/navigation";
 
+import { apiGet } from "@/utils/api";
+
 export default function UpperHeader() {
   const router = useRouter();
   const [locale, setLocale] = useState<Locale>("en");
@@ -12,11 +14,20 @@ export default function UpperHeader() {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [bazaarActive, setBazaarActive] = useState<boolean | null>(null);
 
   useEffect(() => {
     setMounted(true);
     // Initial load
     setLocale(getStoredLocale());
+
+    apiGet("/api/v1/bazaar/config")
+      .then((res: any) => {
+        if (res?.data?.active !== undefined) {
+          setBazaarActive(res.data.active);
+        }
+      })
+      .catch(() => setBazaarActive(true));
 
     const onLocale = (e: Event) => {
       const detail = (e as CustomEvent).detail as { locale: Locale };
@@ -114,14 +125,16 @@ export default function UpperHeader() {
             )}
           </div>
 
-          <Link
-            href="/bazaar"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105 font-bold shadow-sm"
-          >
-            🎟️ GloTrade Bazaar
-          </Link>
+          {bazaarActive !== false && (
+            <Link
+              href="/bazaar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105 font-bold shadow-sm"
+            >
+              🎟️ GloTrade Bazaar
+            </Link>
+          )}
           <Link
             href="/gdip"
             onClick={handleGDIPClick}
