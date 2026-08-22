@@ -198,17 +198,9 @@ export default function AdminBazaarPage() {
     }
   };
 
-  // Auto-polling effect (every 12 seconds) so new registrations pop up live!
   useEffect(() => {
     loadStatsAndConfig();
     loadBookings();
-
-    const interval = setInterval(() => {
-      loadStatsAndConfig();
-      loadBookings();
-    }, 12000);
-
-    return () => clearInterval(interval);
   }, [activeTab, page, statusFilter]);
 
   // Save Seasonal Controls & Bank Config

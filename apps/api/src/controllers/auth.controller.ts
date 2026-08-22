@@ -296,6 +296,7 @@ export class AuthController {
           email: user.email,
           username: user.username,
           role: (user as any).role || 'buyer',
+          assignedRoles: (user as any).assignedRoles || [],
           isEmailVerified: (user as any).emailVerified,
           firstName: (user as any).firstName,
           lastName: (user as any).lastName,

@@ -328,7 +328,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   {user.username || user.firstName || "Admin User"}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {user.isSuperAdmin ? "Super Admin" : managerRoleLabels[user.role] || "Administrator"}
+                  {user.isSuperAdmin
+                    ? "Super Admin"
+                    : user.role === "admin"
+                    ? "Administrator"
+                    : Array.isArray(user.assignedRoles) && user.assignedRoles.length > 0
+                    ? user.assignedRoles.map((r: string) => managerRoleLabels[r] || r).join(" • ")
+                    : managerRoleLabels[user.role] || "Administrator"}
                 </p>
               </div>
             </div>
