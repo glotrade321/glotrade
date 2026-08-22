@@ -30,6 +30,7 @@ import {
   ExternalLink,
   Calendar,
   Check,
+  Layers,
 } from "lucide-react";
 import { apiGet, apiPut, apiPost, apiPatch } from "@/utils/api";
 import QRCodeScanner from "@/components/wallet/QRCodeScanner";
@@ -81,8 +82,8 @@ export default function AdminBazaarPage() {
   const [showInspectModal, setShowInspectModal] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // Bookings List
-  const [activeTab, setActiveTab] = useState<"ticket" | "exhibitor" | "sponsorship" | "contact">("ticket");
+  // Bookings List (Defaults to "all" so every registration across all types shows up immediately)
+  const [activeTab, setActiveTab] = useState<"all" | "ticket" | "exhibitor" | "sponsorship" | "contact">("all");
   const [bookings, setBookings] = useState<any[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -197,12 +198,17 @@ export default function AdminBazaarPage() {
     }
   };
 
+  // Auto-polling effect (every 12 seconds) so new registrations pop up live!
   useEffect(() => {
     loadStatsAndConfig();
-  }, []);
-
-  useEffect(() => {
     loadBookings();
+
+    const interval = setInterval(() => {
+      loadStatsAndConfig();
+      loadBookings();
+    }, 12000);
+
+    return () => clearInterval(interval);
   }, [activeTab, page, statusFilter]);
 
   // Save Seasonal Controls & Bank Config
@@ -335,6 +341,12 @@ export default function AdminBazaarPage() {
     setShowInspectModal(true);
   };
 
+  const totalAllRegistrations =
+    (stats?.totalTickets || 0) +
+    (stats?.totalExhibitors || 0) +
+    (stats?.totalSponsorships || 0) +
+    (stats?.totalContacts || 0);
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -372,7 +384,7 @@ export default function AdminBazaarPage() {
               }}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
             >
-              <RefreshCw size={16} /> Refresh
+              <RefreshCw size={16} /> Refresh Live
             </button>
           </div>
         </div>
@@ -526,7 +538,7 @@ export default function AdminBazaarPage() {
         </div>
 
         {/* SECTION 2: Metric Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-gray-500 uppercase">Total Revenue</span>
@@ -539,7 +551,7 @@ export default function AdminBazaarPage() {
 
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500 uppercase">Tickets Sold</span>
+              <span className="text-xs font-medium text-gray-500 uppercase">Tickets</span>
               <Ticket className="text-blue-500" size={20} />
             </div>
             <p className="text-2xl font-bold text-gray-900 mt-2">{stats?.totalTickets || 0}</p>
@@ -559,6 +571,14 @@ export default function AdminBazaarPage() {
               <Award className="text-amber-500" size={20} />
             </div>
             <p className="text-2xl font-bold text-gray-900 mt-2">{stats?.totalSponsorships || 0}</p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-amber-600 uppercase">Pending Bank</span>
+              <Clock className="text-amber-500" size={20} />
+            </div>
+            <p className="text-2xl font-bold text-amber-600 mt-2">{stats?.totalPending || 0}</p>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
@@ -635,6 +655,18 @@ export default function AdminBazaarPage() {
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
           {/* Tabs */}
           <div className="flex border-b border-gray-200 overflow-x-auto bg-gray-50">
+            <button
+              onClick={() => {
+                setActiveTab("all");
+                setPage(1);
+              }}
+              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "all"
+                  ? "border-blue-600 text-blue-600 bg-white"
+                  : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
+            >
+              <Layers size={16} /> All Registrations ({totalAllRegistrations})
+            </button>
             <button
               onClick={() => {
                 setActiveTab("ticket");
@@ -758,8 +790,11 @@ export default function AdminBazaarPage() {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900">{item.packageName}</p>
-                        <p className="text-xs font-bold text-emerald-600">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 mr-1.5">
+                          {item.type}
+                        </span>
+                        <span className="font-medium text-gray-900">{item.packageName}</span>
+                        <p className="text-xs font-bold text-emerald-600 mt-0.5">
                           ₦{item.amount.toLocaleString("en-NG")}
                         </p>
                       </td>
@@ -890,13 +925,12 @@ export default function AdminBazaarPage() {
               <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
                 <span className="text-[10px] uppercase font-bold text-gray-400 block">Payment Status</span>
                 <span
-                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase mt-1 ${
-                    selectedBooking.paymentStatus === "paid"
+                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase mt-1 ${selectedBooking.paymentStatus === "paid"
                       ? "bg-green-100 text-green-700 border border-green-200"
                       : selectedBooking.paymentStatus === "failed"
-                      ? "bg-red-100 text-red-700 border border-red-200"
-                      : "bg-amber-100 text-amber-700 border border-amber-200"
-                  }`}
+                        ? "bg-red-100 text-red-700 border border-red-200"
+                        : "bg-amber-100 text-amber-700 border border-amber-200"
+                    }`}
                 >
                   {selectedBooking.paymentStatus}
                 </span>
@@ -905,11 +939,10 @@ export default function AdminBazaarPage() {
               <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
                 <span className="text-[10px] uppercase font-bold text-gray-400 block">Gate Check-In</span>
                 <span
-                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold mt-1 ${
-                    selectedBooking.checkInStatus === "checked_in"
+                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold mt-1 ${selectedBooking.checkInStatus === "checked_in"
                       ? "bg-teal-100 text-teal-800 border border-teal-200"
                       : "bg-gray-100 text-gray-600 border border-gray-200"
-                  }`}
+                    }`}
                 >
                   {selectedBooking.checkInStatus === "checked_in" ? "Checked-In" : "Pending Gate"}
                 </span>

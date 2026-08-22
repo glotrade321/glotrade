@@ -318,7 +318,9 @@ export class BazaarController {
       ]);
       const totalRevenue = totalRevenueRes[0]?.total || 0;
 
-      const totalTickets = await BazaarBooking.countDocuments({ type: "ticket", paymentStatus: "paid" });
+      const totalTickets = await BazaarBooking.countDocuments({ type: "ticket" });
+      const totalTicketsPaid = await BazaarBooking.countDocuments({ type: "ticket", paymentStatus: "paid" });
+      const totalPending = await BazaarBooking.countDocuments({ paymentStatus: "pending" });
       const totalExhibitors = await BazaarBooking.countDocuments({ type: "exhibitor" });
       const totalSponsorships = await BazaarBooking.countDocuments({ type: "sponsorship" });
       const totalContacts = await BazaarBooking.countDocuments({ type: "contact" });
@@ -329,6 +331,8 @@ export class BazaarController {
         data: {
           totalRevenue,
           totalTickets,
+          totalTicketsPaid,
+          totalPending,
           totalExhibitors,
           totalSponsorships,
           totalContacts,
