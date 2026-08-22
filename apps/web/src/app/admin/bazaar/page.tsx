@@ -19,6 +19,11 @@ import {
   Filter,
   MessageSquare,
   Camera,
+  PlusCircle,
+  Mail,
+  Building2,
+  X,
+  Send,
 } from "lucide-react";
 import { apiGet, apiPut, apiPost, apiPatch } from "@/utils/api";
 import QRCodeScanner from "@/components/wallet/QRCodeScanner";
@@ -35,6 +40,10 @@ export default function AdminBazaarPage() {
     exhibitorApplicationsActive: true,
     sponsorshipActive: true,
     inactiveMessage: "",
+    bankName: "Moniepoint MFB",
+    bankAccountName: "GloTrade Ltd - Bazaar Account",
+    bankAccountNumber: "8012345678",
+    whatsappNumber: "2347044600924",
   });
   const [configLoading, setConfigLoading] = useState(true);
   const [configSaving, setConfigSaving] = useState(false);
@@ -45,6 +54,65 @@ export default function AdminBazaarPage() {
   const [checkInLoading, setCheckInLoading] = useState(false);
   const [checkInResult, setCheckInResult] = useState<any>(null);
   const [showCameraScanner, setShowCameraScanner] = useState(false);
+
+  // Manual Booking Modal State
+  const [showManualModal, setShowManualModal] = useState(false);
+  const [manualType, setManualType] = useState<"ticket" | "exhibitor" | "sponsorship">("ticket");
+  const [manualPkgId, setManualPkgId] = useState("vvip");
+  const [manualPkgName, setManualPkgName] = useState("VVIP Pass");
+  const [manualAmount, setManualAmount] = useState<number>(25000);
+  const [manualName, setManualName] = useState("");
+  const [manualEmail, setManualEmail] = useState("");
+  const [manualPhone, setManualPhone] = useState("");
+  const [manualBusiness, setManualBusiness] = useState("");
+  const [manualPaymentStatus, setManualPaymentStatus] = useState<"paid" | "pending">("paid");
+  const [manualNotes, setManualNotes] = useState("Bank transfer verified on WhatsApp");
+  const [manualSubmitting, setManualSubmitting] = useState(false);
+  const [manualMsg, setManualMsg] = useState<{ text: string; success: boolean } | null>(null);
+
+  // Bookings List
+  const [activeTab, setActiveTab] = useState<"ticket" | "exhibitor" | "sponsorship" | "contact">("ticket");
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookingsLoading, setBookingsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [actionMsg, setActionMsg] = useState<string | null>(null);
+
+  // Handle Preset Package Changes in Manual Booking Modal
+  const handlePackageSelect = (pkgId: string) => {
+    setManualPkgId(pkgId);
+    if (pkgId === "standard") {
+      setManualPkgName("Standard Ticket");
+      setManualAmount(7000);
+      setManualType("ticket");
+    } else if (pkgId === "vip") {
+      setManualPkgName("VIP Pass");
+      setManualAmount(15000);
+      setManualType("ticket");
+    } else if (pkgId === "vvip") {
+      setManualPkgName("VVIP Pass");
+      setManualAmount(25000);
+      setManualType("ticket");
+    } else if (pkgId === "table") {
+      setManualPkgName("Table of 4");
+      setManualAmount(250000);
+      setManualType("ticket");
+    } else if (pkgId === "stall-standard") {
+      setManualPkgName("Standard Stall");
+      setManualAmount(50000);
+      setManualType("exhibitor");
+    } else if (pkgId === "sponsor-gold") {
+      setManualPkgName("Gold Sponsorship");
+      setManualAmount(500000);
+      setManualType("sponsorship");
+    } else if (pkgId === "sponsor-headline") {
+      setManualPkgName("Headline Sponsorship");
+      setManualAmount(1500000);
+      setManualType("sponsorship");
+    }
+  };
 
   const handleScanQRData = (data: any) => {
     setShowCameraScanner(false);
@@ -70,15 +138,6 @@ export default function AdminBazaarPage() {
       executeCheckIn(extractedCode.trim());
     }
   };
-
-  // Bookings List
-  const [activeTab, setActiveTab] = useState<"ticket" | "exhibitor" | "sponsorship" | "contact">("ticket");
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [bookingsLoading, setBookingsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   // Fetch Stats & Config
   const loadStatsAndConfig = async () => {
@@ -129,7 +188,7 @@ export default function AdminBazaarPage() {
     loadBookings();
   }, [activeTab, page, statusFilter]);
 
-  // Save Seasonal Controls
+  // Save Seasonal Controls & Bank Config
   const handleSaveConfig = async () => {
     setConfigSaving(true);
     setConfigMsg(null);
@@ -137,7 +196,7 @@ export default function AdminBazaarPage() {
       const res: any = await apiPut("/api/v1/bazaar/admin/config", config);
       if (res?.data) {
         setConfig(res.data);
-        setConfigMsg("Seasonal portal settings updated successfully.");
+        setConfigMsg("Portal controls & bank details updated successfully.");
       }
     } catch (err: any) {
       setConfigMsg(err?.message || "Failed to update settings.");
@@ -180,10 +239,70 @@ export default function AdminBazaarPage() {
     executeCheckIn(ticketInput);
   };
 
+  // Create Manual Registration
+  const handleCreateManualBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setManualSubmitting(true);
+    setManualMsg(null);
+
+    try {
+      const res: any = await apiPost("/api/v1/bazaar/admin/bookings/manual", {
+        type: manualType,
+        packageId: manualPkgId,
+        packageName: manualPkgName,
+        amount: manualAmount,
+        customerName: manualName,
+        customerEmail: manualEmail,
+        customerPhone: manualPhone,
+        businessName: manualBusiness,
+        paymentStatus: manualPaymentStatus,
+        notes: manualNotes,
+      });
+
+      if (res?.status === "success") {
+        setManualMsg({
+          text: res.message || "Manual booking created & email dispatched!",
+          success: true,
+        });
+        setManualName("");
+        setManualEmail("");
+        setManualPhone("");
+        setManualBusiness("");
+        loadStatsAndConfig();
+        loadBookings();
+        setTimeout(() => setShowManualModal(false), 2000);
+      }
+    } catch (err: any) {
+      setManualMsg({
+        text: err?.message || "Failed to create manual registration.",
+        success: false,
+      });
+    } finally {
+      setManualSubmitting(false);
+    }
+  };
+
+  // Resend Ticket Email
+  const handleResendEmail = async (id: string, email: string) => {
+    setActionMsg(null);
+    try {
+      const res: any = await apiPost(`/api/v1/bazaar/admin/bookings/${id}/resend-email`, {});
+      setActionMsg(`Ticket confirmation email resent to ${email}`);
+      setTimeout(() => setActionMsg(null), 4000);
+    } catch (err: any) {
+      setActionMsg(err?.message || "Failed to resend ticket email.");
+    }
+  };
+
   // Toggle booking payment or checkin status
   const handleUpdateBooking = async (id: string, payload: any) => {
+    setActionMsg(null);
     try {
-      await apiPatch(`/api/v1/bazaar/admin/bookings/${id}`, payload);
+      const res: any = await apiPatch(`/api/v1/bazaar/admin/bookings/${id}`, payload);
+      if (payload.paymentStatus === "paid") {
+        setActionMsg("Booking marked as PAID. Ticket email dispatched to customer.");
+        setTimeout(() => setActionMsg(null), 4000);
+      }
       loadBookings();
       loadStatsAndConfig();
     } catch (err) {
@@ -194,6 +313,16 @@ export default function AdminBazaarPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
+        {/* Action Alert Banner */}
+        {actionMsg && (
+          <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 rounded-xl text-sm font-semibold flex items-center justify-between animate-fadeIn">
+            <span>{actionMsg}</span>
+            <button onClick={() => setActionMsg(null)} className="text-emerald-700 hover:text-emerald-900">
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4">
           <div>
@@ -201,32 +330,39 @@ export default function AdminBazaarPage() {
               <Ticket className="text-blue-600" size={28} /> GloTrade Bazaar Management
             </h1>
             <p className="text-sm text-gray-500">
-              Manage event portal seasonal visibility, ticket sales, stall bookings, and gate check-ins.
+              Manage event portal seasonal visibility, manual bank transfers, ticket sales, stall bookings, and gate check-ins.
             </p>
           </div>
-          <button
-            onClick={() => {
-              loadStatsAndConfig();
-              loadBookings();
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
-          >
-            <RefreshCw size={16} /> Refresh
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setShowManualModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-sm shadow-sm transition-all"
+            >
+              <PlusCircle size={18} /> Register Manual Booking
+            </button>
+            <button
+              onClick={() => {
+                loadStatsAndConfig();
+                loadBookings();
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
+            >
+              <RefreshCw size={16} /> Refresh
+            </button>
+          </div>
         </div>
 
-        {/* SECTION 1: Seasonal Controls Panel */}
+        {/* SECTION 1: Seasonal Controls & Bank Config Panel */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
             <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <Power className="text-amber-500" size={20} /> Seasonal Portal Accessibility Controls
+              <Power className="text-amber-500" size={20} /> Seasonal Portal Controls & Bank Account Config
             </h2>
             <span
-              className={`px-3 py-1 rounded-full text-xs font-bold ${
-                config.isPortalActive
+              className={`px-3 py-1 rounded-full text-xs font-bold ${config.isPortalActive
                   ? "bg-green-100 text-green-700 border border-green-200"
                   : "bg-red-100 text-red-700 border border-red-200"
-              }`}
+                }`}
             >
               Portal Status: {config.isPortalActive ? "ONLINE / ACTIVE" : "OFF-SEASON / INACTIVE"}
             </span>
@@ -298,17 +434,59 @@ export default function AdminBazaarPage() {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <label className="block text-xs font-medium text-gray-700">
-              Custom Off-Season Announcement Message (Displayed on `/bazaar` when Portal is Inactive)
-            </label>
-            <input
-              type="text"
-              value={config.inactiveMessage}
-              onChange={(e) => setConfig({ ...config, inactiveMessage: e.target.value })}
-              placeholder="e.g. GloTrade Bazaar Abuja 2026 portal is currently offline..."
-              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
+          {/* Bank Account Details Form */}
+          <div className="border-t border-gray-100 pt-4 mt-4 space-y-4">
+            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+              <Building2 size={16} className="text-amber-600" /> Manual Bank Transfer Checkout Account Details
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Bank Name</label>
+                <input
+                  type="text"
+                  value={config.bankName || ""}
+                  onChange={(e) => setConfig({ ...config, bankName: e.target.value })}
+                  placeholder="e.g. Moniepoint MFB / Zenith Bank"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Account Name</label>
+                <input
+                  type="text"
+                  value={config.bankAccountName || ""}
+                  onChange={(e) => setConfig({ ...config, bankAccountName: e.target.value })}
+                  placeholder="e.g. GloTrade Ltd - Bazaar Account"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Account Number</label>
+                <input
+                  type="text"
+                  value={config.bankAccountNumber || ""}
+                  onChange={(e) => setConfig({ ...config, bankAccountNumber: e.target.value })}
+                  placeholder="e.g. 8012345678"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500 font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-gray-700">
+                Off-Season Announcement Message (Displayed when Portal is Inactive)
+              </label>
+              <input
+                type="text"
+                value={config.inactiveMessage || ""}
+                onChange={(e) => setConfig({ ...config, inactiveMessage: e.target.value })}
+                placeholder="e.g. GloTrade Bazaar Abuja 2026 portal is currently offline..."
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+            </div>
           </div>
 
           <div className="mt-4 text-right">
@@ -317,7 +495,7 @@ export default function AdminBazaarPage() {
               disabled={configSaving}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow-sm inline-flex items-center gap-2"
             >
-              {configSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Save Controls & Settings
+              {configSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Save Controls & Bank Settings
             </button>
           </div>
         </div>
@@ -410,11 +588,10 @@ export default function AdminBazaarPage() {
 
           {checkInResult && (
             <div
-              className={`mt-4 p-4 rounded-lg text-sm border flex items-start gap-3 ${
-                checkInResult.success
+              className={`mt-4 p-4 rounded-lg text-sm border flex items-start gap-3 ${checkInResult.success
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                   : "bg-red-500/10 border-red-500/30 text-red-400"
-              }`}
+                }`}
             >
               {checkInResult.success ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
               <div>
@@ -438,11 +615,10 @@ export default function AdminBazaarPage() {
                 setActiveTab("ticket");
                 setPage(1);
               }}
-              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${
-                activeTab === "ticket"
+              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "ticket"
                   ? "border-blue-600 text-blue-600 bg-white"
                   : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
+                }`}
             >
               <Ticket size={16} /> Tickets ({stats?.totalTickets || 0})
             </button>
@@ -451,11 +627,10 @@ export default function AdminBazaarPage() {
                 setActiveTab("exhibitor");
                 setPage(1);
               }}
-              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${
-                activeTab === "exhibitor"
+              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "exhibitor"
                   ? "border-blue-600 text-blue-600 bg-white"
                   : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
+                }`}
             >
               <Store size={16} /> Exhibitor Stalls ({stats?.totalExhibitors || 0})
             </button>
@@ -464,11 +639,10 @@ export default function AdminBazaarPage() {
                 setActiveTab("sponsorship");
                 setPage(1);
               }}
-              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${
-                activeTab === "sponsorship"
+              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "sponsorship"
                   ? "border-blue-600 text-blue-600 bg-white"
                   : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
+                }`}
             >
               <Award size={16} /> Sponsorships ({stats?.totalSponsorships || 0})
             </button>
@@ -477,11 +651,10 @@ export default function AdminBazaarPage() {
                 setActiveTab("contact");
                 setPage(1);
               }}
-              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${
-                activeTab === "contact"
+              className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "contact"
                   ? "border-blue-600 text-blue-600 bg-white"
                   : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
+                }`}
             >
               <MessageSquare size={16} /> Contact Messages ({stats?.totalContacts || 0})
             </button>
@@ -551,6 +724,9 @@ export default function AdminBazaarPage() {
                         {item.businessName && (
                           <p className="text-xs text-purple-600 font-medium">Biz: {item.businessName}</p>
                         )}
+                        {item.notes && (
+                          <p className="text-[11px] text-gray-400 italic truncate max-w-xs">{item.notes}</p>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <p className="font-medium text-gray-900">{item.packageName}</p>
@@ -560,41 +736,49 @@ export default function AdminBazaarPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
-                            item.paymentStatus === "paid"
+                          className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase ${item.paymentStatus === "paid"
                               ? "bg-green-100 text-green-700"
                               : item.paymentStatus === "failed"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
+                                ? "bg-red-100 text-red-700"
+                                : "bg-amber-100 text-amber-700"
+                            }`}
                         >
                           {item.paymentStatus}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
-                            item.checkInStatus === "checked_in"
+                          className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${item.checkInStatus === "checked_in"
                               ? "bg-teal-100 text-teal-800"
                               : "bg-gray-100 text-gray-600"
-                          }`}
+                            }`}
                         >
                           {item.checkInStatus === "checked_in" ? "Checked-In" : "Pending Gate"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right space-x-2">
+                      <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
                         {item.paymentStatus !== "paid" && (
                           <button
                             onClick={() => handleUpdateBooking(item._id, { paymentStatus: "paid" })}
-                            className="px-2.5 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-xs font-medium border border-green-200"
+                            className="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-bold shadow-sm inline-flex items-center gap-1"
+                            title="Mark as Paid & Send Ticket Confirmation Email"
                           >
-                            Mark Paid
+                            <Send size={12} /> Mark Paid & Email
+                          </button>
+                        )}
+                        {item.paymentStatus === "paid" && (
+                          <button
+                            onClick={() => handleResendEmail(item._id, item.customerEmail)}
+                            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-medium border border-blue-200 inline-flex items-center gap-1"
+                            title="Resend Ticket Email to Customer"
+                          >
+                            <Mail size={12} /> Resend Email
                           </button>
                         )}
                         {item.checkInStatus !== "checked_in" && item.paymentStatus === "paid" && (
                           <button
                             onClick={() => handleUpdateBooking(item._id, { checkInStatus: "checked_in" })}
-                            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-medium border border-blue-200"
+                            className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded text-xs font-medium border border-slate-700"
                           >
                             Check In
                           </button>
@@ -631,6 +815,178 @@ export default function AdminBazaarPage() {
           )}
         </div>
       </div>
+
+      {/* Manual Registration Modal */}
+      {showManualModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white border border-gray-200 rounded-2xl max-w-lg w-full p-6 text-gray-900 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <PlusCircle className="text-amber-500" size={20} /> Register Manual Booking
+                </h3>
+                <p className="text-xs text-gray-500">
+                  Register attendees or exhibitors who paid via manual bank transfer on WhatsApp.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowManualModal(false)}
+                className="p-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {manualMsg && (
+              <div
+                className={`p-3 mb-4 rounded-lg text-xs font-semibold ${manualMsg.success
+                    ? "bg-green-50 border border-green-200 text-green-700"
+                    : "bg-red-50 border border-red-200 text-red-700"
+                  }`}
+              >
+                {manualMsg.text}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateManualBooking} className="space-y-4">
+              {/* Preset Package Selector */}
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Select Package Tier *</label>
+                <select
+                  value={manualPkgId}
+                  onChange={(e) => handlePackageSelect(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="standard">🎟️ Standard Ticket (₦7,000)</option>
+                  <option value="vip">⭐ VIP Pass (₦15,000)</option>
+                  <option value="vvip">👑 VVIP Pass (₦25,000)</option>
+                  <option value="table">🥂 Table of 4 (₦250,000)</option>
+                  <option value="stall-standard">🎪 Standard Exhibitor Stall (₦50,000)</option>
+                  <option value="sponsor-gold">🏆 Gold Sponsorship (₦500,000)</option>
+                  <option value="sponsor-headline">👑 Headline Sponsorship (₦1,500,000)</option>
+                </select>
+              </div>
+
+              {/* Package Name & Amount */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Package Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={manualPkgName}
+                    onChange={(e) => setManualPkgName(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Amount Paid (₦)</label>
+                  <input
+                    type="number"
+                    required
+                    value={manualAmount}
+                    onChange={(e) => setManualAmount(Number(e.target.value))}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-emerald-700"
+                  />
+                </div>
+              </div>
+
+              {/* Customer Full Name */}
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Customer Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={manualName}
+                  onChange={(e) => setManualName(e.target.value)}
+                  placeholder="e.g. Samuel Okon"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Email & Phone */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Customer Email *</label>
+                  <input
+                    type="email"
+                    required
+                    value={manualEmail}
+                    onChange={(e) => setManualEmail(e.target.value)}
+                    placeholder="guest@domain.com"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Phone Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    value={manualPhone}
+                    onChange={(e) => setManualPhone(e.target.value)}
+                    placeholder="+234 800 000 0000"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Business Name (Optional) */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Company / Business Name (Optional)</label>
+                <input
+                  type="text"
+                  value={manualBusiness}
+                  onChange={(e) => setManualBusiness(e.target.value)}
+                  placeholder="e.g. AfriCrafts Ltd"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900"
+                />
+              </div>
+
+              {/* Payment Status & Notes */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Payment Status</label>
+                  <select
+                    value={manualPaymentStatus}
+                    onChange={(e) => setManualPaymentStatus(e.target.value as any)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-900"
+                  >
+                    <option value="paid">Paid (Dispatches Ticket Email)</option>
+                    <option value="pending">Pending Verification</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Notes / Bank Ref</label>
+                  <input
+                    type="text"
+                    value={manualNotes}
+                    onChange={(e) => setManualNotes(e.target.value)}
+                    placeholder="e.g. Bank transfer on WhatsApp"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-gray-200 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowManualModal(false)}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={manualSubmitting}
+                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs shadow-md inline-flex items-center gap-2"
+                >
+                  {manualSubmitting ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />} Register & Issue Ticket Email
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

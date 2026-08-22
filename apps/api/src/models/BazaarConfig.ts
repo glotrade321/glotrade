@@ -11,6 +11,9 @@ export interface IBazaarConfig extends Document {
   eventVenue: string;
   whatsappNumber?: string;
   email?: string;
+  bankName?: string;
+  bankAccountName?: string;
+  bankAccountNumber?: string;
   updatedAt: Date;
   updatedBy?: string;
 }
@@ -29,8 +32,11 @@ const BazaarConfigSchema: Schema = new Schema(
     eventTitle: { type: String, default: "GloTrade Bazaar Abuja 2026" },
     eventDateLabel: { type: String, default: "12 September 2026" },
     eventVenue: { type: String, default: "Harrow Park, Abuja" },
-    whatsappNumber: { type: String, default: "2348000000000" },
-    email: { type: String, default: "enquiries@glotrade.online" },
+    whatsappNumber: { type: String, default: "2347044600924" },
+    email: { type: String, default: "glotradebazaar@gmail.com" },
+    bankName: { type: String, default: "Moniepoint MFB" },
+    bankAccountName: { type: String, default: "GloTrade Ltd - Bazaar Account" },
+    bankAccountNumber: { type: String, default: "8012345678" },
     updatedBy: { type: String },
   },
   { timestamps: true }

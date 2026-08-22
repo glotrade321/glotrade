@@ -15,7 +15,9 @@ router.post("/contact", BazaarController.submitContact);
 router.put("/admin/config", requireAuth, requireBazaarManager, BazaarController.updateAdminConfig);
 router.get("/admin/stats", requireAuth, requireBazaarManager, BazaarController.getAdminStats);
 router.get("/admin/bookings", requireAuth, requireBazaarManager, BazaarController.getAdminBookings);
+router.post("/admin/bookings/manual", requireAuth, requireBazaarManager, BazaarController.createManualBooking);
 router.patch("/admin/bookings/:id", requireAuth, requireBazaarManager, BazaarController.updateBookingStatus);
+router.post("/admin/bookings/:id/resend-email", requireAuth, requireBazaarManager, BazaarController.resendConfirmationEmail);
 router.post("/admin/check-in", requireAuth, requireBazaarManager, BazaarController.checkInTicket);
 
 export default router;

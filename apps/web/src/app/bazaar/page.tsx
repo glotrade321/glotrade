@@ -248,7 +248,7 @@ export default function BazaarHome() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Standard Ticket */}
                 <div className="bg-slate-950 border border-slate-800 hover:border-amber-500/40 rounded-2xl p-8 flex flex-col justify-between transition-all hover:-translate-y-1">
                   <div>
@@ -257,7 +257,7 @@ export default function BazaarHome() {
                     </span>
                     <h3 className="text-2xl font-bold text-white mt-1">{translate("bazaar.standardTicket") || "Standard Ticket"}</h3>
                     <div className="mt-4 mb-6">
-                      <span className="text-4xl font-black text-amber-400">₦5,000</span>
+                      <span className="text-4xl font-black text-amber-400">₦7,000</span>
                       <span className="text-xs text-slate-400 ml-1">/ {translate("bazaar.perGuest") || "guest"}</span>
                     </div>
                     <ul className="space-y-3 text-sm text-slate-300 mb-8">
@@ -280,7 +280,7 @@ export default function BazaarHome() {
                       handleOpenBooking({
                         id: "standard",
                         name: translate("bazaar.standardTicket") || "Standard Ticket",
-                        price: 5000,
+                        price: 7000,
                         type: "ticket",
                       })
                     }
@@ -291,7 +291,7 @@ export default function BazaarHome() {
                 </div>
 
                 {/* VIP Pass */}
-                <div className="bg-slate-950 border-2 border-amber-500 rounded-2xl p-8 flex flex-col justify-between relative shadow-xl shadow-amber-500/10 transform md:-translate-y-2">
+                <div className="bg-slate-950 border border-amber-500/60 hover:border-amber-500 rounded-2xl p-8 flex flex-col justify-between relative shadow-xl shadow-amber-500/10 transition-all hover:-translate-y-1">
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 text-xs font-black px-4 py-1 rounded-full uppercase tracking-wider">
                     {translate("bazaar.popularChoice") || "Most Popular"}
                   </div>
@@ -332,9 +332,57 @@ export default function BazaarHome() {
                         type: "ticket",
                       })
                     }
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all"
+                    className="w-full py-3.5 rounded-xl bg-slate-900 border border-amber-500/30 hover:bg-amber-500 hover:text-slate-950 text-white font-bold text-sm transition-all"
                   >
                     {translate("bazaar.bookVipCta") || "Buy VIP Pass"}
+                  </button>
+                </div>
+
+                {/* VVIP Pass */}
+                <div className="bg-slate-950 border-2 border-amber-400 rounded-2xl p-8 flex flex-col justify-between relative shadow-xl shadow-amber-500/20 transition-all hover:-translate-y-1">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 text-xs font-black px-4 py-1 rounded-full uppercase tracking-wider">
+                    {translate("bazaar.vvipAccessLabel") || "VVIP Access"}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
+                      VVIP Access
+                    </span>
+                    <h3 className="text-2xl font-bold text-white mt-1">{translate("bazaar.vvipPass") || "VVIP Pass"}</h3>
+                    <div className="mt-4 mb-6">
+                      <span className="text-4xl font-black text-amber-400">₦25,000</span>
+                      <span className="text-xs text-slate-400 ml-1">/ {translate("bazaar.perGuest") || "guest"}</span>
+                    </div>
+                    <ul className="space-y-3 text-sm text-slate-300 mb-8">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
+                        Front-row VVIP stage seating
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
+                        Fast-track priority entry
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
+                        Complimentary food & drinks platter
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
+                        Dedicated VVIP host & lounge
+                      </li>
+                    </ul>
+                  </div>
+                  <button
+                    onClick={() =>
+                      handleOpenBooking({
+                        id: "vvip",
+                        name: translate("bazaar.vvipPass") || "VVIP Pass",
+                        price: 25000,
+                        type: "ticket",
+                      })
+                    }
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/25 transition-all"
+                  >
+                    {translate("bazaar.bookVvipCta") || "Buy VVIP Pass"}
                   </button>
                 </div>
 
@@ -346,7 +394,7 @@ export default function BazaarHome() {
                     </span>
                     <h3 className="text-2xl font-bold text-white mt-1">{translate("bazaar.tableOf4") || "Table of 4"}</h3>
                     <div className="mt-4 mb-6">
-                      <span className="text-4xl font-black text-amber-400">₦50,000</span>
+                      <span className="text-4xl font-black text-amber-400">₦250,000</span>
                       <span className="text-xs text-slate-400 ml-1">/ {translate("bazaar.per4Guests") || "4 guests"}</span>
                     </div>
                     <ul className="space-y-3 text-sm text-slate-300 mb-8">
@@ -369,7 +417,7 @@ export default function BazaarHome() {
                       handleOpenBooking({
                         id: "table",
                         name: translate("bazaar.tableOf4") || "Table of 4",
-                        price: 50000,
+                        price: 250000,
                         type: "ticket",
                       })
                     }

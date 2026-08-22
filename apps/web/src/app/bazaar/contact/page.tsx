@@ -65,8 +65,8 @@ export default function ContactPage() {
               <Mail className="text-amber-400 shrink-0 mt-1" size={20} />
               <div>
                 <h3 className="font-bold text-white text-sm">{translate("bazaar.enquiriesSupport") || "Email Enquiries"}</h3>
-                <a href="mailto:enquiries@glotrade.online" className="text-xs text-slate-400 hover:text-amber-400">
-                  enquiries@glotrade.online
+                <a href="mailto:glotradebazaar@glotrade.online" className="text-xs text-slate-400 hover:text-amber-400">
+                  glotradebazaar@glotrade.online
                 </a>
               </div>
             </div>
@@ -75,8 +75,8 @@ export default function ContactPage() {
               <Phone className="text-amber-400 shrink-0 mt-1" size={20} />
               <div>
                 <h3 className="font-bold text-white text-sm">WhatsApp Line</h3>
-                <a href="https://wa.me/2348000000000" target="_blank" rel="noreferrer" className="text-xs text-slate-400 hover:text-amber-400">
-                  +234 800 000 0000
+                <a href="https://wa.me/2347044600924" target="_blank" rel="noreferrer" className="text-xs text-slate-400 hover:text-amber-400">
+                  +234 704-460-0924
                 </a>
               </div>
             </div>
@@ -139,7 +139,7 @@ export default function ContactPage() {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+234 800 000 0000"
+                      placeholder="+234 803 123 4567"
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
                     />
                   </div>

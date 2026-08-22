@@ -58,6 +58,9 @@ export class BazaarController {
         eventVenue,
         whatsappNumber,
         email,
+        bankName,
+        bankAccountName,
+        bankAccountNumber,
       } = req.body;
 
       const config = await getOrCreateConfig();
@@ -74,6 +77,9 @@ export class BazaarController {
       if (eventVenue !== undefined) config.eventVenue = eventVenue;
       if (whatsappNumber !== undefined) config.whatsappNumber = whatsappNumber;
       if (email !== undefined) config.email = email;
+      if (bankName !== undefined) config.bankName = bankName;
+      if (bankAccountName !== undefined) config.bankAccountName = bankAccountName;
+      if (bankAccountNumber !== undefined) config.bankAccountNumber = bankAccountNumber;
 
       config.updatedAt = new Date();
       if ((req as any).user) {
@@ -369,6 +375,7 @@ export class BazaarController {
         return res.status(404).json({ status: "fail", message: "Booking not found." });
       }
 
+      const previousStatus = booking.paymentStatus;
       if (paymentStatus) booking.paymentStatus = paymentStatus;
       if (checkInStatus) {
         booking.checkInStatus = checkInStatus;
@@ -379,7 +386,96 @@ export class BazaarController {
       if (notes !== undefined) booking.notes = notes;
 
       await booking.save();
+
+      // Trigger ticket email if payment was just changed to paid
+      if (previousStatus !== "paid" && paymentStatus === "paid") {
+        emailService.sendBazaarConfirmationEmail(booking).catch((emailErr) => {
+          console.error("Failed to send ticket email on admin mark paid:", emailErr);
+        });
+      }
+
       res.json({ status: "success", data: booking, message: "Booking updated successfully." });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // Admin: Create manual ticket / exhibitor / sponsorship booking
+  static async createManualBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {
+        type = "ticket",
+        packageId = "general",
+        packageName = "General Ticket",
+        amount = 0,
+        customerName,
+        customerEmail,
+        customerPhone,
+        businessName,
+        paymentStatus = "paid",
+        notes = "Manual bank transfer registration via admin",
+      } = req.body;
+
+      if (!customerName || !customerEmail || !customerPhone) {
+        return res.status(400).json({ status: "fail", message: "Customer name, email, and phone number are required." });
+      }
+
+      const prefix = type === "ticket" ? "TK" : type === "exhibitor" ? "EX" : type === "sponsorship" ? "SP" : "CT";
+      const reference = `BZ-${prefix}-M-${Date.now()}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+      const ticketCode = generateTicketCode();
+
+      const booking = await BazaarBooking.create({
+        reference,
+        ticketCode,
+        type,
+        packageId,
+        packageName,
+        amount: Number(amount),
+        currency: "NGN",
+        customerName,
+        customerEmail,
+        customerPhone,
+        businessName,
+        notes,
+        paymentStatus,
+        checkInStatus: "pending",
+      });
+
+      let emailSent = false;
+      if (paymentStatus === "paid") {
+        try {
+          await emailService.sendBazaarConfirmationEmail(booking);
+          emailSent = true;
+        } catch (emailErr) {
+          console.error("Failed to send manual bazaar confirmation email:", emailErr);
+        }
+      }
+
+      res.status(201).json({
+        status: "success",
+        message: `Booking created successfully.${emailSent ? " Ticket confirmation email dispatched." : ""}`,
+        data: booking,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // Admin: Resend ticket confirmation email
+  static async resendConfirmationEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const booking = await BazaarBooking.findById(id);
+      if (!booking) {
+        return res.status(404).json({ status: "fail", message: "Booking record not found." });
+      }
+
+      await emailService.sendBazaarConfirmationEmail(booking);
+      res.json({
+        status: "success",
+        message: `Ticket confirmation email resent to ${booking.customerEmail}`,
+        data: booking,
+      });
     } catch (err) {
       next(err);
     }
