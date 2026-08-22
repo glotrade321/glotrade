@@ -90,6 +90,8 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
           customerPhone: phone,
           businessName,
           notes: transferNotes,
+          paymentMethod: "bank_transfer",
+          isManualBankTransfer: true,
         });
 
         const bookingRef = res?.data?.booking?.reference || res?.data?.reference || "GTB-REF";

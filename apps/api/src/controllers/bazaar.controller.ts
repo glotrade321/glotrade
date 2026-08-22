@@ -116,6 +116,8 @@ export class BazaarController {
         businessName,
         notes,
         returnUrl,
+        paymentMethod,
+        isManualBankTransfer,
       } = req.body;
 
       // Validate portal feature status
@@ -154,9 +156,16 @@ export class BazaarController {
         checkInStatus: "pending",
       });
 
-      // If free ticket or contact inquiry
-      if (Number(amount) <= 0) {
-        if (type !== "contact") {
+      // Check if this is a manual bank transfer request
+      const isManual =
+        paymentMethod === "bank_transfer" ||
+        paymentMethod === "manual" ||
+        isManualBankTransfer === true ||
+        (typeof notes === "string" && notes.includes("[Manual Bank Transfer Enquiry]"));
+
+      // If free ticket, contact inquiry, or manual bank transfer
+      if (isManual || Number(amount) <= 0) {
+        if (Number(amount) <= 0 && type !== "contact") {
           emailService.sendBazaarConfirmationEmail(booking).catch((emailErr) => {
             console.error("Failed to send bazaar confirmation email for free ticket:", emailErr);
           });
@@ -166,7 +175,8 @@ export class BazaarController {
           status: "success",
           data: {
             booking,
-            free: true,
+            free: Number(amount) <= 0,
+            manual: isManual,
             reference: booking.reference,
             ticketCode: booking.ticketCode,
           },
@@ -174,38 +184,51 @@ export class BazaarController {
       }
 
       // Initialize Paystack payment
-      const callback = returnUrl || `${req.protocol}://${req.get("host")}/bazaar/callback`;
-      const paystackResult = await paystackProvider.initialize({
-        orderId: booking.reference,
-        provider: "paystack",
-        amount: Number(amount) * 100, // convert NGN to kobo
-        currency: "NGN",
-        customer: { email: customerEmail, name: customerName },
-        returnUrl: `${callback}?reference=${booking.reference}`,
-        metadata: {
-          type: "bazaar",
-          bookingId: (booking._id as any).toString(),
-          bookingType: type,
-          reference: booking.reference,
-          ticketCode: booking.ticketCode,
-          phone: customerPhone,
-        },
-      });
+      try {
+        const callback = returnUrl || `${req.protocol}://${req.get("host")}/bazaar/callback`;
+        const paystackResult = await paystackProvider.initialize({
+          orderId: booking.reference,
+          provider: "paystack",
+          amount: Number(amount) * 100, // convert NGN to kobo
+          currency: "NGN",
+          customer: { email: customerEmail, name: customerName },
+          returnUrl: `${callback}?reference=${booking.reference}`,
+          metadata: {
+            type: "bazaar",
+            bookingId: (booking._id as any).toString(),
+            bookingType: type,
+            reference: booking.reference,
+            ticketCode: booking.ticketCode,
+            phone: customerPhone,
+          },
+        });
 
-      booking.paystackReference = paystackResult.reference;
-      booking.paystackUrl = paystackResult.url;
-      await booking.save();
+        booking.paystackReference = paystackResult.reference;
+        booking.paystackUrl = paystackResult.url;
+        await booking.save();
 
-      res.json({
-        status: "success",
-        data: {
-          authorizationUrl: paystackResult.url,
-          paystackReference: paystackResult.reference,
-          reference: booking.reference,
-          ticketCode: booking.ticketCode,
-          booking,
-        },
-      });
+        return res.json({
+          status: "success",
+          data: {
+            authorizationUrl: paystackResult.url,
+            paystackReference: paystackResult.reference,
+            reference: booking.reference,
+            ticketCode: booking.ticketCode,
+            booking,
+          },
+        });
+      } catch (paystackErr: any) {
+        console.error("Paystack initialization failed for Bazaar booking:", paystackErr);
+        return res.status(400).json({
+          status: "fail",
+          message: paystackErr?.message || "Paystack payment initialization unavailable. Please use Bank Transfer / WhatsApp option.",
+          data: {
+            booking,
+            reference: booking.reference,
+            ticketCode: booking.ticketCode,
+          },
+        });
+      }
     } catch (err) {
       next(err);
     }

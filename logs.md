@@ -1,81 +1,50 @@
-❯ clear
-❯ npm run dev
-
-> dev
-> turbo run dev
-
-• turbo 2.7.1
-• Packages in scope: @afritrade/api, web
-• Running dev in 2 packages
-• Remote caching disabled
-web:dev: cache bypass, force executing 36135c2b9a2a6733
-@afritrade/api:dev: cache bypass, force executing 0037a9846bf2d4e0
-yarn run v1.22.22
-yarn run v1.22.22
-$ next dev
-$ nodemon
-@afritrade/api:dev: [nodemon] 3.1.11
-@afritrade/api:dev: [nodemon] to restart at any time, enter `rs`
-@afritrade/api:dev: [nodemon] watching path(s): src/**/*
-@afritrade/api:dev: [nodemon] watching extensions: ts,js
-@afritrade/api:dev: [nodemon] starting `ts-node ./src/app.ts`
-web:dev:    ▲ Next.js 15.5.12
-web:dev:    - Local:        http://localhost:3000
-web:dev:    - Network:      http://192.168.1.190:3000
-web:dev:    - Environments: .env.local
-web:dev:    - Experiments (use with caution):
-web:dev:      · optimizePackageImports
-web:dev: 
-web:dev:  ✓ Starting...
-@afritrade/api:dev: ℹ️ Redis is disabled. Using memory cache.
-web:dev:  ✓ Ready in 8s
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: Orange Money credentials not fully configured. Set ORANGE_MONEY_CLIENT_ID, ORANGE_MONEY_CLIENT_SECRET, and ORANGE_MONEY_MERCHANT_CODE
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: [FLW] baseUrl=https://api.flutterwave.com/v3 token=FLWSECK_...97-X
-@afritrade/api:dev: 🔒 CORS Allowed Origins: [ 'http://localhost:3000' ]
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"name":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (Use `node --trace-warnings ...` to show where the warning was created)
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"orderId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"userId":1,"status":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"tpiaId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"profitDistributed":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"userId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"code":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"reference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"externalReference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: (node:57027) [MONGOOSE] Warning: Duplicate schema index on {"reference":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
-@afritrade/api:dev: 🚀 MongoDB connected successfully
-@afritrade/api:dev: Initializing scheduled jobs...
-@afritrade/api:dev: Scheduled jobs initialized.
-@afritrade/api:dev: 🌐 Server running in development mode on port 8080
-@afritrade/api:dev: 📚 API Documentation: http://localhost:8080/api-docs
-@afritrade/api:dev: 🔒 Security: Helmet enabled
-@afritrade/api:dev: 📝 Logging: Morgan dev mode
-web:dev:  ○ Compiling / ...
-web:dev: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
-web:dev:  ✓ Compiled / in 12.3s (986 modules)
-@afritrade/api:dev: GET /api/v1/market/products?limit=24 200 88.250 ms - 1454
-@afritrade/api:dev: GET /api/v1/banners?active=true 200 11.245 ms - 54
-web:dev:  ✓ Compiled in 5.9s (383 modules)
-web:dev:  GET / 200 in 18528ms
-web:dev:  ✓ Compiled in 494ms (369 modules)
-@afritrade/api:dev: GET /api/v1/market/products/featured?limit=12 200 67.297 ms - 2105
-@afritrade/api:dev: GET /api/v1/images/glotrade%2Fproducts%2F697e2c3f795e77fae34c926a%2F1769876583383_0.jpg?w=400&q=80 200 1303.795 ms - 12964
-@afritrade/api:dev: GET /api/v1/images/glotrade%2Fproducts%2F6976a483227ae3eb5b3e2123%2F1769383058719_0.JPG?w=400&q=80 200 1163.652 ms - 18034
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&sort=-views&brand=MyPro 200 105.278 ms - 1454
-@afritrade/api:dev: GET /api/v1/market/products?limit=24&discountMin=5 200 89.894 ms - 1454
-@afritrade/api:dev: GET /api/v1/market/categories 200 419.848 ms - 102531
-@afritrade/api:dev: GET /api/v1/market/categories 200 425.217 ms - 102531
+2026-08-22T11:44:46.266828814Z ::1 - - [22/Aug/2026:11:44:46 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6a745f00327b1b2eb6201a29%2F1786016232918_0.png?w=400&q=80 HTTP/1.1" 200 14982 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:47.372193409Z ::1 - - [22/Aug/2026:11:44:47 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:47.374254182Z ::1 - - [22/Aug/2026:11:44:47 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6a1d8a46de6d730d3b2a0855%2F1780320849067_0.png?w=400&q=80 HTTP/1.1" 200 9540 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:47.464519395Z ::1 - - [22/Aug/2026:11:44:47 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6a1d5478de6d730d3b29d90f%2F1780307078620_0.jpeg?w=400&q=80 HTTP/1.1" 200 9216 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:47.865561747Z ::1 - - [22/Aug/2026:11:44:47 +0000] "GET /api/v1/market/products?limit=24&discountMin=5 HTTP/1.1" 200 77 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:47.969059231Z ::1 - - [22/Aug/2026:11:44:47 +0000] "GET /api/v1/bazaar/config HTTP/1.1" 200 608 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:48.264587109Z ::1 - - [22/Aug/2026:11:44:48 +0000] "GET /api/v1/market/categories HTTP/1.1" 200 102531 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:48.26510764Z ::1 - - [22/Aug/2026:11:44:48 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6a1ebd19beaa707d7d1d75f2%2F1780399403717_0.jpeg?w=400&q=80 HTTP/1.1" 200 13680 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:48.265579428Z ::1 - - [22/Aug/2026:11:44:48 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6a1d9a20de6d730d3b2a0a1c%2F1780324912419_0.jpeg?w=400&q=80 HTTP/1.1" 200 21050 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:48.266083768Z ::1 - - [22/Aug/2026:11:44:48 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6a1f06e5beaa707d7d1d7ecc%2F1780418298538_0.jpeg?w=400&q=80 HTTP/1.1" 200 16510 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:48.26645544Z ::1 - - [22/Aug/2026:11:44:48 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6a1d5c02de6d730d3b29e4fe%2F1780309021448_0.jpeg?w=400&q=80 HTTP/1.1" 200 4672 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:48.450663407Z ::1 - - [22/Aug/2026:11:44:48 +0000] "GET /api/v1/bazaar/config HTTP/1.1" 200 608 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:48.454016247Z ::1 - - [22/Aug/2026:11:44:48 +0000] "GET /api/v1/market/products?limit=24&sort=-views HTTP/1.1" 200 16743 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:50.666103768Z ::1 - - [22/Aug/2026:11:44:50 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F698074c6c08c37346daecee8%2F1770026295543_0.jpg?w=400&q=80 HTTP/1.1" 200 5924 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:50.667513932Z ::1 - - [22/Aug/2026:11:44:50 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F698320fd36286fa4591381aa%2F1770201355236_0.PNG?w=400&q=80 HTTP/1.1" 200 14614 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:51.766031487Z ::1 - - [22/Aug/2026:11:44:51 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6980b6efc08c37346daf13e6%2F1770043151842_0.jpg?w=400&q=80 HTTP/1.1" 200 5036 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:52.664345781Z ::1 - - [22/Aug/2026:11:44:52 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6981e22336286fa45912a833%2F1770119729885_0.jpg?w=400&q=80 HTTP/1.1" 200 13064 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:53.16476821Z ::1 - - [22/Aug/2026:11:44:53 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6994b0438521ceacea083728%2F1771352151691_0.PNG?w=400&q=80 HTTP/1.1" 200 10696 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:53.166584119Z ::1 - - [22/Aug/2026:11:44:53 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F697f4fa51df6e3b8e300600a%2F1769951168977_0.jpg?w=400&q=80 HTTP/1.1" 200 11752 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:53.464444996Z ::1 - - [22/Aug/2026:11:44:53 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6980c5e6c08c37346daf27e2%2F1770046983981_0.jpg?w=400&q=80 HTTP/1.1" 200 18956 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:54.066765664Z ::1 - - [22/Aug/2026:11:44:54 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F6976a483227ae3eb5b3e2123%2F1769383058719_0.JPG?w=400&q=80 HTTP/1.1" 200 18034 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:55.265653896Z ::1 - - [22/Aug/2026:11:44:55 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F69ad9372c8c9a63a25c7fad5%2F1772983228118_0.jpeg?w=400&q=80 HTTP/1.1" 200 11994 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:55.265689228Z ::1 - - [22/Aug/2026:11:44:55 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F69ea5beb1e43aac81fbff8f0%2F1776967707568_0.jpeg?w=400&q=80 HTTP/1.1" 200 9444 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:55.465399761Z ::1 - - [22/Aug/2026:11:44:55 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F698a09d5a1a9bbb7c5358fd8%2F1773749001687_0.png?w=400&q=80 HTTP/1.1" 200 6928 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:44:55.566736305Z ::1 - - [22/Aug/2026:11:44:55 +0000] "GET /api/v1/images/glotrade%2Fproducts%2F69cffab896bcbd57af8bf137%2F1775237849575_0.png?w=400&q=80 HTTP/1.1" 200 19746 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:45:16.830155618Z ::1 - - [22/Aug/2026:11:45:16 +0000] "GET /api/v1/market/products?category=Comforters+%26+Duvets&condition=new&discountMin=50&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-08-22T11:45:34.669818758Z ::1 - - [22/Aug/2026:11:45:34 +0000] "GET /api/v1/market/products?category=Men%27s+Clothing&condition=used&sort=price&ratingMin=4&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-08-22T11:45:35.467029249Z ERROR 💥 Error: Integration has been deactivated
+2026-08-22T11:45:35.467064221Z     at PaystackProvider.initialize (/app/dist/services/providers/PaystackProvider.js:35:19)
+2026-08-22T11:45:35.467071501Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-08-22T11:45:35.467077462Z     at async initializeBooking (/app/dist/controllers/bazaar.controller.js:151:36)
+2026-08-22T11:45:35.46787971Z ::1 - - [22/Aug/2026:11:45:35 +0000] "POST /api/v1/bazaar/initialize-booking HTTP/1.1" 500 51 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:45:41.158654614Z ERROR 💥 Error: Integration has been deactivated
+2026-08-22T11:45:41.158675715Z     at PaystackProvider.initialize (/app/dist/services/providers/PaystackProvider.js:35:19)
+2026-08-22T11:45:41.158681005Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-08-22T11:45:41.158686186Z     at async initializeBooking (/app/dist/controllers/bazaar.controller.js:151:36)
+2026-08-22T11:45:41.159312713Z ::1 - - [22/Aug/2026:11:45:41 +0000] "POST /api/v1/bazaar/initialize-booking HTTP/1.1" 500 51 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:45:44.488548452Z ERROR 💥 Error: Integration has been deactivated
+2026-08-22T11:45:44.488571784Z     at PaystackProvider.initialize (/app/dist/services/providers/PaystackProvider.js:35:19)
+2026-08-22T11:45:44.488578414Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-08-22T11:45:44.488584704Z     at async initializeBooking (/app/dist/controllers/bazaar.controller.js:151:36)
+2026-08-22T11:45:44.489213812Z ::1 - - [22/Aug/2026:11:45:44 +0000] "POST /api/v1/bazaar/initialize-booking HTTP/1.1" 500 51 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:45:52.964995385Z ::1 - - [22/Aug/2026:11:45:52 +0000] "GET /api/v1/market/products?category=Men%27s+Accessories&etaMaxDays=2&attr_ram=16GB&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-08-22T11:46:09.964456491Z ::1 - - [22/Aug/2026:11:46:09 +0000] "GET /api/v1/market/products?category=Makeup+Tools&sort=-createdAt&limit=30 HTTP/1.1" 200 77 "-" "node"
+2026-08-22T11:46:20.991846046Z ERROR 💥 Error: Integration has been deactivated
+2026-08-22T11:46:20.99190267Z     at PaystackProvider.initialize (/app/dist/services/providers/PaystackProvider.js:35:19)
+2026-08-22T11:46:20.99190727Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-08-22T11:46:20.99191062Z     at async initializeBooking (/app/dist/controllers/bazaar.controller.js:151:36)
+2026-08-22T11:46:20.996850735Z ::1 - - [22/Aug/2026:11:46:20 +0000] "POST /api/v1/bazaar/initialize-booking HTTP/1.1" 500 51 "https://www.glotrade.online/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15"
+2026-08-22T11:46:26.065153706Z ::1 - - [22/Aug/2026:11:46:26 +0000] "GET /api/v1/market/products?category=Motorcycles+for+Sale&discountMin=10&attr_brand=Sonic&limit=30 HTTP/1.1" 200 77 "-" "node"
