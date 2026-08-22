@@ -44,6 +44,17 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleModalClose = () => {
+    setName("");
+    setEmail("");
+    setPhone("");
+    setBusinessName("");
+    setNotes("");
+    setError(null);
+    setTransferSubmitted(null);
+    onClose();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !phone) {
@@ -142,10 +153,7 @@ Please verify my payment and send my ticket confirmation email.`;
             <h2 className="text-xl font-bold text-white mt-1">{pkg.name}</h2>
           </div>
           <button
-            onClick={() => {
-              setTransferSubmitted(null);
-              onClose();
-            }}
+            onClick={handleModalClose}
             className="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X size={20} />
@@ -194,10 +202,7 @@ Please verify my payment and send my ticket confirmation email.`;
                 <MessageSquare size={16} /> Open WhatsApp Chat
               </a>
               <button
-                onClick={() => {
-                  setTransferSubmitted(null);
-                  onClose();
-                }}
+                onClick={handleModalClose}
                 className="py-3 px-6 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm rounded-xl"
               >
                 Close

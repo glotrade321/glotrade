@@ -34,6 +34,11 @@ export default function ContactPage() {
         subject,
         message,
       });
+      setName("");
+      setEmail("");
+      setPhone("");
+      setSubject("");
+      setMessage("");
       setSuccess(true);
     } catch (err: any) {
       setError(err?.message || "Failed to submit enquiry.");
