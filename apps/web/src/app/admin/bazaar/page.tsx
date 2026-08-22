@@ -24,6 +24,12 @@ import {
   Building2,
   X,
   Send,
+  Eye,
+  Phone,
+  Copy,
+  ExternalLink,
+  Calendar,
+  Check,
 } from "lucide-react";
 import { apiGet, apiPut, apiPost, apiPatch } from "@/utils/api";
 import QRCodeScanner from "@/components/wallet/QRCodeScanner";
@@ -70,6 +76,11 @@ export default function AdminBazaarPage() {
   const [manualSubmitting, setManualSubmitting] = useState(false);
   const [manualMsg, setManualMsg] = useState<{ text: string; success: boolean } | null>(null);
 
+  // Inspection Modal State
+  const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
+  const [showInspectModal, setShowInspectModal] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
   // Bookings List
   const [activeTab, setActiveTab] = useState<"ticket" | "exhibitor" | "sponsorship" | "contact">("ticket");
   const [bookings, setBookings] = useState<any[]>([]);
@@ -79,6 +90,12 @@ export default function AdminBazaarPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
+
+  const handleCopyText = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(label);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   // Handle Preset Package Changes in Manual Booking Modal
   const handlePackageSelect = (pkgId: string) => {
@@ -303,11 +320,19 @@ export default function AdminBazaarPage() {
         setActionMsg("Booking marked as PAID. Ticket email dispatched to customer.");
         setTimeout(() => setActionMsg(null), 4000);
       }
+      if (selectedBooking && selectedBooking._id === id && res?.data) {
+        setSelectedBooking(res.data);
+      }
       loadBookings();
       loadStatsAndConfig();
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleInspectBooking = (item: any) => {
+    setSelectedBooking(item);
+    setShowInspectModal(true);
   };
 
   return (
@@ -713,7 +738,11 @@ export default function AdminBazaarPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {bookings.map((item) => (
-                    <tr key={item._id} className="hover:bg-gray-50">
+                    <tr
+                      key={item._id}
+                      className="hover:bg-blue-50/50 cursor-pointer transition-colors"
+                      onClick={() => handleInspectBooking(item)}
+                    >
                       <td className="px-4 py-3 font-mono text-xs">
                         <span className="font-bold text-blue-600 block">{item.ticketCode}</span>
                         <span className="text-gray-400 text-[10px]">{item.reference}</span>
@@ -756,7 +785,17 @@ export default function AdminBazaarPage() {
                           {item.checkInStatus === "checked_in" ? "Checked-In" : "Pending Gate"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+                      <td
+                        className="px-4 py-3 text-right space-x-2 whitespace-nowrap"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          onClick={() => handleInspectBooking(item)}
+                          className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-semibold inline-flex items-center gap-1 border border-gray-200"
+                          title="Inspect full details"
+                        >
+                          <Eye size={12} /> Inspect
+                        </button>
                         {item.paymentStatus !== "paid" && (
                           <button
                             onClick={() => handleUpdateBooking(item._id, { paymentStatus: "paid" })}
@@ -815,6 +854,203 @@ export default function AdminBazaarPage() {
           )}
         </div>
       </div>
+
+      {/* Booking Inspection Detail Modal */}
+      {showInspectModal && selectedBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white border border-gray-200 rounded-2xl max-w-2xl w-full p-6 text-gray-900 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-4">
+              <div>
+                <span className="text-xs uppercase font-bold text-blue-600 tracking-wider flex items-center gap-1.5">
+                  <Ticket size={14} /> Booking Details Inspection
+                </span>
+                <div className="flex items-center gap-2 mt-1">
+                  <h3 className="text-xl font-mono font-bold text-gray-900">{selectedBooking.ticketCode}</h3>
+                  <button
+                    onClick={() => handleCopyText(selectedBooking.ticketCode, "ticketCode")}
+                    className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                    title="Copy Ticket Code"
+                  >
+                    {copiedField === "ticketCode" ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 font-mono">Ref: {selectedBooking.reference}</p>
+              </div>
+              <button
+                onClick={() => setShowInspectModal(false)}
+                className="p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Status Badges */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+              <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                <span className="text-[10px] uppercase font-bold text-gray-400 block">Payment Status</span>
+                <span
+                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase mt-1 ${
+                    selectedBooking.paymentStatus === "paid"
+                      ? "bg-green-100 text-green-700 border border-green-200"
+                      : selectedBooking.paymentStatus === "failed"
+                      ? "bg-red-100 text-red-700 border border-red-200"
+                      : "bg-amber-100 text-amber-700 border border-amber-200"
+                  }`}
+                >
+                  {selectedBooking.paymentStatus}
+                </span>
+              </div>
+
+              <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                <span className="text-[10px] uppercase font-bold text-gray-400 block">Gate Check-In</span>
+                <span
+                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold mt-1 ${
+                    selectedBooking.checkInStatus === "checked_in"
+                      ? "bg-teal-100 text-teal-800 border border-teal-200"
+                      : "bg-gray-100 text-gray-600 border border-gray-200"
+                  }`}
+                >
+                  {selectedBooking.checkInStatus === "checked_in" ? "Checked-In" : "Pending Gate"}
+                </span>
+              </div>
+
+              <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 sm:col-span-1 col-span-2">
+                <span className="text-[10px] uppercase font-bold text-gray-400 block">Registration Date</span>
+                <span className="text-xs font-semibold text-gray-800 mt-1 block">
+                  {selectedBooking.createdAt ? new Date(selectedBooking.createdAt).toLocaleString() : "N/A"}
+                </span>
+              </div>
+            </div>
+
+            {/* Customer Details Card */}
+            <div className="bg-slate-50 border border-gray-200 rounded-xl p-4 mb-5 space-y-3">
+              <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Users size={14} className="text-blue-600" /> Customer Information
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-gray-500 block">Full Name:</span>
+                  <span className="font-bold text-gray-900 text-sm">{selectedBooking.customerName}</span>
+                </div>
+
+                <div>
+                  <span className="text-gray-500 block">Email Address:</span>
+                  <a
+                    href={`mailto:${selectedBooking.customerEmail}`}
+                    className="font-medium text-blue-600 hover:underline"
+                  >
+                    {selectedBooking.customerEmail}
+                  </a>
+                </div>
+
+                <div>
+                  <span className="text-gray-500 block">Phone Number:</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="font-bold text-gray-900">{selectedBooking.customerPhone}</span>
+                    <a
+                      href={`https://wa.me/${selectedBooking.customerPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                        `Hi ${selectedBooking.customerName}, regarding your GloTrade Bazaar ${selectedBooking.packageName} booking (${selectedBooking.ticketCode})...`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold inline-flex items-center gap-1"
+                    >
+                      <MessageSquare size={10} /> Chat on WhatsApp
+                    </a>
+                  </div>
+                </div>
+
+                {selectedBooking.businessName && (
+                  <div>
+                    <span className="text-gray-500 block">Company / Business Name:</span>
+                    <span className="font-bold text-purple-700">{selectedBooking.businessName}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Package & Payment Info */}
+            <div className="bg-white border border-gray-200 rounded-xl p-4 mb-5 space-y-3">
+              <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Ticket size={14} className="text-amber-600" /> Package & Financial Details
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-gray-500 block">Category / Type:</span>
+                  <span className="font-bold text-gray-900 uppercase">{selectedBooking.type}</span>
+                </div>
+
+                <div>
+                  <span className="text-gray-500 block">Package Tier:</span>
+                  <span className="font-bold text-gray-900">{selectedBooking.packageName}</span>
+                </div>
+
+                <div>
+                  <span className="text-gray-500 block">Total Amount:</span>
+                  <span className="font-black text-emerald-600 text-base">
+                    ₦{selectedBooking.amount.toLocaleString("en-NG")}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-gray-500 block">Transaction Reference:</span>
+                  <span className="font-mono text-gray-700">{selectedBooking.reference}</span>
+                </div>
+              </div>
+
+              {selectedBooking.notes && (
+                <div className="pt-2 border-t border-gray-100">
+                  <span className="text-gray-500 text-xs block mb-1">Customer / Registration Notes:</span>
+                  <div className="p-3 bg-amber-50/60 border border-amber-200 rounded-lg text-xs text-amber-900">
+                    {selectedBooking.notes}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Actions Bar */}
+            <div className="pt-3 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex gap-2">
+                {selectedBooking.paymentStatus !== "paid" && (
+                  <button
+                    onClick={() => handleUpdateBooking(selectedBooking._id, { paymentStatus: "paid" })}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5"
+                  >
+                    <Send size={14} /> Mark Paid & Send Ticket Email
+                  </button>
+                )}
+                {selectedBooking.paymentStatus === "paid" && (
+                  <button
+                    onClick={() => handleResendEmail(selectedBooking._id, selectedBooking.customerEmail)}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5"
+                  >
+                    <Mail size={14} /> Resend Ticket Confirmation Email
+                  </button>
+                )}
+                {selectedBooking.checkInStatus !== "checked_in" && selectedBooking.paymentStatus === "paid" && (
+                  <button
+                    onClick={() => handleUpdateBooking(selectedBooking._id, { checkInStatus: "checked_in" })}
+                    className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl text-xs font-bold inline-flex items-center gap-1.5"
+                  >
+                    <CheckCircle2 size={14} /> Verify Gate Check-In
+                  </button>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowInspectModal(false)}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Manual Registration Modal */}
       {showManualModal && (
