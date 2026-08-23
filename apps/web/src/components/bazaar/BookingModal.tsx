@@ -33,9 +33,9 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
 
   if (!isOpen || !pkg) return null;
 
-  const bankName = config?.bankName || "Moniepoint MFB";
-  const bankAccountName = config?.bankAccountName || "GloTrade Ltd - Bazaar Account";
-  const bankAccountNumber = config?.bankAccountNumber || "8012345678";
+  const bankName = config?.bankName || "Wema Bank";
+  const bankAccountName = config?.bankAccountName || "GloTrade Platform Limited";
+  const bankAccountNumber = config?.bankAccountNumber || "0127131496";
   const whatsappNumber = config?.whatsappNumber || "2347044600924";
 
   const handleCopyAccount = () => {
@@ -217,8 +217,8 @@ Please verify my payment and send my ticket confirmation email.`;
                 type="button"
                 onClick={() => setPaymentMode("paystack")}
                 className={`py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${paymentMode === "paystack"
-                    ? "bg-amber-500 text-slate-950 shadow-md"
-                    : "text-slate-400 hover:text-white"
+                  ? "bg-amber-500 text-slate-950 shadow-md"
+                  : "text-slate-400 hover:text-white"
                   }`}
               >
                 <CreditCard size={15} /> Instant Card / Paystack
@@ -227,8 +227,8 @@ Please verify my payment and send my ticket confirmation email.`;
                 type="button"
                 onClick={() => setPaymentMode("bank_transfer")}
                 className={`py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${paymentMode === "bank_transfer"
-                    ? "bg-amber-500 text-slate-950 shadow-md"
-                    : "text-slate-400 hover:text-white"
+                  ? "bg-amber-500 text-slate-950 shadow-md"
+                  : "text-slate-400 hover:text-white"
                   }`}
               >
                 <Building2 size={15} /> Bank Transfer / WhatsApp

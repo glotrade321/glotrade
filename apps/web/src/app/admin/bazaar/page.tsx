@@ -47,9 +47,9 @@ export default function AdminBazaarPage() {
     exhibitorApplicationsActive: true,
     sponsorshipActive: true,
     inactiveMessage: "",
-    bankName: "Moniepoint MFB",
-    bankAccountName: "GloTrade Ltd - Bazaar Account",
-    bankAccountNumber: "8012345678",
+    bankName: "Wema Bank",
+    bankAccountName: "GloTrade Platform Limited",
+    bankAccountNumber: "0127131496",
     whatsappNumber: "2347044600924",
   });
   const [configLoading, setConfigLoading] = useState(true);
@@ -389,8 +389,8 @@ export default function AdminBazaarPage() {
             </h2>
             <span
               className={`px-3 py-1 rounded-full text-xs font-bold ${config.isPortalActive
-                  ? "bg-green-100 text-green-700 border border-green-200"
-                  : "bg-red-100 text-red-700 border border-red-200"
+                ? "bg-green-100 text-green-700 border border-green-200"
+                : "bg-red-100 text-red-700 border border-red-200"
                 }`}
             >
               Portal Status: {config.isPortalActive ? "ONLINE / ACTIVE" : "OFF-SEASON / INACTIVE"}
@@ -476,7 +476,7 @@ export default function AdminBazaarPage() {
                   type="text"
                   value={config.bankName || ""}
                   onChange={(e) => setConfig({ ...config, bankName: e.target.value })}
-                  placeholder="e.g. Moniepoint MFB / Zenith Bank"
+                  placeholder="e.g. Wema Bank"
                   className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -487,7 +487,7 @@ export default function AdminBazaarPage() {
                   type="text"
                   value={config.bankAccountName || ""}
                   onChange={(e) => setConfig({ ...config, bankAccountName: e.target.value })}
-                  placeholder="e.g. GloTrade Ltd - Bazaar Account"
+                  placeholder="e.g. GloTrade Platform Limited"
                   className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -498,7 +498,7 @@ export default function AdminBazaarPage() {
                   type="text"
                   value={config.bankAccountNumber || ""}
                   onChange={(e) => setConfig({ ...config, bankAccountNumber: e.target.value })}
-                  placeholder="e.g. 8012345678"
+                  placeholder="e.g. 0127131496"
                   className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500 font-mono"
                 />
               </div>
@@ -626,8 +626,8 @@ export default function AdminBazaarPage() {
           {checkInResult && (
             <div
               className={`mt-4 p-4 rounded-lg text-sm border flex items-start gap-3 ${checkInResult.success
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                  : "bg-red-500/10 border-red-500/30 text-red-400"
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                : "bg-red-500/10 border-red-500/30 text-red-400"
                 }`}
             >
               {checkInResult.success ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
@@ -653,8 +653,8 @@ export default function AdminBazaarPage() {
                 setPage(1);
               }}
               className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "all"
-                  ? "border-blue-600 text-blue-600 bg-white"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                ? "border-blue-600 text-blue-600 bg-white"
+                : "border-transparent text-gray-600 hover:text-gray-900"
                 }`}
             >
               <Layers size={16} /> All Registrations ({totalAllRegistrations})
@@ -665,8 +665,8 @@ export default function AdminBazaarPage() {
                 setPage(1);
               }}
               className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "ticket"
-                  ? "border-blue-600 text-blue-600 bg-white"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                ? "border-blue-600 text-blue-600 bg-white"
+                : "border-transparent text-gray-600 hover:text-gray-900"
                 }`}
             >
               <Ticket size={16} /> Tickets ({stats?.totalTickets || 0})
@@ -677,8 +677,8 @@ export default function AdminBazaarPage() {
                 setPage(1);
               }}
               className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "exhibitor"
-                  ? "border-blue-600 text-blue-600 bg-white"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                ? "border-blue-600 text-blue-600 bg-white"
+                : "border-transparent text-gray-600 hover:text-gray-900"
                 }`}
             >
               <Store size={16} /> Exhibitor Stalls ({stats?.totalExhibitors || 0})
@@ -689,8 +689,8 @@ export default function AdminBazaarPage() {
                 setPage(1);
               }}
               className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "sponsorship"
-                  ? "border-blue-600 text-blue-600 bg-white"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                ? "border-blue-600 text-blue-600 bg-white"
+                : "border-transparent text-gray-600 hover:text-gray-900"
                 }`}
             >
               <Award size={16} /> Sponsorships ({stats?.totalSponsorships || 0})
@@ -701,8 +701,8 @@ export default function AdminBazaarPage() {
                 setPage(1);
               }}
               className={`px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "contact"
-                  ? "border-blue-600 text-blue-600 bg-white"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                ? "border-blue-600 text-blue-600 bg-white"
+                : "border-transparent text-gray-600 hover:text-gray-900"
                 }`}
             >
               <MessageSquare size={16} /> Contact Messages ({stats?.totalContacts || 0})
@@ -793,10 +793,10 @@ export default function AdminBazaarPage() {
                       <td className="px-4 py-3">
                         <span
                           className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase ${item.paymentStatus === "paid"
-                              ? "bg-green-100 text-green-700"
-                              : item.paymentStatus === "failed"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-amber-100 text-amber-700"
+                            ? "bg-green-100 text-green-700"
+                            : item.paymentStatus === "failed"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-amber-100 text-amber-700"
                             }`}
                         >
                           {item.paymentStatus}
@@ -805,8 +805,8 @@ export default function AdminBazaarPage() {
                       <td className="px-4 py-3">
                         <span
                           className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${item.checkInStatus === "checked_in"
-                              ? "bg-teal-100 text-teal-800"
-                              : "bg-gray-100 text-gray-600"
+                            ? "bg-teal-100 text-teal-800"
+                            : "bg-gray-100 text-gray-600"
                             }`}
                         >
                           {item.checkInStatus === "checked_in" ? "Checked-In" : "Pending Gate"}
@@ -918,10 +918,10 @@ export default function AdminBazaarPage() {
                 <span className="text-[10px] uppercase font-bold text-gray-400 block">Payment Status</span>
                 <span
                   className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase mt-1 ${selectedBooking.paymentStatus === "paid"
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : selectedBooking.paymentStatus === "failed"
-                        ? "bg-red-100 text-red-700 border border-red-200"
-                        : "bg-amber-100 text-amber-700 border border-amber-200"
+                    ? "bg-green-100 text-green-700 border border-green-200"
+                    : selectedBooking.paymentStatus === "failed"
+                      ? "bg-red-100 text-red-700 border border-red-200"
+                      : "bg-amber-100 text-amber-700 border border-amber-200"
                     }`}
                 >
                   {selectedBooking.paymentStatus}
@@ -932,8 +932,8 @@ export default function AdminBazaarPage() {
                 <span className="text-[10px] uppercase font-bold text-gray-400 block">Gate Check-In</span>
                 <span
                   className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold mt-1 ${selectedBooking.checkInStatus === "checked_in"
-                      ? "bg-teal-100 text-teal-800 border border-teal-200"
-                      : "bg-gray-100 text-gray-600 border border-gray-200"
+                    ? "bg-teal-100 text-teal-800 border border-teal-200"
+                    : "bg-gray-100 text-gray-600 border border-gray-200"
                     }`}
                 >
                   {selectedBooking.checkInStatus === "checked_in" ? "Checked-In" : "Pending Gate"}
@@ -1101,8 +1101,8 @@ export default function AdminBazaarPage() {
             {manualMsg && (
               <div
                 className={`p-3 mb-4 rounded-lg text-xs font-semibold ${manualMsg.success
-                    ? "bg-green-50 border border-green-200 text-green-700"
-                    : "bg-red-50 border border-red-200 text-red-700"
+                  ? "bg-green-50 border border-green-200 text-green-700"
+                  : "bg-red-50 border border-red-200 text-red-700"
                   }`}
               >
                 {manualMsg.text}

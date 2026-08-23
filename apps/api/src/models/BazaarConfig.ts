@@ -34,9 +34,9 @@ const BazaarConfigSchema: Schema = new Schema(
     eventVenue: { type: String, default: "Harrow Park, Abuja" },
     whatsappNumber: { type: String, default: "2347044600924" },
     email: { type: String, default: "glotradebazaar@gmail.com" },
-    bankName: { type: String, default: "Moniepoint MFB" },
-    bankAccountName: { type: String, default: "GloTrade Ltd - Bazaar Account" },
-    bankAccountNumber: { type: String, default: "8012345678" },
+    bankName: { type: String, default: "Wema Bank" },
+    bankAccountName: { type: String, default: "GloTrade Platform Limited" },
+    bankAccountNumber: { type: String, default: "0127131496" },
     updatedBy: { type: String },
   },
   { timestamps: true }
