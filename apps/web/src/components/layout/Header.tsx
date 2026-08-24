@@ -299,7 +299,6 @@ export default function Header() {
 
           {/* Mobile actions: simplified layout */}
           <div className="ml-auto flex items-center gap-2 text-white lg:hidden">
-            <HeaderLanguageSelector locale={locale} />
             <UserMenu role={userRole as any} />
             <Link
               aria-label="Wishlist"
@@ -369,7 +368,6 @@ export default function Header() {
 
           {/* Actions (desktop only to keep mobile clean) */}
           <div className="hidden lg:flex items-center gap-3 text-white text-sm font-semibold">
-            <HeaderLanguageSelector locale={locale} />
             <UserMenu role={userRole as any} />
 
             {/* <button
