@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, ArrowLeft, Ticket, Calendar } from "lucide-react";
+import { Menu, X, ArrowLeft, Calendar, Phone, Globe, Mail } from "lucide-react";
 import { translate } from "@/utils/translate";
 import { apiGet } from "@/utils/api";
+import { getStoredLocale, setStoredLocale, Locale, languageNames, locales } from "@/utils/i18n";
 
 interface BazaarNavProps {
   eventTitle?: string;
@@ -21,8 +22,25 @@ export default function BazaarNav({
   const [activeStatus, setActiveStatus] = useState<boolean | null>(
     propIsPortalActive !== undefined ? propIsPortalActive : null
   );
+  const [currentLocale, setCurrentLocale] = useState<Locale>("en");
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    setCurrentLocale(getStoredLocale());
+    const handleLocaleChange = (e: any) => {
+      if (e?.detail?.locale) {
+        setCurrentLocale(e.detail.locale);
+      }
+    };
+    window.addEventListener("i18n:locale", handleLocaleChange);
+    return () => window.removeEventListener("i18n:locale", handleLocaleChange);
+  }, []);
+
+  const handleLanguageChange = (newLang: Locale) => {
+    setStoredLocale(newLang);
+    setCurrentLocale(newLang);
+  };
 
   useEffect(() => {
     if (propIsPortalActive !== undefined) {
@@ -62,18 +80,54 @@ export default function BazaarNav({
   return (
     <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-amber-500/20 text-white">
       {/* Top micro banner */}
-      <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-slate-950 font-semibold text-xs py-1.5 px-4 text-center flex items-center justify-center gap-4">
-        <span className="flex items-center gap-1">
-          <Calendar size={13} /> {eventDateLabel} • Harrow Park, Abuja
-        </span>
-        <span className="hidden sm:inline">|</span>
-        <span className="hidden sm:inline">{translate("bazaar.annualFestival") || "Annual Trade & Entertainment Festival"}</span>
-        <Link
-          href="/"
-          className="ml-auto underline flex items-center gap-1 font-bold text-slate-900 hover:text-white transition-colors"
-        >
-          <ArrowLeft size={12} /> {translate("bazaar.mainPlatformLink") || "Main GloTrade Platform"}
-        </Link>
+      <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-slate-950 font-semibold text-xs py-1.5 px-3 sm:px-6 flex flex-wrap items-center justify-between gap-2 shadow-sm">
+        {/* Left: Date & Venue */}
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5 font-bold">
+            <Calendar size={13} className="shrink-0" /> {eventDateLabel} • Harrow Park, Abuja
+          </span>
+          <span className="hidden md:inline text-amber-900/60">|</span>
+          <span className="hidden md:inline">{translate("bazaar.annualFestival") || "Annual Trade & Cultural Festival"}</span>
+        </div>
+
+        {/* Right: Phone Number, Language Selector & Main Platform Link */}
+        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+          {/* Phone Number */}
+          <a
+            href="https://wa.me/2347044600924"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 font-bold text-slate-950 hover:text-white transition-colors bg-amber-400/30 hover:bg-slate-900 px-2 py-0.5 rounded text-[11px] sm:text-xs"
+            title="Chat on WhatsApp"
+          >
+            <Phone size={12} className="shrink-0" />
+            <span>+234 704 460 0924</span>
+          </a>
+
+          {/* Language Selector Dropdown */}
+          <div className="flex items-center gap-1 bg-slate-950/20 px-2 py-0.5 rounded border border-slate-950/20">
+            <Globe size={12} className="shrink-0 text-slate-950" />
+            <select
+              value={currentLocale}
+              onChange={(e) => handleLanguageChange(e.target.value as Locale)}
+              className="bg-transparent text-slate-950 font-extrabold text-[11px] sm:text-xs focus:outline-none cursor-pointer"
+            >
+              {locales.map((loc) => (
+                <option key={loc} value={loc} className="bg-slate-900 text-white font-medium">
+                  {languageNames[loc]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Main Platform Link */}
+          <Link
+            href="/"
+            className="hidden sm:flex underline items-center gap-1 font-bold text-slate-900 hover:text-white transition-colors text-[11px] sm:text-xs"
+          >
+            <ArrowLeft size={12} /> {translate("bazaar.mainPlatformLink") || "Main Platform"}
+          </Link>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,11 +135,10 @@ export default function BazaarNav({
           {/* Brand Logo */}
           <Link href="/bazaar" className="flex items-center gap-3 group">
             <div className="w-12 h-12 rounded-xl bg-slate-900 border border-amber-500/40 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform overflow-hidden">
-              {/* <Ticket className="text-slate-950 font-bold" size={24} /> */}
               <img src="/bazaar_logo.jpg" alt="GloTrade Bazaar Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-400 via-amber-200 to-amber-400 bg-clip-text text-transparent">
+              <span className="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-400 via-amber-200 to-amber-400 bg-clip-text text-transparent">
                 GLOTRADE BAZAAR
               </span>
               <p className="text-[10px] uppercase tracking-widest text-amber-400/80 font-medium">
@@ -133,10 +186,11 @@ export default function BazaarNav({
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none"
+            aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -145,35 +199,84 @@ export default function BazaarNav({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-slate-900 border-b border-amber-500/20 px-4 pt-2 pb-6 space-y-2">
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === "/bazaar"
-                ? pathname === "/bazaar"
-                : pathname.startsWith(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 rounded-lg text-base font-medium ${
-                  isActive
-                    ? "text-amber-400 bg-amber-500/10 border border-amber-500/30"
-                    : "text-slate-300 hover:text-white hover:bg-slate-800"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+        <div className="lg:hidden bg-slate-900 border-b border-amber-500/20 px-4 pt-4 pb-6 space-y-4 animate-fadeIn">
+          {/* Mobile Language Selector Card */}
+          <div className="p-3 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
+              <Globe size={16} />
+              <span>Select Language / Langue:</span>
+            </div>
+            <select
+              value={currentLocale}
+              onChange={(e) => handleLanguageChange(e.target.value as Locale)}
+              className="bg-slate-900 text-amber-300 font-bold text-xs px-3 py-1.5 rounded-xl border border-amber-500/30 focus:outline-none"
+            >
+              {locales.map((loc) => (
+                <option key={loc} value={loc} className="bg-slate-900 text-white font-medium">
+                  {languageNames[loc]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Mobile Contact Quick Actions */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <a
+              href="https://wa.me/2347044600924"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-600/20 text-emerald-400 font-bold border border-emerald-500/30 text-xs"
+            >
+              <Phone size={14} /> +234 704 460 0924 (WhatsApp)
+            </a>
+            <a
+              href="mailto:glotradebazaar@glotrade.online"
+              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-950 text-slate-300 font-medium border border-slate-800 text-xs"
+            >
+              <Mail size={14} /> glotradebazaar@glotrade.online
+            </a>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="space-y-1 pt-2">
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/bazaar"
+                  ? pathname === "/bazaar"
+                  : pathname.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${
+                    isActive
+                      ? "text-amber-400 bg-amber-500/10 border border-amber-500/30 font-bold"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+
           {isPortalActive && (
-            <div className="pt-2">
+            <div className="pt-2 space-y-2">
               <Link
                 href="/bazaar/tickets"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-center w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-bold text-base shadow-lg shadow-amber-500/20"
+                className="block text-center w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-base shadow-lg shadow-amber-500/20 transition-all"
               >
-                Book Tickets
+                Book Tickets Now
+              </Link>
+
+              <Link
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-center w-full py-2.5 rounded-xl bg-slate-950 text-slate-300 font-medium text-xs border border-slate-800"
+              >
+                ← Return to Main GloTrade Platform
               </Link>
             </div>
           )}
