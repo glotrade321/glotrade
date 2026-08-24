@@ -9,7 +9,19 @@ import { apiGet, apiPost } from "@/utils/api";
 
 function VerifyContent() {
   const searchParams = useSearchParams();
-  const code = searchParams.get("code") || searchParams.get("ticketCode") || searchParams.get("ref");
+  let rawCode = searchParams.get("code") || searchParams.get("ticketCode") || searchParams.get("ref") || searchParams.get("reference") || "";
+
+  if (rawCode.includes("code=")) {
+    try {
+      const urlObj = new URL(rawCode);
+      rawCode = urlObj.searchParams.get("code") || rawCode;
+    } catch {
+      const match = rawCode.match(/code=([^&]+)/);
+      if (match) rawCode = match[1];
+    }
+  }
+
+  const code = rawCode.trim();
 
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +39,7 @@ function VerifyContent() {
     }
 
     try {
-      const res: any = await apiGet(`/api/v1/bazaar/verify-payment?reference=${encodeURIComponent(code.trim())}`);
+      const res: any = await apiGet(`/api/v1/bazaar/verify-payment?reference=${encodeURIComponent(code)}`);
       if (res?.data?.booking) {
         setBooking(res.data.booking);
       } else {

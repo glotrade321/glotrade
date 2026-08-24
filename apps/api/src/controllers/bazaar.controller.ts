@@ -234,20 +234,24 @@ export class BazaarController {
     }
   }
 
-  // Public: Verify payment status by reference
+  // Public: Verify payment status by reference or ticket code
   static async verifyPayment(req: Request, res: Response, next: NextFunction) {
     try {
-      const reference = String(req.query.reference || req.params.reference || "");
+      const reference = String(req.query.reference || req.params.reference || "").trim();
       if (!reference) {
-        return res.status(400).json({ status: "fail", message: "Reference is required." });
+        return res.status(400).json({ status: "fail", message: "Reference or Ticket Code is required." });
       }
 
       const booking = await BazaarBooking.findOne({
-        $or: [{ reference }, { paystackReference: reference }],
+        $or: [
+          { reference },
+          { paystackReference: reference },
+          { ticketCode: reference.toUpperCase() },
+        ],
       });
 
       if (!booking) {
-        return res.status(404).json({ status: "fail", message: "Booking reference not found." });
+        return res.status(404).json({ status: "fail", message: "Booking reference or ticket code not found." });
       }
 
       if (booking.paymentStatus === "paid") {
