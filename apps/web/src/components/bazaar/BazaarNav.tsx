@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Menu, X, ArrowLeft, Calendar, Phone, Globe, Mail } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Menu, X, ArrowLeft, Calendar, Phone, Globe, Mail, Check, ChevronDown } from "lucide-react";
 import { translate } from "@/utils/translate";
 import { apiGet } from "@/utils/api";
 import { getStoredLocale, setStoredLocale, Locale, languageNames, locales } from "@/utils/i18n";
@@ -13,16 +13,27 @@ interface BazaarNavProps {
   isPortalActive?: boolean;
 }
 
+const languageFlags: Record<Locale, string> = {
+  en: "🇬🇧",
+  fr: "🇫🇷",
+  es: "🇪🇸",
+  zh: "🇨🇳",
+  ar: "🇸🇦",
+  ha: "🇳🇬",
+};
+
 export default function BazaarNav({
   eventTitle = "GloTrade Bazaar Abuja 2026",
   eventDateLabel = "12 Sept 2026",
   isPortalActive: propIsPortalActive,
 }: BazaarNavProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [activeStatus, setActiveStatus] = useState<boolean | null>(
     propIsPortalActive !== undefined ? propIsPortalActive : null
   );
   const [currentLocale, setCurrentLocale] = useState<Locale>("en");
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -37,9 +48,25 @@ export default function BazaarNav({
     return () => window.removeEventListener("i18n:locale", handleLocaleChange);
   }, []);
 
+  // Close language dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleLanguageChange = (newLang: Locale) => {
     setStoredLocale(newLang);
     setCurrentLocale(newLang);
+    setLangDropdownOpen(false);
+    // Force refresh page to update translations across all components
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
   };
 
   useEffect(() => {
@@ -78,52 +105,80 @@ export default function BazaarNav({
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-amber-500/20 text-white">
+    <header className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-md border-b border-amber-500/20 text-white">
       {/* Top micro banner */}
-      <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-slate-950 font-semibold text-xs py-1.5 px-3 sm:px-6 flex flex-wrap items-center justify-between gap-2 shadow-sm">
+      <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-slate-950 font-semibold text-xs py-1.5 px-3 sm:px-6 flex items-center justify-between gap-2 shadow-sm">
         {/* Left: Date & Venue */}
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 font-bold">
-            <Calendar size={13} className="shrink-0" /> {eventDateLabel} • Harrow Park, Abuja
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="flex items-center gap-1 font-bold text-[11px] sm:text-xs">
+            <Calendar size={13} className="shrink-0 text-slate-950" /> {eventDateLabel} • Harrow Park, Abuja
           </span>
-          <span className="hidden md:inline text-amber-900/60">|</span>
-          <span className="hidden md:inline">{translate("bazaar.annualFestival") || "Annual Trade & Cultural Festival"}</span>
+          <span className="hidden md:inline text-amber-950/40">|</span>
+          <span className="hidden md:inline text-[11px] sm:text-xs">{translate("bazaar.annualFestival") || "Annual Trade & Cultural Festival"}</span>
         </div>
 
         {/* Right: Phone Number, Language Selector & Main Platform Link */}
-        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+        <div className="flex items-center gap-2 sm:gap-3 ml-auto relative">
           {/* Phone Number */}
           <a
             href="https://wa.me/2347044600924"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 font-bold text-slate-950 hover:text-white transition-colors bg-amber-400/30 hover:bg-slate-900 px-2 py-0.5 rounded text-[11px] sm:text-xs"
+            className="flex items-center gap-1 font-bold text-slate-950 hover:text-white transition-colors bg-slate-950/10 hover:bg-slate-950 px-2 py-0.5 rounded text-[11px] sm:text-xs"
             title="Chat on WhatsApp"
           >
             <Phone size={12} className="shrink-0" />
             <span>+234 704 460 0924</span>
           </a>
 
-          {/* Language Selector Dropdown */}
-          <div className="flex items-center gap-1 bg-slate-950/20 px-2 py-0.5 rounded border border-slate-950/20">
-            <Globe size={12} className="shrink-0 text-slate-950" />
-            <select
-              value={currentLocale}
-              onChange={(e) => handleLanguageChange(e.target.value as Locale)}
-              className="bg-transparent text-slate-950 font-extrabold text-[11px] sm:text-xs focus:outline-none cursor-pointer"
+          {/* Interactive Language Selector Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+              className="flex items-center gap-1.5 bg-slate-950 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-400/40 text-[11px] sm:text-xs font-bold hover:bg-slate-900 transition-colors shadow-sm"
+              aria-label="Select Language"
             >
-              {locales.map((loc) => (
-                <option key={loc} value={loc} className="bg-slate-900 text-white font-medium">
-                  {languageNames[loc]}
-                </option>
-              ))}
-            </select>
+              <Globe size={13} className="shrink-0 text-amber-400" />
+              <span>{languageFlags[currentLocale]} {languageNames[currentLocale]}</span>
+              <ChevronDown size={12} className={`transition-transform ${langDropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {/* Floating Language Dropdown Menu */}
+            {langDropdownOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-44 bg-slate-900 border border-amber-500/40 rounded-xl shadow-2xl z-50 py-1 overflow-hidden animate-fadeIn">
+                <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-amber-400/80 border-b border-slate-800">
+                  Select Language / Langue
+                </div>
+                {locales.map((loc) => {
+                  const isSelected = currentLocale === loc;
+                  return (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => handleLanguageChange(loc)}
+                      className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center justify-between transition-colors ${
+                        isSelected
+                          ? "bg-amber-500/20 text-amber-300 font-bold"
+                          : "text-slate-200 hover:bg-slate-800 hover:text-white"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{languageFlags[loc]}</span>
+                        <span>{languageNames[loc]}</span>
+                      </span>
+                      {isSelected && <Check size={14} className="text-amber-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Main Platform Link */}
           <Link
             href="/"
-            className="hidden sm:flex underline items-center gap-1 font-bold text-slate-900 hover:text-white transition-colors text-[11px] sm:text-xs"
+            className="hidden sm:flex underline items-center gap-1 font-bold text-slate-950 hover:text-white transition-colors text-[11px] sm:text-xs"
           >
             <ArrowLeft size={12} /> {translate("bazaar.mainPlatformLink") || "Main Platform"}
           </Link>
@@ -170,7 +225,7 @@ export default function BazaarNav({
             })}
           </nav>
 
-          {/* Ticket CTA Button */}
+          {/* Ticket CTA Button & Language Pill */}
           <div className="hidden lg:flex items-center gap-3">
             {isPortalActive ? (
               <Link
@@ -200,34 +255,46 @@ export default function BazaarNav({
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-slate-900 border-b border-amber-500/20 px-4 pt-4 pb-6 space-y-4 animate-fadeIn">
-          {/* Mobile Language Selector Card */}
-          <div className="p-3 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
+          {/* Mobile Language Selector Grid */}
+          <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
               <Globe size={16} />
-              <span>Select Language / Langue:</span>
+              <span>Select Language / Chwazi Lang:</span>
             </div>
-            <select
-              value={currentLocale}
-              onChange={(e) => handleLanguageChange(e.target.value as Locale)}
-              className="bg-slate-900 text-amber-300 font-bold text-xs px-3 py-1.5 rounded-xl border border-amber-500/30 focus:outline-none"
-            >
-              {locales.map((loc) => (
-                <option key={loc} value={loc} className="bg-slate-900 text-white font-medium">
-                  {languageNames[loc]}
-                </option>
-              ))}
-            </select>
+            <div className="grid grid-cols-2 gap-2">
+              {locales.map((loc) => {
+                const isSelected = currentLocale === loc;
+                return (
+                  <button
+                    key={loc}
+                    type="button"
+                    onClick={() => handleLanguageChange(loc)}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-between border transition-all ${
+                      isSelected
+                        ? "bg-amber-500 text-slate-950 border-amber-400 shadow-md"
+                        : "bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white"
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span>{languageFlags[loc]}</span>
+                      <span>{languageNames[loc]}</span>
+                    </span>
+                    {isSelected && <Check size={14} className="shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Mobile Contact Quick Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2">
             <a
               href="https://wa.me/2347044600924"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-600/20 text-emerald-400 font-bold border border-emerald-500/30 text-xs"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600/20 text-emerald-400 font-bold border border-emerald-500/30 text-xs"
             >
-              <Phone size={14} /> +234 704 460 0924 (WhatsApp)
+              <Phone size={16} /> +234 704 460 0924 (WhatsApp)
             </a>
             <a
               href="mailto:glotradebazaar@glotrade.online"
@@ -266,7 +333,7 @@ export default function BazaarNav({
               <Link
                 href="/bazaar/tickets"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-center w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-base shadow-lg shadow-amber-500/20 transition-all"
+                className="block text-center w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-base shadow-lg shadow-amber-500/20 transition-all"
               >
                 Book Tickets Now
               </Link>
