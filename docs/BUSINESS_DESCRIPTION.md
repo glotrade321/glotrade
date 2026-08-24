@@ -283,7 +283,7 @@ Starting from Nigeria and expanding across the continent, we aim to become the g
 
 ### **Business Inquiries**
 - **Email**: business@afritradehub.com
-- **Phone**: +234 (0) 800 000 0000
+- **Phone**: +234 (0) 803 123 4567
 - **Address**: Lagos, Nigeria
 
 ### **Technical Support**

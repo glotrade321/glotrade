@@ -339,7 +339,7 @@ Please verify my payment and send my ticket confirmation email.`;
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+234 800 000 0000"
+                    placeholder="+234 803 123 4567"
                     className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
                   />
                 </div>

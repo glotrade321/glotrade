@@ -21,8 +21,8 @@ async function getOrCreateConfig() {
       eventTitle: "GloTrade Bazaar Abuja 2026",
       eventDateLabel: "12 September 2026",
       eventVenue: "Harrow Park, Abuja",
-      whatsappNumber: "2348000000000",
-      email: "enquiries@glotrade.online",
+      whatsappNumber: "2347044600924",
+      email: "glotradebazaar@glotrade.online",
     });
   }
   return config;

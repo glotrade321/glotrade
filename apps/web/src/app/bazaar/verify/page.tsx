@@ -111,9 +111,13 @@ function VerifyContent() {
     <div className="max-w-xl mx-auto px-4 py-16">
       <div className="bg-slate-900 border-2 border-amber-500/40 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
         {/* Header Status Badge */}
-        {isValidPaid ? (
+        {isCheckedIn ? (
+          <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-rose-500/20 text-rose-300 text-xs font-extrabold border border-rose-500/40 mb-6 shadow-lg">
+            <XCircle size={16} className="text-rose-400" /> ⛔ ALREADY USED / ENTRY DENIED
+          </div>
+        ) : isValidPaid ? (
           <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-6">
-            <CheckCircle2 size={16} /> VALID & CONFIRMED TICKET PASS
+            <CheckCircle2 size={16} /> VALID & UNUSED TICKET PASS
           </div>
         ) : (
           <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-500/10 text-red-400 text-xs font-bold border border-red-500/30 mb-6">
@@ -143,8 +147,8 @@ function VerifyContent() {
             </div>
             <div className="text-right">
               <span className="text-[10px] text-slate-500 font-bold uppercase">Gate Status</span>
-              <p className={`text-xs font-bold uppercase ${isCheckedIn ? "text-teal-400" : "text-amber-400"}`}>
-                {isCheckedIn ? "Checked-In" : "Pending Entrance"}
+              <p className={`text-xs font-extrabold uppercase ${isCheckedIn ? "text-rose-400" : "text-emerald-400"}`}>
+                {isCheckedIn ? "USED / CHECKED-IN" : "Unused / Ready for Entry"}
               </p>
             </div>
           </div>
@@ -183,8 +187,13 @@ function VerifyContent() {
         )}
 
         {isCheckedIn && (
-          <div className="p-4 bg-teal-500/10 border border-teal-500/30 text-teal-400 rounded-2xl font-bold text-sm flex items-center justify-center gap-2">
-            <CheckCircle2 size={18} /> Guest checked in at {booking.checkInTime ? new Date(booking.checkInTime).toLocaleTimeString() : "gate"}
+          <div className="p-5 bg-rose-500/10 border-2 border-rose-500/40 text-rose-300 rounded-2xl font-bold text-sm flex flex-col items-center justify-center gap-1 shadow-lg">
+            <div className="flex items-center gap-2 text-rose-400 text-base font-black">
+              <XCircle size={24} /> ENTRY DENIED — TICKET ALREADY USED
+            </div>
+            <p className="text-xs text-slate-300 font-normal mt-1 leading-relaxed max-w-md">
+              This ticket pass was checked in at <strong className="text-white">{booking.checkInTime ? new Date(booking.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "earlier"}</strong>. Each ticket can only be scanned and used ONCE for venue entry.
+            </p>
           </div>
         )}
       </div>

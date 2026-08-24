@@ -100,14 +100,14 @@ export default function BazaarFooter() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-3">
                 <Mail size={16} className="text-amber-400 shrink-0" />
-                <a href="mailto:enquiries@glotrade.online" className="hover:text-amber-400">
-                  enquiries@glotrade.online
+                <a href="mailto:glotradebazaar@glotrade.online" className="hover:text-amber-400">
+                  glotradebazaar@glotrade.online
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={16} className="text-amber-400 shrink-0" />
-                <a href="https://wa.me/2348000000000" target="_blank" rel="noreferrer" className="hover:text-amber-400">
-                  +234 800 000 0000 (WhatsApp)
+                <a href="https://wa.me/2347044600924" target="_blank" rel="noreferrer" className="hover:text-amber-400">
+                  +234 704 460 0924 (WhatsApp)
                 </a>
               </li>
             </ul>

@@ -138,11 +138,10 @@ export default function CreateManagerAccountPage() {
                   return (
                     <label
                       key={option.value}
-                      className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
-                        isChecked
+                      className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer ${isChecked
                           ? 'bg-blue-50 border-blue-500/50 text-blue-950 shadow-sm'
                           : 'bg-white border-gray-200 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <input
                         type="checkbox"
@@ -220,7 +219,7 @@ export default function CreateManagerAccountPage() {
                 value={formData.phone}
                 onChange={handleChange}
                 className="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="+234 800 000 0000"
+                placeholder="+234 803 123 4567"
               />
             </div>
 

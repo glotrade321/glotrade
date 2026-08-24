@@ -879,9 +879,8 @@ export default function AdminBazaarPage() {
                   {bookings.map((item) => (
                     <tr
                       key={item._id}
-                      className={`hover:bg-blue-50/50 cursor-pointer transition-colors ${
-                        selectedBookingIds.includes(item._id) ? "bg-red-50/40" : ""
-                      }`}
+                      className={`hover:bg-blue-50/50 cursor-pointer transition-colors ${selectedBookingIds.includes(item._id) ? "bg-red-50/40" : ""
+                        }`}
                       onClick={() => handleInspectBooking(item)}
                     >
                       {isSuperAdmin && (
@@ -1329,7 +1328,7 @@ export default function AdminBazaarPage() {
                     required
                     value={manualPhone}
                     onChange={(e) => setManualPhone(e.target.value)}
-                    placeholder="+234 800 000 0000"
+                    placeholder="+234 803 123 4567"
                     className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
