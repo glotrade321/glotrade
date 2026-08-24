@@ -15,13 +15,87 @@ import {
   LayoutDashboard,
   ChevronRight,
   Wallet,
+  Check,
 } from "lucide-react";
 import UserMenu from "@/components/layout/UserMenu";
 import NotificationBell from "./NotificationBell";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getStoredLocale, Locale, translate } from "@/utils/i18n";
+import { getStoredLocale, setStoredLocale, Locale, languageNames, locales, translate } from "@/utils/i18n";
 import { fetchCategories, ICategory } from "@/utils/categoryApi";
+
+function HeaderLanguageSelector({ locale }: { locale: Locale }) {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const languageFlags: Record<Locale, string> = {
+    en: "🇬🇧",
+    fr: "🇫🇷",
+    es: "🇪🇸",
+    zh: "🇨🇳",
+    ar: "🇸🇦",
+    ha: "🇳🇬",
+  };
+
+  const handleLangChange = (newLocale: Locale) => {
+    setStoredLocale(newLocale);
+    setOpen(false);
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1 bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full text-xs font-bold text-white transition-all shadow-sm cursor-pointer"
+        aria-label="Select Language"
+      >
+        <Globe size={14} />
+        <span>{languageFlags[locale]} {languageNames[locale]}</span>
+        <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-neutral-200 dark:border-neutral-800 py-1 z-50 text-slate-900 dark:text-white animate-in fade-in zoom-in duration-150">
+          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800">
+            Select Language / Langue
+          </div>
+          {locales.map((loc) => (
+            <button
+              key={loc}
+              type="button"
+              onClick={() => handleLangChange(loc)}
+              className={`w-full text-left px-3.5 py-2 text-xs transition-colors flex items-center justify-between ${
+                locale === loc
+                  ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-bold"
+                  : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <span>{languageFlags[loc]}</span>
+                <span>{languageNames[loc]}</span>
+              </span>
+              {locale === loc && <Check size={14} className="text-blue-600 dark:text-blue-400 shrink-0" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Header() {
   const [cartCount, setCartCount] = useState<number>(0);
@@ -225,6 +299,7 @@ export default function Header() {
 
           {/* Mobile actions: simplified layout */}
           <div className="ml-auto flex items-center gap-2 text-white lg:hidden">
+            <HeaderLanguageSelector locale={locale} />
             <UserMenu role={userRole as any} />
             <Link
               aria-label="Wishlist"
@@ -251,13 +326,6 @@ export default function Header() {
               )}
             </Link>
             <NotificationBell className="text-white hover:text-white/80" />
-            {/* <button
-              aria-label="Toggle theme"
-              onClick={toggleTheme}
-              className="p-2 rounded-md hover:bg-white/10"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button> */}
           </div>
 
           {/* Search (desktop) */}
@@ -301,6 +369,7 @@ export default function Header() {
 
           {/* Actions (desktop only to keep mobile clean) */}
           <div className="hidden lg:flex items-center gap-3 text-white text-sm font-semibold">
+            <HeaderLanguageSelector locale={locale} />
             <UserMenu role={userRole as any} />
 
             {/* <button
