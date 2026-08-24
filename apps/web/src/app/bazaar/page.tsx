@@ -209,7 +209,7 @@ export default function BazaarHome() {
                 <div className="hidden sm:block w-px h-6 bg-slate-800" />
                 <div className="flex items-center gap-2 text-sm text-slate-200">
                   <Clock className="text-amber-400" size={18} />
-                  <span>9:00 PM Gate Open</span>
+                  <span>9:00 AM - 12:00 AM</span>
                 </div>
                 <div className="hidden sm:block w-px h-6 bg-slate-800" />
                 <div className="flex items-center gap-2 text-sm text-slate-200">

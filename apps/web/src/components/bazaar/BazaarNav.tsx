@@ -80,8 +80,9 @@ export default function BazaarNav({
         <div className="flex items-center justify-between h-20">
           {/* Brand Logo */}
           <Link href="/bazaar" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-              <Ticket className="text-slate-950 font-bold" size={24} />
+            <div className="w-12 h-12 rounded-xl bg-slate-900 border border-amber-500/40 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform overflow-hidden">
+              {/* <Ticket className="text-slate-950 font-bold" size={24} /> */}
+              <img src="/bazaar_logo.jpg" alt="GloTrade Bazaar Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-400 via-amber-200 to-amber-400 bg-clip-text text-transparent">

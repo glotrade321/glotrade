@@ -11,8 +11,9 @@ export default function BazaarFooter() {
           {/* Brand Col */}
           <div className="space-y-4">
             <Link href="/bazaar" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-bold">
-                <Ticket size={22} />
+              <div className="w-11 h-11 rounded-xl bg-slate-900 border border-amber-500/40 flex items-center justify-center shadow-md overflow-hidden">
+                {/* <Ticket size={22} /> */}
+                <img src="/bazaar_logo.jpg" alt="GloTrade Bazaar Logo" className="w-full h-full object-cover" />
               </div>
               <span className="text-lg font-bold text-white tracking-tight">
                 GLOTRADE BAZAAR
