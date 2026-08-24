@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { BazaarController } from "../controllers/bazaar.controller";
-import { requireAuth, requireBazaarManager } from "../middleware/auth";
+import { requireAuth, requireBazaarManager, requireSuperAdmin } from "../middleware/auth";
 
 const router = Router();
 
@@ -19,5 +19,9 @@ router.post("/admin/bookings/manual", requireAuth, requireBazaarManager, BazaarC
 router.patch("/admin/bookings/:id", requireAuth, requireBazaarManager, BazaarController.updateBookingStatus);
 router.post("/admin/bookings/:id/resend-email", requireAuth, requireBazaarManager, BazaarController.resendConfirmationEmail);
 router.post("/admin/check-in", requireAuth, requireBazaarManager, BazaarController.checkInTicket);
+
+// Super Admin delete routes
+router.post("/admin/bookings/bulk-delete", requireAuth, requireSuperAdmin, BazaarController.bulkDeleteBookings);
+router.delete("/admin/bookings/:id", requireAuth, requireSuperAdmin, BazaarController.deleteBooking);
 
 export default router;

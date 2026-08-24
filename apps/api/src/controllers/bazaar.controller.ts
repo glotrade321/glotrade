@@ -556,4 +556,41 @@ export class BazaarController {
       next(err);
     }
   }
+
+  // Super Admin: Delete single booking
+  static async deleteBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const deleted = await BazaarBooking.findByIdAndDelete(id);
+      if (!deleted) {
+        return res.status(404).json({ status: "fail", message: "Booking record not found." });
+      }
+      res.json({
+        status: "success",
+        message: "Booking record deleted successfully.",
+        data: deleted,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // Super Admin: Bulk delete multiple bookings
+  static async bulkDeleteBookings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ status: "fail", message: "Please provide an array of booking IDs to delete." });
+      }
+
+      const result = await BazaarBooking.deleteMany({ _id: { $in: ids } });
+      res.json({
+        status: "success",
+        message: `Successfully deleted ${result.deletedCount} booking record(s).`,
+        deletedCount: result.deletedCount,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

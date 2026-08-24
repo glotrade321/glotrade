@@ -31,8 +31,9 @@ import {
   Calendar,
   Check,
   Layers,
+  Trash2,
 } from "lucide-react";
-import { apiGet, apiPut, apiPost, apiPatch } from "@/utils/api";
+import { apiGet, apiPut, apiPost, apiPatch, apiDelete } from "@/utils/api";
 import QRCodeScanner from "@/components/wallet/QRCodeScanner";
 
 export default function AdminBazaarPage() {
@@ -96,6 +97,81 @@ export default function AdminBazaarPage() {
     navigator.clipboard.writeText(text);
     setCopiedField(label);
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  // Super Admin & Delete State
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [selectedBookingIds, setSelectedBookingIds] = useState<string[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'single' | 'bulk'; item?: any; ids?: string[] } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("afritrade:user");
+      if (stored) {
+        setCurrentUser(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Failed to load user from localStorage:", e);
+    }
+  }, []);
+
+  const isSuperAdmin = Boolean(currentUser?.isSuperAdmin);
+
+  const isAllSelected = bookings.length > 0 && bookings.every((b) => selectedBookingIds.includes(b._id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedBookingIds([]);
+    } else {
+      setSelectedBookingIds(bookings.map((b) => b._id));
+    }
+  };
+
+  const toggleSelectBooking = (id: string) => {
+    if (selectedBookingIds.includes(id)) {
+      setSelectedBookingIds(selectedBookingIds.filter((item) => item !== id));
+    } else {
+      setSelectedBookingIds([...selectedBookingIds, id]);
+    }
+  };
+
+  const promptDeleteSingle = (item: any) => {
+    setDeleteTarget({ type: 'single', item, ids: [item._id] });
+    setShowDeleteModal(true);
+  };
+
+  const promptDeleteBulk = () => {
+    if (selectedBookingIds.length === 0) return;
+    setDeleteTarget({ type: 'bulk', ids: selectedBookingIds });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setActionMsg(null);
+    try {
+      if (deleteTarget.type === 'single' && deleteTarget.item) {
+        await apiDelete(`/api/v1/bazaar/admin/bookings/${deleteTarget.item._id}`);
+        setActionMsg(`Deleted registration for ${deleteTarget.item.customerName} (${deleteTarget.item.ticketCode || deleteTarget.item.reference})`);
+      } else if (deleteTarget.type === 'bulk' && deleteTarget.ids) {
+        const res: any = await apiPost('/api/v1/bazaar/admin/bookings/bulk-delete', { ids: deleteTarget.ids });
+        setActionMsg(res?.message || `Successfully deleted ${deleteTarget.ids.length} registration(s).`);
+      }
+
+      setSelectedBookingIds([]);
+      setShowDeleteModal(false);
+      setShowInspectModal(false);
+      setDeleteTarget(null);
+      loadStatsAndConfig();
+      loadBookings();
+    } catch (err: any) {
+      alert(err?.message || "Failed to delete registration(s)");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   // Handle Preset Package Changes in Manual Booking Modal
@@ -737,6 +813,34 @@ export default function AdminBazaarPage() {
             </div>
           </div>
 
+          {/* Super Admin Bulk Action Toolbar */}
+          {isSuperAdmin && selectedBookingIds.length > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                <span className="text-xs sm:text-sm font-bold text-red-900">
+                  {selectedBookingIds.length} registration(s) selected for deletion
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedBookingIds([])}
+                  className="px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm"
+                >
+                  Deselect All
+                </button>
+                <button
+                  type="button"
+                  onClick={promptDeleteBulk}
+                  className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-sm inline-flex items-center gap-1.5 transition-colors"
+                >
+                  <Trash2 size={14} /> Delete Selected ({selectedBookingIds.length})
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Data Table */}
           <div className="overflow-x-auto">
             {bookingsLoading ? (
@@ -752,6 +856,17 @@ export default function AdminBazaarPage() {
               <table className="w-full text-left text-sm text-gray-700">
                 <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-500 border-b border-gray-200">
                   <tr>
+                    {isSuperAdmin && (
+                      <th className="px-3 py-3 w-10 text-center">
+                        <input
+                          type="checkbox"
+                          checked={isAllSelected}
+                          onChange={toggleSelectAll}
+                          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                          title="Select all registrations on this page"
+                        />
+                      </th>
+                    )}
                     <th className="px-4 py-3">Code / Ref</th>
                     <th className="px-4 py-3">Customer Info</th>
                     <th className="px-4 py-3">Package & Amount</th>
@@ -764,9 +879,21 @@ export default function AdminBazaarPage() {
                   {bookings.map((item) => (
                     <tr
                       key={item._id}
-                      className="hover:bg-blue-50/50 cursor-pointer transition-colors"
+                      className={`hover:bg-blue-50/50 cursor-pointer transition-colors ${
+                        selectedBookingIds.includes(item._id) ? "bg-red-50/40" : ""
+                      }`}
                       onClick={() => handleInspectBooking(item)}
                     >
+                      {isSuperAdmin && (
+                        <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selectedBookingIds.includes(item._id)}
+                            onChange={() => toggleSelectBooking(item._id)}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                          />
+                        </td>
+                      )}
                       <td className="px-4 py-3 font-mono text-xs">
                         <span className="font-bold text-blue-600 block">{item.ticketCode}</span>
                         <span className="text-gray-400 text-[10px]">{item.reference}</span>
@@ -847,6 +974,15 @@ export default function AdminBazaarPage() {
                             className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded text-xs font-medium border border-slate-700"
                           >
                             Check In
+                          </button>
+                        )}
+                        {isSuperAdmin && (
+                          <button
+                            onClick={() => promptDeleteSingle(item)}
+                            className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded text-xs font-bold border border-red-200 inline-flex items-center gap-1 transition-colors"
+                            title="Delete registration (Super Admin only)"
+                          >
+                            <Trash2 size={12} /> Delete
                           </button>
                         )}
                       </td>
@@ -1063,6 +1199,14 @@ export default function AdminBazaarPage() {
                     <CheckCircle2 size={14} /> Verify Gate Check-In
                   </button>
                 )}
+                {isSuperAdmin && (
+                  <button
+                    onClick={() => promptDeleteSingle(selectedBooking)}
+                    className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl text-xs font-bold border border-red-200 inline-flex items-center gap-1.5 transition-colors"
+                  >
+                    <Trash2 size={14} /> Delete Registration
+                  </button>
+                )}
               </div>
 
               <button
@@ -1245,6 +1389,74 @@ export default function AdminBazaarPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Super Admin Delete Confirmation Modal */}
+      {showDeleteModal && deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white border border-red-200 rounded-2xl max-w-md w-full p-6 text-gray-900 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+              <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+                <Trash2 size={20} /> Confirm Permanent Deletion
+              </h3>
+              <button
+                type="button"
+                onClick={() => !deleting && setShowDeleteModal(false)}
+                className="p-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                {deleteTarget.type === "single" && deleteTarget.item ? (
+                  <>
+                    <p className="text-sm font-bold text-red-900">
+                      Delete registration for <span className="underline">{deleteTarget.item.customerName}</span>?
+                    </p>
+                    <p className="text-xs text-red-700 mt-1">
+                      Ticket Code: <strong>{deleteTarget.item.ticketCode || "N/A"}</strong> • Ref: <strong>{deleteTarget.item.reference}</strong>
+                    </p>
+                    <p className="text-xs text-red-700 mt-1">
+                      Package: <strong>{deleteTarget.item.packageName}</strong> (₦{deleteTarget.item.amount?.toLocaleString("en-NG")})
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-bold text-red-900">
+                      Delete {deleteTarget.ids?.length} selected registration(s)?
+                    </p>
+                    <p className="text-xs text-red-700 mt-1">
+                      All selected test/obsolete tickets and registration records will be permanently deleted from the database.
+                    </p>
+                  </>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 italic">
+                ⚠️ Warning: This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-3 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md inline-flex items-center gap-2 disabled:opacity-50"
+              >
+                {deleting ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />} Confirm & Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
