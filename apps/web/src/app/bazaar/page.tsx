@@ -188,8 +188,14 @@ export default function BazaarHome() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-amber-500/10 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider mb-6 shadow-lg shadow-amber-500/5">
-                <Sparkles size={14} /> {translate("bazaar.annualFestival") || "Annual Trade & Cultural Festival"}
+              {/* Presenter Banner */}
+              <div className="mb-6 space-y-2">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-widest shadow-lg shadow-amber-500/5">
+                  <Award size={14} className="text-amber-400" /> AL ABAMA GROUP PRESENTS
+                </div>
+                <h2 className="text-sm sm:text-base font-extrabold text-amber-300 tracking-wide max-w-3xl mx-auto uppercase">
+                  GLOTRADE BAZAAR ABUJA – 2026: Empowering Women and Youth Entrepreneurs Through Global Market Inclusion
+                </h2>
               </div>
 
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight mb-6">
@@ -232,6 +238,125 @@ export default function BazaarHome() {
                 >
                   {translate("bazaar.bookStall") || "Apply for Exhibition Stall"}
                 </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* About GLOTRADE & Our Vision Section */}
+          <section className="py-20 bg-slate-950 relative border-t border-slate-800">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+                {/* About GLOTRADE */}
+                <div className="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-2xl flex flex-col justify-between">
+                  <div>
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30">
+                      About GLOTRADE
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl font-black text-white mt-4 mb-6 leading-tight">
+                      Bridging Global Market Gap for African MSMEs
+                    </h2>
+                    <div className="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed">
+                      <p>
+                        <strong className="text-amber-400 font-bold">GLOTRADE Platform Limited</strong> is an African-focused trade and market development platform committed to bridging the gap between African producers, entrepreneurs, MSMEs, suppliers, buyers, and international markets.
+                      </p>
+                      <p>
+                        Under the vision of <span className="text-amber-300 font-semibold">“Bridging Global Market Gap for African MSMEs,”</span> Glotrade provides opportunities for businesses to showcase their products, establish commercial relationships, access new markets, and participate in local and international trade opportunities.
+                      </p>
+                      <p>
+                        <strong className="text-white font-bold">GLOTRADE BAZAAR ABUJA – 2026</strong> is designed as a major platform for promoting entrepreneurship, trade, innovation, investment, and economic inclusion, with particular emphasis on women-owned businesses and young entrepreneurs.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-amber-400 font-bold">
+                    <span>GLOTRADE Platform Limited</span>
+                    <span>Abuja • 2026 Edition</span>
+                  </div>
+                </div>
+
+                {/* Our Vision Card */}
+                <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-amber-950/30 to-slate-950 border-2 border-amber-500/40 rounded-3xl p-8 sm:p-10 shadow-2xl flex flex-col justify-between relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                  <div>
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mb-6 shadow-lg shadow-amber-500/10">
+                      <Sparkles size={26} />
+                    </div>
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30">
+                      Our Vision
+                    </span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-white mt-4 mb-4">
+                      Inclusive African Marketplace
+                    </h3>
+                    <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-medium">
+                      To build an inclusive African marketplace where women, youth, MSMEs, producers, and entrepreneurs can connect with opportunities beyond their immediate markets and participate meaningfully in regional and global trade.
+                    </p>
+                  </div>
+
+                  <div className="mt-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-3">
+                    <ShieldCheck size={20} className="shrink-0 text-amber-400" />
+                    <span>Empowering Women & Youth Entrepreneurs Through Global Inclusion</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Our Message & 4 Core Pillars Grid */}
+          <section className="py-20 bg-slate-900/40 border-t border-slate-800">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <span className="text-xs font-extrabold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-4 py-1.5 rounded-full border border-amber-500/30">
+                Our Message
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-black text-white mt-4 mb-4">
+                Core Pillars of GloTrade Bazaar
+              </h2>
+              <p className="text-slate-400 text-base max-w-2xl mx-auto mb-16">
+                GLOTRADE BAZAAR ABUJA – 2026: “Empowering Women and Youth Entrepreneurs Through Global Market Inclusion.”
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                {/* Pillar 1 */}
+                <div className="bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-8 transition-all hover:-translate-y-1 group">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Users size={24} />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Empower the Entrepreneur</h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    Fostering economic inclusion, capacity building, and business support for women-owned and youth-led enterprises across Africa.
+                  </p>
+                </div>
+
+                {/* Pillar 2 */}
+                <div className="bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-8 transition-all hover:-translate-y-1 group">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <ShoppingBag size={24} />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Connect the Market</h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    Bridging African MSMEs, suppliers, buyers, and corporate partners to build high-value commercial relationships.
+                  </p>
+                </div>
+
+                {/* Pillar 3 */}
+                <div className="bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-8 transition-all hover:-translate-y-1 group">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Award size={24} />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Promote African Products</h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    Showcasing high-quality, authentic African commodities, innovation, and manufactured goods to a diverse audience.
+                  </p>
+                </div>
+
+                {/* Pillar 4 */}
+                <div className="bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-8 transition-all hover:-translate-y-1 group">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Sparkles size={24} />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Create Global Opportunities</h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    Unlocking cross-border trade, regional investment, and international market access for African producers.
+                  </p>
+                </div>
               </div>
             </div>
           </section>

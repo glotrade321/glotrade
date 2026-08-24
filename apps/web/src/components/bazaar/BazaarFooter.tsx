@@ -125,7 +125,7 @@ export default function BazaarFooter() {
         <div className="mt-12 pt-8 border-t border-slate-800 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} GloTrade Platform. All rights reserved.</p>
           <p className="text-slate-400">
-            Powered by <span className="text-amber-400 font-semibold">Paystack Gateway</span>
+            Powered by <span className="text-amber-400 font-semibold">NexGen Innovations Technology</span>
           </p>
         </div>
       </div>
