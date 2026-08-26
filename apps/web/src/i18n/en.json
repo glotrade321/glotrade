@@ -2670,6 +2670,10 @@
     "eventNav": "Event Navigation",
     "eventInfo": "Event Information",
     "enquiriesSupport": "Enquiries & Support",
-    "sendMessageCta": "Send Us a Message"
+    "sendMessageCta": "Send Us a Message",
+    "navTermsPolicy": "Terms & Refund Policy",
+    "termsAgreement": "I agree to the Terms & Conditions and understand that all payments are strictly non-refundable.",
+    "termsRequiredError": "Please check the box to agree to the Terms & Conditions and acknowledge the Non-Refundable Policy before proceeding to payment.",
+    "nonRefundableBanner": "Notice: All ticket, exhibitor, and sponsorship payments for GloTrade Bazaar are final and strictly non-refundable."
   }
 }

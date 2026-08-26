@@ -2570,6 +2570,10 @@
     "eventNav": "Navigation Événement",
     "eventInfo": "Informations Événement",
     "enquiriesSupport": "Demandes & Assistance",
-    "sendMessageCta": "Envoyez-nous un Message"
+    "sendMessageCta": "Envoyez-nous un Message",
+    "navTermsPolicy": "Conditions & Politique de Remboursement",
+    "termsAgreement": "J'accepte les Conditions Générales et reconnais que tous les paiements sont strictement non remboursables.",
+    "termsRequiredError": "Veuillez cocher la case pour accepter les Conditions Générales et la politique de non-remboursement avant de payer.",
+    "nonRefundableBanner": "Avis : Tous les paiements pour GloTrade Bazaar sont définitifs et strictement non remboursables."
   }
 }

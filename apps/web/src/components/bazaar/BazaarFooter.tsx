@@ -66,6 +66,11 @@ export default function BazaarFooter() {
                   {translate("bazaar.navProgramme") || "Programme Timeline"}
                 </Link>
               </li>
+              <li>
+                <Link href="/bazaar/terms" className="text-amber-400/90 hover:text-amber-300 transition-colors font-medium">
+                  {translate("bazaar.navTermsPolicy") || "Terms & Refund Policy"}
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -79,7 +84,7 @@ export default function BazaarFooter() {
                 <Calendar size={18} className="text-amber-400 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-white font-medium">{translate("bazaar.eventDate") || "12 September 2026"}</p>
-                  <p className="text-xs text-slate-500">Starts 9:00 PM till late</p>
+                  <p className="text-xs text-slate-500">Starts 9:00 AM till late</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -123,7 +128,13 @@ export default function BazaarFooter() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-slate-800 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} GloTrade Platform. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <p>© {new Date().getFullYear()} GloTrade Platform. All rights reserved.</p>
+            <span>•</span>
+            <Link href="/bazaar/terms" className="text-slate-400 hover:text-amber-400 transition-colors underline">
+              Terms & Non-Refundable Policy
+            </Link>
+          </div>
           <p className="text-slate-400">
             Powered by <span className="text-amber-400 font-semibold">NexGen Innovations Technology</span>
           </p>

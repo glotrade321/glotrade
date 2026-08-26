@@ -1,6 +1,21 @@
 "use client";
 import { useState } from "react";
-import { X, CheckCircle2, CreditCard, ShieldCheck, Loader2, Building2, MessageSquare, Copy, Check } from "lucide-react";
+import Link from "next/link";
+import {
+  X,
+  CheckCircle2,
+  CreditCard,
+  ShieldCheck,
+  Loader2,
+  Building2,
+  MessageSquare,
+  Copy,
+  Check,
+  AlertTriangle,
+  FileText,
+  ExternalLink,
+  ShieldAlert
+} from "lucide-react";
 import { apiPost } from "@/utils/api";
 import { translate } from "@/utils/translate";
 
@@ -26,6 +41,9 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
   const [phone, setPhone] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [notes, setNotes] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [termsError, setTermsError] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -51,6 +69,9 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
     setBusinessName("");
     setNotes("");
     setError(null);
+    setAcceptedTerms(false);
+    setTermsError(false);
+    setShowTermsModal(false);
     setTransferSubmitted(null);
     onClose();
   };
@@ -62,8 +83,15 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
       return;
     }
 
+    if (!acceptedTerms) {
+      setError("Please check the box to agree to the Terms & Conditions and acknowledge the Non-Refundable Policy before proceeding to payment.");
+      setTermsError(true);
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    setTermsError(false);
 
     try {
       if (paymentMode === "paystack") {
@@ -212,7 +240,7 @@ Please verify my payment and send my ticket confirmation email.`;
         ) : (
           <>
             {/* Payment Method Selector Tabs */}
-            <div className="grid grid-cols-2 gap-2 mb-5 p-1 bg-slate-950/80 border border-slate-800 rounded-xl">
+            <div className="grid grid-cols-2 gap-2 mb-4 p-1 bg-slate-950/80 border border-slate-800 rounded-xl">
               <button
                 type="button"
                 onClick={() => setPaymentMode("paystack")}
@@ -236,7 +264,7 @@ Please verify my payment and send my ticket confirmation email.`;
             </div>
 
             {/* Package summary card */}
-            <div className="bg-slate-950/60 border border-amber-500/20 rounded-xl p-4 mb-5 flex items-center justify-between">
+            <div className="bg-slate-950/60 border border-amber-500/20 rounded-xl p-4 mb-4 flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-400">{translate("bazaar.totalPayable") || "Total Payable Amount"}</p>
                 <p className="text-2xl font-black text-amber-400">
@@ -260,7 +288,7 @@ Please verify my payment and send my ticket confirmation email.`;
 
             {paymentMode === "bank_transfer" && (
               /* Bank Transfer Details Box */
-              <div className="bg-slate-950 border border-amber-500/40 rounded-xl p-4 mb-5 space-y-2 text-xs">
+              <div className="bg-slate-950 border border-amber-500/40 rounded-xl p-4 mb-4 space-y-2 text-xs">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
                   <span className="font-bold text-amber-400 flex items-center gap-1.5">
                     <Building2 size={14} /> Official GloTrade Bank Account
@@ -295,8 +323,9 @@ Please verify my payment and send my ticket confirmation email.`;
             )}
 
             {error && (
-              <div className="p-3 mb-4 text-xs bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg">
-                {error}
+              <div className="p-3 mb-4 text-xs bg-red-500/15 border border-red-500/40 text-red-300 rounded-xl flex items-start gap-2 animate-fadeIn">
+                <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                <div className="flex-1">{error}</div>
               </div>
             )}
 
@@ -373,7 +402,57 @@ Please verify my payment and send my ticket confirmation email.`;
                 />
               </div>
 
-              <div className="pt-3">
+              {/* Non-Refundable Policy & Terms Acceptance Box */}
+              <div
+                className={`p-3.5 rounded-xl border transition-all text-xs ${
+                  termsError
+                    ? "bg-red-950/30 border-red-500/80 ring-2 ring-red-500/30"
+                    : acceptedTerms
+                    ? "bg-amber-500/5 border-amber-500/40"
+                    : "bg-slate-950 border-slate-800 hover:border-slate-700"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="bazaar-terms-agreement"
+                    checked={acceptedTerms}
+                    onChange={(e) => {
+                      setAcceptedTerms(e.target.checked);
+                      if (e.target.checked) {
+                        setTermsError(false);
+                        if (error?.includes("Terms")) {
+                          setError(null);
+                        }
+                      }
+                    }}
+                    className="mt-1 h-4 w-4 rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-400 focus:ring-offset-slate-950 cursor-pointer accent-amber-500 shrink-0"
+                  />
+                  <label htmlFor="bazaar-terms-agreement" className="text-slate-300 select-none cursor-pointer leading-relaxed">
+                    <span>
+                      I agree to the{" "}
+                      <button
+                        type="button"
+                        onClick={() => setShowTermsModal(true)}
+                        className="text-amber-400 font-bold underline hover:text-amber-300 inline-flex items-center gap-0.5"
+                      >
+                        Terms & Conditions
+                      </button>{" "}
+                      and acknowledge that all ticket, booth, and sponsorship payments are{" "}
+                      <strong className="text-amber-400 font-bold underline">strictly non-refundable</strong> after payment.
+                    </span>
+                  </label>
+                </div>
+
+                {termsError && (
+                  <p className="text-[11px] text-red-400 font-semibold mt-2 pl-7 flex items-center gap-1">
+                    <AlertTriangle size={12} className="shrink-0" />
+                    Please check the box above to accept the terms before paying.
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={loading}
@@ -396,14 +475,87 @@ Please verify my payment and send my ticket confirmation email.`;
               </div>
             </form>
 
-            <p className="text-[11px] text-slate-500 text-center mt-4">
+            <p className="text-[11px] text-slate-500 text-center mt-3">
               {paymentMode === "paystack"
                 ? translate("bazaar.paystackRedirectDisclaimer") || "By clicking pay, you will be securely redirected to Paystack to complete your payment."
                 : "Your registration will be submitted to the admin team and verified via WhatsApp for email ticket issuance."}
             </p>
           </>
         )}
+
+        {/* In-Modal Terms & Conditions Summary Drawer */}
+        {showTermsModal && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fadeIn">
+            <div className="bg-slate-900 border border-amber-500/40 rounded-2xl max-w-lg w-full p-6 text-white shadow-2xl relative max-h-[85vh] overflow-y-auto space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="text-amber-400" size={20} />
+                  <h3 className="text-lg font-bold text-white">Event Policy & Terms</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(false)}
+                  className="p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-800"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Policy Highlights */}
+              <div className="p-3.5 rounded-xl bg-red-950/40 border border-amber-500/50 text-xs text-slate-200 space-y-1.5">
+                <span className="font-black text-amber-400 uppercase tracking-wider block">
+                  ⚠️ Non-Refundable Policy
+                </span>
+                <p>
+                  All payments made for GloTrade Bazaar tickets, exhibitor stalls, and sponsorship packages are <strong>final and strictly non-refundable</strong> once confirmed. No refunds or partial refunds will be given under any circumstance.
+                </p>
+              </div>
+
+              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <div>
+                  <h4 className="font-bold text-white mb-1">1. Ticket & Admittance Rules</h4>
+                  <p>Each ticket code is valid for single admission (or 4 persons for Table of 4). Attendees must present the valid digital QR code or email pass at the Harrow Park gate.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white mb-1">2. Ticket Transferability</h4>
+                  <p>Tickets are transferable to another guest by providing the original ticket code/email pass, but cannot be returned for monetary refund.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white mb-1">3. Exhibitor & Sponsor Commitments</h4>
+                  <p>Vendor stall spaces and sponsorship deliverables are locked and allocated immediately upon payment confirmation.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white mb-1">4. Rescheduling / Force Majeure</h4>
+                  <p>If the event is rescheduled due to unforeseen conditions, passes and stall reservations will automatically remain valid for the new date.</p>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-3">
+                <Link
+                  href="/bazaar/terms"
+                  target="_blank"
+                  className="text-xs text-amber-400 hover:text-amber-300 font-semibold underline flex items-center gap-1"
+                >
+                  <FileText size={13} /> View Full Terms Page <ExternalLink size={11} />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAcceptedTerms(true);
+                    setTermsError(false);
+                    setError(null);
+                    setShowTermsModal(false);
+                  }}
+                  className="py-2 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md"
+                >
+                  <Check size={14} /> I Understand & Accept
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
