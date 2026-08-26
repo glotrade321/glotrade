@@ -1,5 +1,26 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export interface IAdminActor {
+  adminId?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  at?: Date;
+  action?: string;
+}
+
+export interface IAuditLogEntry {
+  action: string;
+  performedBy?: {
+    adminId?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+  };
+  details?: string;
+  timestamp: Date;
+}
+
 export interface IBazaarBooking extends Document {
   reference: string;
   ticketCode: string;
@@ -19,9 +40,41 @@ export interface IBazaarBooking extends Document {
   paystackReference?: string;
   paystackUrl?: string;
   rawWebhook?: any;
+  registeredBy?: IAdminActor;
+  paymentApprovedBy?: IAdminActor;
+  checkedInBy?: IAdminActor;
+  lastModifiedBy?: IAdminActor;
+  auditLogs?: IAuditLogEntry[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+const AdminActorSchema = new Schema(
+  {
+    adminId: { type: String },
+    name: { type: String },
+    email: { type: String },
+    role: { type: String },
+    at: { type: Date, default: Date.now },
+    action: { type: String },
+  },
+  { _id: false }
+);
+
+const AuditLogEntrySchema = new Schema(
+  {
+    action: { type: String, required: true },
+    performedBy: {
+      adminId: { type: String },
+      name: { type: String },
+      email: { type: String },
+      role: { type: String },
+    },
+    details: { type: String },
+    timestamp: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
 
 const BazaarBookingSchema: Schema = new Schema(
   {
@@ -57,6 +110,11 @@ const BazaarBookingSchema: Schema = new Schema(
     paystackReference: { type: String },
     paystackUrl: { type: String },
     rawWebhook: { type: Schema.Types.Mixed },
+    registeredBy: { type: AdminActorSchema },
+    paymentApprovedBy: { type: AdminActorSchema },
+    checkedInBy: { type: AdminActorSchema },
+    lastModifiedBy: { type: AdminActorSchema },
+    auditLogs: { type: [AuditLogEntrySchema], default: [] },
   },
   { timestamps: true }
 );

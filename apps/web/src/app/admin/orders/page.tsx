@@ -18,11 +18,35 @@ import {
   X,
   Package,
   MapPin,
-  CalendarDays
+  CalendarDays,
+  ShieldCheck,
+  History,
+  UserCheck
 } from "lucide-react";
 import { apiGet, apiPost, apiPut } from "@/utils/api";
 import { formatCurrency } from "@/utils/format";
 import { getCountryPhoneCode } from "@/utils/countryData";
+
+interface OrderAdminActor {
+  adminId?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  at?: string;
+  action?: string;
+}
+
+interface OrderAuditLog {
+  action: string;
+  performedBy?: {
+    adminId?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+  };
+  details?: string;
+  timestamp: string;
+}
 
 interface Order {
   _id: string;
@@ -50,6 +74,11 @@ interface Order {
   refundAmount?: number;
   refundReason?: string;
   refundedAt?: string;
+  statusUpdatedByAdmin?: OrderAdminActor;
+  refundApprovedByAdmin?: OrderAdminActor;
+  cancelledByAdmin?: OrderAdminActor;
+  lastModifiedByAdmin?: OrderAdminActor;
+  auditLogs?: OrderAuditLog[];
   lineItems: Array<{
     productId: string;
     productTitle?: string;
@@ -1046,6 +1075,147 @@ export default function AdminOrdersPage() {
                       </>
                     )}
                   </div>
+                </div>
+
+                {/* Manager Action Audit & Blame Trail */}
+                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-white space-y-3 shadow-inner">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <ShieldCheck size={14} className="text-amber-400" /> Manager Audit & Action Trail (Blame Log)
+                    </h4>
+                    <span className="text-[10px] text-slate-400 font-mono">Traceability</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    {/* Status Update Actor */}
+                    <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Status Managed By</span>
+                      {selectedOrder.statusUpdatedByAdmin ? (
+                        <div>
+                          <div className="font-bold text-amber-300">{selectedOrder.statusUpdatedByAdmin.name}</div>
+                          <span className="text-[10px] text-slate-400 block truncate" title={selectedOrder.statusUpdatedByAdmin.email}>
+                            {selectedOrder.statusUpdatedByAdmin.email}
+                          </span>
+                          <div className="mt-1 flex items-center gap-1">
+                            <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[9px] font-bold uppercase border border-amber-500/30">
+                              {selectedOrder.statusUpdatedByAdmin.role || "Order Manager"}
+                            </span>
+                          </div>
+                          {selectedOrder.statusUpdatedByAdmin.at && (
+                            <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                              {new Date(selectedOrder.statusUpdatedByAdmin.at).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="font-semibold text-slate-300">System / Automated</span>
+                          <span className="text-[10px] text-slate-500 block">Initial buyer placement</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Refund Approved By */}
+                    <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Refund Verification</span>
+                      {selectedOrder.refundApprovedByAdmin ? (
+                        <div>
+                          <div className="font-bold text-orange-400">{selectedOrder.refundApprovedByAdmin.name}</div>
+                          <span className="text-[10px] text-slate-400 block truncate" title={selectedOrder.refundApprovedByAdmin.email}>
+                            {selectedOrder.refundApprovedByAdmin.email}
+                          </span>
+                          <div className="mt-1 flex items-center gap-1">
+                            <span className="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 text-[9px] font-bold uppercase border border-orange-500/30">
+                              {selectedOrder.refundApprovedByAdmin.role || "Admin"}
+                            </span>
+                          </div>
+                          {selectedOrder.refundApprovedByAdmin.at && (
+                            <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                              {new Date(selectedOrder.refundApprovedByAdmin.at).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      ) : selectedOrder.paymentStatus === "refunded" ? (
+                        <div>
+                          <span className="font-semibold text-orange-400">Processed</span>
+                          <span className="text-[10px] text-slate-500 block">Refund completed</span>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="font-semibold text-slate-400">No Refund</span>
+                          <span className="text-[10px] text-slate-500 block">Active standard payment</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Cancellation Actor */}
+                    <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Cancellation Blame</span>
+                      {selectedOrder.cancelledByAdmin ? (
+                        <div>
+                          <div className="font-bold text-red-400">{selectedOrder.cancelledByAdmin.name}</div>
+                          <span className="text-[10px] text-slate-400 block truncate" title={selectedOrder.cancelledByAdmin.email}>
+                            {selectedOrder.cancelledByAdmin.email}
+                          </span>
+                          <div className="mt-1 flex items-center gap-1">
+                            <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[9px] font-bold uppercase border border-red-500/30">
+                              {selectedOrder.cancelledByAdmin.role || "Order Manager"}
+                            </span>
+                          </div>
+                          {selectedOrder.cancelledByAdmin.at && (
+                            <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                              {new Date(selectedOrder.cancelledByAdmin.at).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      ) : selectedOrder.status === "cancelled" ? (
+                        <div>
+                          <span className="font-semibold text-red-400">Buyer / Store Cancelled</span>
+                          <span className="text-[10px] text-slate-500 block">Not cancelled by admin</span>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="font-semibold text-emerald-400">Active Order</span>
+                          <span className="text-[10px] text-slate-500 block">Valid and non-cancelled</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Chronology Log */}
+                  {selectedOrder.auditLogs && selectedOrder.auditLogs.length > 0 && (
+                    <div className="pt-2 border-t border-slate-800">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5 flex items-center gap-1">
+                        <History size={12} className="text-amber-400" /> Action Chronology ({selectedOrder.auditLogs.length}):
+                      </span>
+                      <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                        {selectedOrder.auditLogs.map((log: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="p-2 bg-slate-950/90 rounded-lg border border-slate-800 flex items-start justify-between text-[11px] gap-2"
+                          >
+                            <div className="space-y-0.5 min-w-0">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-bold text-amber-300">{log.performedBy?.name || "Manager"}</span>
+                                <span className="text-[9px] px-1.5 py-0.2 bg-slate-800 text-slate-300 rounded font-mono">
+                                  {log.performedBy?.role || "admin"}
+                                </span>
+                                <span className="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-1 rounded">
+                                  {log.action}
+                                </span>
+                              </div>
+                              {log.details && (
+                                <p className="text-slate-300 text-[10px] leading-relaxed break-words">{log.details}</p>
+                              )}
+                            </div>
+                            <span className="text-[9px] text-slate-500 shrink-0 font-mono">
+                              {log.timestamp ? new Date(log.timestamp).toLocaleString() : ""}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

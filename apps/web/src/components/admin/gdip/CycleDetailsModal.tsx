@@ -1,13 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Calendar, Activity, TrendingUp, DollarSign, Package } from "lucide-react";
+import { X, Calendar, Activity, TrendingUp, DollarSign, Package, ShieldCheck, History, UserCheck } from "lucide-react";
 import { apiGet } from "@/utils/api";
 import { translate } from "@/utils/translate";
 
 interface CycleDetailsModalProps {
     cycleId: string;
     onClose: () => void;
+}
+
+interface TradeCycleAdminActor {
+    adminId?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+    at?: string;
+    action?: string;
+}
+
+interface TradeCycleAuditLog {
+    action: string;
+    performedBy?: {
+        adminId?: string;
+        name?: string;
+        email?: string;
+        role?: string;
+    };
+    details?: string;
+    timestamp: string;
 }
 
 interface TradeCycle {
@@ -28,6 +49,10 @@ interface TradeCycle {
     tradingCosts: number;
     totalCapital: number;
     profitDistributed: boolean;
+    executedByAdmin?: TradeCycleAdminActor;
+    approvedByAdmin?: TradeCycleAdminActor;
+    lastModifiedByAdmin?: TradeCycleAdminActor;
+    auditLogs?: TradeCycleAuditLog[];
 }
 
 export default function CycleDetailsModal({ cycleId, onClose }: CycleDetailsModalProps) {
@@ -222,6 +247,114 @@ export default function CycleDetailsModal({ cycleId, onClose }: CycleDetailsModa
                                     : "⚠ Profits pending distribution"}
                             </div>
                         )}
+
+                        {/* Manager Action Audit & Blame Trail */}
+                        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-white space-y-3 shadow-inner">
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <ShieldCheck size={14} className="text-amber-400" /> Manager Audit & Execution Trail (Blame Log)
+                                </h4>
+                                <span className="text-[10px] text-slate-400 font-mono">Traceability</span>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                {/* Executed By */}
+                                <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Cycle Execution / Launch</span>
+                                    {cycle.executedByAdmin ? (
+                                        <div>
+                                            <div className="font-bold text-amber-300">{cycle.executedByAdmin.name}</div>
+                                            <span className="text-[10px] text-slate-400 block truncate" title={cycle.executedByAdmin.email}>
+                                                {cycle.executedByAdmin.email}
+                                            </span>
+                                            <div className="mt-1 flex items-center gap-1">
+                                                <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[9px] font-bold uppercase border border-amber-500/30">
+                                                    {cycle.executedByAdmin.role || "GDIP Manager"}
+                                                </span>
+                                            </div>
+                                            {cycle.executedByAdmin.at && (
+                                                <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                                                    {new Date(cycle.executedByAdmin.at).toLocaleString()}
+                                                </span>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <span className="font-semibold text-slate-300">Automated Scheduler</span>
+                                            <span className="text-[10px] text-slate-500 block">Launched by platform cron scheduler</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Profit Distribution / Approval */}
+                                <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Settlement Approval</span>
+                                    {cycle.approvedByAdmin ? (
+                                        <div>
+                                            <div className="font-bold text-green-400">{cycle.approvedByAdmin.name}</div>
+                                            <span className="text-[10px] text-slate-400 block truncate" title={cycle.approvedByAdmin.email}>
+                                                {cycle.approvedByAdmin.email}
+                                            </span>
+                                            <div className="mt-1 flex items-center gap-1">
+                                                <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 text-[9px] font-bold uppercase border border-green-500/30">
+                                                    {cycle.approvedByAdmin.role || "Admin"}
+                                                </span>
+                                            </div>
+                                            {cycle.approvedByAdmin.at && (
+                                                <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                                                    {new Date(cycle.approvedByAdmin.at).toLocaleString()}
+                                                </span>
+                                            )}
+                                        </div>
+                                    ) : cycle.profitDistributed ? (
+                                        <div>
+                                            <span className="font-semibold text-emerald-400">Automated Settlement</span>
+                                            <span className="text-[10px] text-slate-500 block">Profits disbursed directly to investor wallets</span>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <span className="font-semibold text-amber-400">Pending Settlement</span>
+                                            <span className="text-[10px] text-slate-500 block">Awaiting cycle completion</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Action Chronology Log */}
+                            {cycle.auditLogs && cycle.auditLogs.length > 0 && (
+                                <div className="pt-2 border-t border-slate-800">
+                                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5 flex items-center gap-1">
+                                        <History size={12} className="text-amber-400" /> Action Chronology ({cycle.auditLogs.length}):
+                                    </span>
+                                    <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                                        {cycle.auditLogs.map((log: any, idx: number) => (
+                                            <div
+                                                key={idx}
+                                                className="p-2 bg-slate-950/90 rounded-lg border border-slate-800 flex items-start justify-between text-[11px] gap-2"
+                                            >
+                                                <div className="space-y-0.5 min-w-0">
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        <span className="font-bold text-amber-300">{log.performedBy?.name || "Manager"}</span>
+                                                        <span className="text-[9px] px-1.5 py-0.2 bg-slate-800 text-slate-300 rounded font-mono">
+                                                            {log.performedBy?.role || "admin"}
+                                                        </span>
+                                                        <span className="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-1 rounded">
+                                                            {log.action}
+                                                        </span>
+                                                    </div>
+                                                    {log.details && (
+                                                        <p className="text-slate-300 text-[10px] leading-relaxed break-words">{log.details}</p>
+                                                    )}
+                                                </div>
+                                                <span className="text-[9px] text-slate-500 shrink-0 font-mono">
+                                                    {log.timestamp ? new Date(log.timestamp).toLocaleString() : ""}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 ) : (
                     <div className="p-12 text-center text-gray-500">

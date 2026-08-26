@@ -32,6 +32,9 @@ import {
   Check,
   Layers,
   Trash2,
+  ShieldCheck,
+  History,
+  UserCheck,
 } from "lucide-react";
 import { apiGet, apiPut, apiPost, apiPatch, apiDelete } from "@/utils/api";
 import QRCodeScanner from "@/components/wallet/QRCodeScanner";
@@ -1166,6 +1169,157 @@ export default function AdminBazaarPage() {
                   <span className="text-gray-500 text-xs block mb-1">Customer / Registration Notes:</span>
                   <div className="p-3 bg-amber-50/60 border border-amber-200 rounded-lg text-xs text-amber-900">
                     {selectedBooking.notes}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Manager Action Audit & Blame Trail */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-5 text-white space-y-3 shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck size={14} className="text-amber-400" /> Manager Audit & Action Trail (Blame Log)
+                </h4>
+                <span className="text-[10px] text-slate-400 font-mono">Traceability</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                {/* Registered By */}
+                <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Registration Origin</span>
+                  {selectedBooking.registeredBy ? (
+                    <div>
+                      <div className="font-bold text-amber-300">{selectedBooking.registeredBy.name}</div>
+                      <span className="text-[10px] text-slate-400 block truncate" title={selectedBooking.registeredBy.email}>
+                        {selectedBooking.registeredBy.email}
+                      </span>
+                      <div className="mt-1 flex items-center gap-1">
+                        <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[9px] font-bold uppercase border border-amber-500/30">
+                          {selectedBooking.registeredBy.role || "Manager"}
+                        </span>
+                      </div>
+                      {selectedBooking.registeredBy.at && (
+                        <span className="text-[9px] text-slate-500 block mt-1">
+                          {new Date(selectedBooking.registeredBy.at).toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="font-semibold text-slate-300">Public Portal</span>
+                      <span className="text-[10px] text-slate-500 block">Customer self-checkout</span>
+                      <span className="text-[9px] text-slate-500 block mt-1">
+                        {selectedBooking.createdAt ? new Date(selectedBooking.createdAt).toLocaleString() : ""}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Payment Approved By */}
+                <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Payment Verification</span>
+                  {selectedBooking.paymentApprovedBy ? (
+                    <div>
+                      <div className="font-bold text-green-400">{selectedBooking.paymentApprovedBy.name}</div>
+                      <span className="text-[10px] text-slate-400 block truncate" title={selectedBooking.paymentApprovedBy.email}>
+                        {selectedBooking.paymentApprovedBy.email}
+                      </span>
+                      <div className="mt-1 flex items-center gap-1">
+                        <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 text-[9px] font-bold uppercase border border-green-500/30">
+                          {selectedBooking.paymentApprovedBy.role || "Admin"}
+                        </span>
+                      </div>
+                      {selectedBooking.paymentApprovedBy.at && (
+                        <span className="text-[9px] text-slate-500 block mt-1">
+                          {new Date(selectedBooking.paymentApprovedBy.at).toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  ) : selectedBooking.paymentStatus === "paid" ? (
+                    <div>
+                      <span className="font-semibold text-emerald-400">Paystack Gateway</span>
+                      <span className="text-[10px] text-slate-500 block">Automated online verification</span>
+                      {selectedBooking.paystackReference && (
+                        <span className="text-[9px] font-mono text-slate-500 block truncate mt-1">
+                          {selectedBooking.paystackReference}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="font-semibold text-amber-400">Pending Review</span>
+                      <span className="text-[10px] text-slate-500 block">Awaiting bank credit confirmation</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Gate Checked In By */}
+                <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Gate Admittance</span>
+                  {selectedBooking.checkedInBy ? (
+                    <div>
+                      <div className="font-bold text-teal-400">{selectedBooking.checkedInBy.name}</div>
+                      <span className="text-[10px] text-slate-400 block truncate" title={selectedBooking.checkedInBy.email}>
+                        {selectedBooking.checkedInBy.email}
+                      </span>
+                      <div className="mt-1 flex items-center gap-1">
+                        <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-400 text-[9px] font-bold uppercase border border-teal-500/30">
+                          {selectedBooking.checkedInBy.role || "Scanner"}
+                        </span>
+                      </div>
+                      {selectedBooking.checkInTime && (
+                        <span className="text-[9px] text-slate-500 block mt-1">
+                          {new Date(selectedBooking.checkInTime).toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  ) : selectedBooking.checkInStatus === "checked_in" ? (
+                    <div>
+                      <span className="font-semibold text-teal-400">Admitted & Checked In</span>
+                      <span className="text-[10px] text-slate-500 block">
+                        {selectedBooking.checkInTime ? new Date(selectedBooking.checkInTime).toLocaleString() : "Verified"}
+                      </span>
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="font-semibold text-slate-400">Pending Gate</span>
+                      <span className="text-[10px] text-slate-500 block">Awaiting physical barcode scan</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action History Log */}
+              {selectedBooking.auditLogs && selectedBooking.auditLogs.length > 0 && (
+                <div className="pt-2 border-t border-slate-800">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5 flex items-center gap-1">
+                    <History size={12} className="text-amber-400" /> Action Chronology ({selectedBooking.auditLogs.length}):
+                  </span>
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                    {selectedBooking.auditLogs.map((log: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="p-2 bg-slate-950/90 rounded-lg border border-slate-800 flex items-start justify-between text-[11px] gap-2"
+                      >
+                        <div className="space-y-0.5 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-bold text-amber-300">{log.performedBy?.name || "Manager"}</span>
+                            <span className="text-[9px] px-1.5 py-0.2 bg-slate-800 text-slate-300 rounded font-mono">
+                              {log.performedBy?.role || "admin"}
+                            </span>
+                            <span className="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-1 rounded">
+                              {log.action}
+                            </span>
+                          </div>
+                          {log.details && (
+                            <p className="text-slate-300 text-[10px] leading-relaxed break-words">{log.details}</p>
+                          )}
+                        </div>
+                        <span className="text-[9px] text-slate-500 shrink-0 font-mono">
+                          {log.timestamp ? new Date(log.timestamp).toLocaleString() : ""}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

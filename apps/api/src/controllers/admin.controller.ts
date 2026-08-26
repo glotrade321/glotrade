@@ -852,7 +852,7 @@ export class AdminController {
         throw new ValidationError('Status is required');
       }
 
-      const result = await this.adminService.updateOrderStatus(id, status);
+      const result = await this.adminService.updateOrderStatus(id, status, req.user);
 
       res.status(200).json({
         status: 'success',
@@ -887,7 +887,7 @@ export class AdminController {
         throw new ValidationError('Refund reason is required');
       }
 
-      const result = await this.adminService.refundOrder(id, reason, amount);
+      const result = await this.adminService.refundOrder(id, reason, amount, req.user);
 
       res.status(200).json({
         status: 'success',
@@ -929,7 +929,7 @@ export class AdminController {
     try {
       const { id } = req.params;
 
-      const result = await this.adminService.cancelOrder(id);
+      const result = await this.adminService.cancelOrder(id, req.user);
 
       res.status(200).json({
         status: 'success',
@@ -981,11 +981,12 @@ export class AdminController {
     try {
       const { id } = req.params;
 
-      const result = await this.adminService.processRefund(id);
+      const result = await this.adminService.processRefund(id, req.user);
 
       res.status(200).json({
         status: 'success',
-        data: result
+        data: result,
+        message: 'Order refund processed successfully'
       });
     } catch (error: any) {
       // Return specific error messages for better frontend handling
@@ -1010,6 +1011,7 @@ export class AdminController {
         });
       }
 
+      next(error);
     }
   };
 

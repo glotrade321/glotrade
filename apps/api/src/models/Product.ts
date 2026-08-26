@@ -130,6 +130,35 @@ const productSchema = new Schema<IProduct>(
         { _id: false }
       ),
     ],
+    // Audit & Manager Blame Fields
+    createdByAdmin: {
+      adminId: { type: String },
+      name: { type: String },
+      email: { type: String },
+      role: { type: String },
+      at: { type: Date },
+    },
+    lastModifiedByAdmin: {
+      adminId: { type: String },
+      name: { type: String },
+      email: { type: String },
+      role: { type: String },
+      action: { type: String },
+      at: { type: Date },
+    },
+    auditLogs: [
+      {
+        action: { type: String, required: true },
+        performedBy: {
+          adminId: { type: String },
+          name: { type: String },
+          email: { type: String },
+          role: { type: String },
+        },
+        details: { type: String },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

@@ -56,6 +56,27 @@ export interface ProductAnalytics {
   }[];
 }
 
+export interface IProductAdminActor {
+  adminId?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  at?: Date;
+  action?: string;
+}
+
+export interface IProductAuditLogEntry {
+  action: string;
+  performedBy?: {
+    adminId?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+  };
+  details?: string;
+  timestamp: Date;
+}
+
 export interface IProductBase {
   seller: Schema.Types.ObjectId;
   title: string;
@@ -100,6 +121,10 @@ export interface IProductBase {
     quantity: number;
     attributes: Record<string, string>;
   }>;
+  // Audit & Manager Blame Fields
+  createdByAdmin?: IProductAdminActor;
+  lastModifiedByAdmin?: IProductAdminActor;
+  auditLogs?: IProductAuditLogEntry[];
 }
 
 export interface IProductMethods {

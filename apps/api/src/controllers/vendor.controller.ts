@@ -628,6 +628,15 @@ export class VendorController {
       }
 
       // Create product
+      const isManagerOrAdmin = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin;
+      const managerActor = isManagerOrAdmin ? {
+        adminId: String(req.user._id || req.user.id || ''),
+        name: req.user.name || [req.user.firstName, req.user.lastName].filter(Boolean).join(' ') || req.user.username || req.user.email || 'Product Manager',
+        email: req.user.email || '',
+        role: req.user.role || 'product_manager',
+        at: new Date(),
+      } : undefined;
+
       const doc = await Product.create({
         ...body,
         seller: req.user.id,
@@ -635,6 +644,14 @@ export class VendorController {
         views: 0,
         likes: 0,
         rating: 0,
+        createdByAdmin: managerActor,
+        lastModifiedByAdmin: managerActor ? { ...managerActor, action: 'PRODUCT_CREATED' } : undefined,
+        auditLogs: managerActor ? [{
+          action: 'PRODUCT_CREATED',
+          performedBy: managerActor,
+          details: `Product '${body.title}' initialized by manager`,
+          timestamp: new Date(),
+        }] : [],
       });
 
       res.status(201).json({
@@ -655,12 +672,53 @@ export class VendorController {
       const body = req.body || {};
 
       // Allow admins and product managers to update any product, regular users can only update their own
-      const query = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin
+      const isManagerOrAdmin = req.user.role === 'admin' || req.user.role === 'product_manager' || req.user.isSuperAdmin;
+      const query = isManagerOrAdmin
         ? { _id: id }
         : { _id: id, seller: req.user.id };
 
+      const existingProduct = await Product.findOne(query);
+      if (!existingProduct) throw new ValidationError("Product not found");
+
+      // Build audit tracking if performed by manager/admin
+      if (isManagerOrAdmin) {
+        const actorName =
+          req.user.name ||
+          [req.user.firstName, req.user.lastName].filter(Boolean).join(" ") ||
+          req.user.username ||
+          req.user.email ||
+          "Product Manager";
+
+        const actor = {
+          adminId: String(req.user._id || req.user.id || ""),
+          name: actorName,
+          email: req.user.email || "",
+          role: req.user.role || "product_manager",
+          at: new Date(),
+        };
+
+        const changedFields: string[] = [];
+        if (body.price !== undefined && body.price !== existingProduct.price) changedFields.push(`price: ₦${existingProduct.price} → ₦${body.price}`);
+        if (body.quantity !== undefined && body.quantity !== existingProduct.quantity) changedFields.push(`quantity: ${existingProduct.quantity} → ${body.quantity}`);
+        if (body.status !== undefined && body.status !== existingProduct.status) changedFields.push(`status: ${existingProduct.status} → ${body.status}`);
+        if (body.title !== undefined && body.title !== existingProduct.title) changedFields.push(`title updated`);
+        if (body.discount !== undefined && body.discount !== existingProduct.discount) changedFields.push(`discount: ${existingProduct.discount}% → ${body.discount}%`);
+
+        const changeDescription = changedFields.length > 0 ? changedFields.join(", ") : "Product attributes modified";
+
+        body.lastModifiedByAdmin = { ...actor, action: "PRODUCT_UPDATED" };
+
+        const newLog = {
+          action: "PRODUCT_UPDATED",
+          performedBy: actor,
+          details: changeDescription,
+          timestamp: new Date(),
+        };
+
+        body.$push = { auditLogs: newLog };
+      }
+
       const doc = await Product.findOneAndUpdate(query, body, { new: true });
-      if (!doc) throw new ValidationError("Product not found");
       res.json({ status: "success", data: doc });
     } catch (e) {
       next(e as any);

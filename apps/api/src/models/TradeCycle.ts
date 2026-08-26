@@ -69,6 +69,41 @@ export interface ITradeCycle extends Document {
     approvedBy?: Schema.Types.ObjectId; // Admin who approved
     notes?: string;
 
+    // Manager Audit & Blame Trail
+    executedByAdmin?: {
+        adminId?: string;
+        name?: string;
+        email?: string;
+        role?: string;
+        at?: Date;
+    };
+    approvedByAdmin?: {
+        adminId?: string;
+        name?: string;
+        email?: string;
+        role?: string;
+        at?: Date;
+    };
+    lastModifiedByAdmin?: {
+        adminId?: string;
+        name?: string;
+        email?: string;
+        role?: string;
+        action?: string;
+        at?: Date;
+    };
+    auditLogs?: Array<{
+        action: string;
+        performedBy?: {
+            adminId?: string;
+            name?: string;
+            email?: string;
+            role?: string;
+        };
+        details?: string;
+        timestamp: Date;
+    }>;
+
     // Automation
     autoExecuted: boolean; // Was this cycle auto-executed by cron?
     executionLog?: string;
@@ -247,6 +282,39 @@ const tradeCycleSchema = new Schema<ITradeCycle>(
             ref: "User"
         },
         notes: String,
+        executedByAdmin: {
+            adminId: { type: String },
+            name: { type: String },
+            email: { type: String },
+            role: { type: String },
+            at: { type: Date }
+        },
+        approvedByAdmin: {
+            adminId: { type: String },
+            name: { type: String },
+            email: { type: String },
+            role: { type: String },
+            at: { type: Date }
+        },
+        lastModifiedByAdmin: {
+            adminId: { type: String },
+            name: { type: String },
+            email: { type: String },
+            role: { type: String },
+            action: { type: String },
+            at: { type: Date }
+        },
+        auditLogs: [{
+            action: { type: String, required: true },
+            performedBy: {
+                adminId: { type: String },
+                name: { type: String },
+                email: { type: String },
+                role: { type: String }
+            },
+            details: { type: String },
+            timestamp: { type: Date, default: Date.now }
+        }],
         autoExecuted: {
             type: Boolean,
             default: false

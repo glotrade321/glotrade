@@ -1,6 +1,27 @@
 // src/models/Order.ts
 import mongoose, { Document, Schema } from "mongoose";
 
+export interface IOrderAdminActor {
+  adminId?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  at?: Date;
+  action?: string;
+}
+
+export interface IOrderAuditLogEntry {
+  action: string;
+  performedBy?: {
+    adminId?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+  };
+  details?: string;
+  timestamp: Date;
+}
+
 export interface IOrder extends Document {
   buyer?: Schema.Types.ObjectId;
   guestEmail?: string;
@@ -47,6 +68,12 @@ export interface IOrder extends Document {
   // PO fields
   purchaseOrderNumber?: string;
   poDocument?: string;
+  // Audit & Manager Blame Fields
+  statusUpdatedByAdmin?: IOrderAdminActor;
+  refundApprovedByAdmin?: IOrderAdminActor;
+  cancelledByAdmin?: IOrderAdminActor;
+  lastModifiedByAdmin?: IOrderAdminActor;
+  auditLogs?: IOrderAuditLogEntry[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -128,6 +155,49 @@ const orderSchema = new Schema<IOrder>(
     // PO fields
     purchaseOrderNumber: { type: String, required: false },
     poDocument: { type: String, required: false },
+    // Audit & Manager Blame Fields
+    statusUpdatedByAdmin: {
+      adminId: { type: String },
+      name: { type: String },
+      email: { type: String },
+      role: { type: String },
+      at: { type: Date },
+    },
+    refundApprovedByAdmin: {
+      adminId: { type: String },
+      name: { type: String },
+      email: { type: String },
+      role: { type: String },
+      at: { type: Date },
+    },
+    cancelledByAdmin: {
+      adminId: { type: String },
+      name: { type: String },
+      email: { type: String },
+      role: { type: String },
+      at: { type: Date },
+    },
+    lastModifiedByAdmin: {
+      adminId: { type: String },
+      name: { type: String },
+      email: { type: String },
+      role: { type: String },
+      action: { type: String },
+      at: { type: Date },
+    },
+    auditLogs: [
+      {
+        action: { type: String, required: true },
+        performedBy: {
+          adminId: { type: String },
+          name: { type: String },
+          email: { type: String },
+          role: { type: String },
+        },
+        details: { type: String },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

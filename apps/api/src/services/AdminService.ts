@@ -1729,22 +1729,51 @@ export class AdminService extends BaseService<IUser> {
   }
 
   /**
-   * Update order status
+   * Update order status with manager actor audit tracking
    */
-  async updateOrderStatus(orderId: string, newStatus: string): Promise<any> {
+  async updateOrderStatus(orderId: string, newStatus: string, adminUser?: any): Promise<any> {
     try {
-      const order = await Order.findByIdAndUpdate(
-        orderId,
-        {
-          status: newStatus,
-          updatedAt: new Date()
-        },
-        { new: true }
-      );
+      const order = await Order.findById(orderId);
 
       if (!order) {
         throw new Error('Order not found');
       }
+
+      const previousStatus = order.status;
+      order.status = newStatus as any;
+      order.updatedAt = new Date();
+
+      if (adminUser) {
+        const actorName =
+          adminUser.name ||
+          [adminUser.firstName, adminUser.lastName].filter(Boolean).join(" ") ||
+          adminUser.username ||
+          adminUser.email ||
+          "Order Manager";
+
+        const actor = {
+          adminId: String(adminUser._id || adminUser.id || ""),
+          name: actorName,
+          email: adminUser.email || "",
+          role: adminUser.role || "order_manager",
+          at: new Date(),
+        };
+
+        order.statusUpdatedByAdmin = actor;
+        order.lastModifiedByAdmin = { ...actor, action: "STATUS_UPDATE" };
+
+        if (!order.auditLogs) {
+          order.auditLogs = [];
+        }
+        order.auditLogs.push({
+          action: "STATUS_UPDATE",
+          performedBy: actor,
+          details: `Order status updated from '${previousStatus}' to '${newStatus}'`,
+          timestamp: new Date(),
+        });
+      }
+
+      await order.save();
 
       // **SALES AGENT INTEGRATION**: Calculate commission when order is delivered
       if (newStatus === 'delivered') {
@@ -1779,9 +1808,9 @@ export class AdminService extends BaseService<IUser> {
   }
 
   /**
-   * Cancel order (admin action)
+   * Cancel order (admin action with manager blame tracking)
    */
-  async cancelOrder(orderId: string): Promise<any> {
+  async cancelOrder(orderId: string, adminUser?: any): Promise<any> {
     try {
       const order = await Order.findById(orderId);
 
@@ -1797,18 +1826,43 @@ export class AdminService extends BaseService<IUser> {
         throw new Error('Cannot cancel delivered order');
       }
 
-      // Update order status to cancelled
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        {
-          status: 'cancelled',
-          cancelledAt: new Date(),
-          updatedAt: new Date()
-        },
-        { new: true }
-      );
+      const previousStatus = order.status;
+      order.status = 'cancelled' as any;
+      (order as any).cancelledAt = new Date();
+      order.updatedAt = new Date();
 
-      return updatedOrder;
+      if (adminUser) {
+        const actorName =
+          adminUser.name ||
+          [adminUser.firstName, adminUser.lastName].filter(Boolean).join(" ") ||
+          adminUser.username ||
+          adminUser.email ||
+          "Order Manager";
+
+        const actor = {
+          adminId: String(adminUser._id || adminUser.id || ""),
+          name: actorName,
+          email: adminUser.email || "",
+          role: adminUser.role || "order_manager",
+          at: new Date(),
+        };
+
+        order.cancelledByAdmin = actor;
+        order.lastModifiedByAdmin = { ...actor, action: "CANCEL_ORDER" };
+
+        if (!order.auditLogs) {
+          order.auditLogs = [];
+        }
+        order.auditLogs.push({
+          action: "ORDER_CANCELLED",
+          performedBy: actor,
+          details: `Order cancelled by manager (Previous status: '${previousStatus}')`,
+          timestamp: new Date(),
+        });
+      }
+
+      await order.save();
+      return order;
     } catch (error: any) {
       console.error('Error cancelling order:', error);
       throw error;
@@ -1817,19 +1871,8 @@ export class AdminService extends BaseService<IUser> {
 
   /**
    * Process simple order refund (quick admin action)
-   * 
-   * This method handles quick admin refunds with default parameters:
-   * - Uses "Admin refund" as the default reason
-   * - Refunds the full order amount
-   * - Validates order exists and is deliverable
-   * - Prevents duplicate refunds
-   * 
-   * Used by: POST /api/v1/admin/orders/:id/refund endpoint
-   * 
-   * @param {string} orderId - The order ID to refund
-   * @returns {Promise<any>} Updated order object
    */
-  async processRefund(orderId: string): Promise<any> {
+  async processRefund(orderId: string, adminUser?: any): Promise<any> {
     try {
       const order = await Order.findById(orderId);
 
@@ -1846,7 +1889,7 @@ export class AdminService extends BaseService<IUser> {
       }
 
       // Use the existing refundOrder method
-      return await this.refundOrder(orderId, 'Admin refund', order.totalPrice);
+      return await this.refundOrder(orderId, 'Admin refund', order.totalPrice, adminUser);
     } catch (error: any) {
       console.error('Error processing refund:', error);
       throw error;
@@ -1854,22 +1897,9 @@ export class AdminService extends BaseService<IUser> {
   }
 
   /**
-   * Process detailed order refund with custom parameters
-   * 
-   * This method handles advanced refund scenarios with custom parameters:
-   * - Allows custom refund reasons for documentation
-   * - Supports partial refunds with custom amounts
-   * - Updates paymentStatus to 'refunded'
-   * - Adds refund metadata (reason, amount, timestamp)
-   * 
-   * Used by: PUT /api/v1/admin/orders/:id/refund endpoint and processRefund method
-   * 
-   * @param {string} orderId - The order ID to refund
-   * @param {string} reason - Custom refund reason for documentation
-   * @param {number} amount - Optional custom refund amount (defaults to full order amount)
-   * @returns {Promise<any>} Updated order object with refund details
+   * Process detailed order refund with custom parameters & manager blame tracking
    */
-  async refundOrder(orderId: string, reason: string, amount?: number): Promise<any> {
+  async refundOrder(orderId: string, reason: string, amount?: number, adminUser?: any): Promise<any> {
     try {
       const order = await Order.findById(orderId);
 
@@ -1877,23 +1907,45 @@ export class AdminService extends BaseService<IUser> {
         throw new Error('Order not found');
       }
 
-      // In a real implementation, this would integrate with payment gateway
-      // For now, just update the order status and add refund info
       const refundAmount = amount || order.totalPrice;
+      order.paymentStatus = 'refunded';
+      (order as any).refundReason = reason;
+      (order as any).refundAmount = refundAmount;
+      (order as any).refundedAt = new Date();
+      order.updatedAt = new Date();
 
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        {
-          paymentStatus: 'refunded',
-          refundReason: reason,
-          refundAmount,
-          refundedAt: new Date(),
-          updatedAt: new Date()
-        },
-        { new: true }
-      );
+      if (adminUser) {
+        const actorName =
+          adminUser.name ||
+          [adminUser.firstName, adminUser.lastName].filter(Boolean).join(" ") ||
+          adminUser.username ||
+          adminUser.email ||
+          "Order Manager";
 
-      return updatedOrder;
+        const actor = {
+          adminId: String(adminUser._id || adminUser.id || ""),
+          name: actorName,
+          email: adminUser.email || "",
+          role: adminUser.role || "order_manager",
+          at: new Date(),
+        };
+
+        order.refundApprovedByAdmin = actor;
+        order.lastModifiedByAdmin = { ...actor, action: "REFUND_ORDER" };
+
+        if (!order.auditLogs) {
+          order.auditLogs = [];
+        }
+        order.auditLogs.push({
+          action: "REFUND_PROCESSED",
+          performedBy: actor,
+          details: `Refund of ₦${refundAmount.toLocaleString("en-NG")} processed. Reason: ${reason}`,
+          timestamp: new Date(),
+        });
+      }
+
+      await order.save();
+      return order;
     } catch (error: any) {
       console.error('Error processing refund:', error);
       throw error;

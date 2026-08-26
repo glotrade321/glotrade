@@ -16,10 +16,35 @@ import {
     Clock3,
     Image as ImageIcon,
     Layers,
-    TrendingUp
+    TrendingUp,
+    ShieldCheck,
+    History,
+    UserCheck,
+    X,
 } from "lucide-react";
 import Link from "next/link";
 import { getOptimizedImageUrl } from "@/utils/image";
+
+interface ProductAdminActor {
+    adminId?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+    at?: string;
+    action?: string;
+}
+
+interface ProductAuditLog {
+    action: string;
+    performedBy?: {
+        adminId?: string;
+        name?: string;
+        email?: string;
+        role?: string;
+    };
+    details?: string;
+    timestamp: string;
+}
 
 interface Product {
     _id: string;
@@ -36,8 +61,12 @@ interface Product {
     brand?: string;
     featured: boolean;
     discount: number;
+    status?: string;
     createdAt?: string;
     updatedAt?: string;
+    createdByAdmin?: ProductAdminActor;
+    lastModifiedByAdmin?: ProductAdminActor;
+    auditLogs?: ProductAuditLog[];
     seller?: {
         _id: string;
         username: string;
@@ -184,6 +213,7 @@ export default function AdminProductsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; product: Product | null }>({ isOpen: false, product: null });
+    const [inspectProduct, setInspectProduct] = useState<Product | null>(null);
     const [overview, setOverview] = useState<ProductOverview | null>(null);
     const [overviewLoading, setOverviewLoading] = useState(true);
     const itemsPerPage = 20;
@@ -713,6 +743,13 @@ export default function AdminProductsPage() {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={() => setInspectProduct(product)}
+                                                            className="text-amber-600 hover:text-amber-900"
+                                                            title="Inspect Manager Audit Trail"
+                                                        >
+                                                            <ShieldCheck size={16} />
+                                                        </button>
                                                         <Link
                                                             href={`/marketplace/${product._id}`}
                                                             className="text-blue-600 hover:text-blue-900"
@@ -785,6 +822,13 @@ export default function AdminProductsPage() {
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-3">
+                                                    <button
+                                                        onClick={() => setInspectProduct(product)}
+                                                        className="text-amber-600 hover:text-amber-900 text-sm"
+                                                        title="Inspect Manager Audit Trail"
+                                                    >
+                                                        <ShieldCheck size={18} />
+                                                    </button>
                                                     <Link
                                                         href={`/marketplace/${product._id}`}
                                                         className="text-blue-600 hover:text-blue-900 text-sm"
@@ -821,7 +865,7 @@ export default function AdminProductsPage() {
                                     >
                                         Previous
                                     </button>
-                                    <span className="text-sm text-gray-700">
+                                    <span className="text-sm text-gray-500">
                                         Page {currentPage} of {totalPages}
                                     </span>
                                     <button
@@ -836,6 +880,198 @@ export default function AdminProductsPage() {
                         </>
                     )}
                 </div>
+
+                {/* Product Inspection & Manager Audit Modal */}
+                {inspectProduct && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
+                                        <ShieldCheck size={22} />
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] uppercase font-bold text-amber-600 tracking-wider">Product Inspection & Blame</span>
+                                        <h3 className="text-lg font-bold text-gray-900 truncate max-w-md">{inspectProduct.title}</h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setInspectProduct(null)}
+                                    className="p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            {/* Product Quick Specs */}
+                            <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-200">
+                                <div className="flex gap-4 items-center">
+                                    {inspectProduct.images && inspectProduct.images.length > 0 ? (
+                                        <img
+                                            src={getOptimizedImageUrl(inspectProduct.images[0], { width: 120, quality: 70 })}
+                                            alt={inspectProduct.title}
+                                            className="w-16 h-16 object-cover rounded-lg border border-gray-200 shrink-0"
+                                        />
+                                    ) : (
+                                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 shrink-0">
+                                            <Package size={24} />
+                                        </div>
+                                    )}
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs flex-1">
+                                        <div>
+                                            <span className="text-gray-500 block">Price:</span>
+                                            <span className="font-bold text-emerald-600 text-sm">
+                                                {formatCurrency(inspectProduct.price, inspectProduct.currency)}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-500 block">Stock Qty:</span>
+                                            <span className="font-bold text-gray-900">{inspectProduct.quantity.toLocaleString()}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-500 block">Category:</span>
+                                            <span className="font-semibold text-gray-800 truncate block">{inspectProduct.category}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-500 block">Condition:</span>
+                                            <span className="font-semibold text-gray-800 capitalize">{inspectProduct.condition}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Manager Action Audit & Blame Trail */}
+                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-white space-y-3 shadow-inner mb-5">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                        <ShieldCheck size={14} className="text-amber-400" /> Manager Audit & Action Trail (Blame Log)
+                                    </h4>
+                                    <span className="text-[10px] text-slate-400 font-mono">Traceability</span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                    {/* Created By */}
+                                    <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                                        <span className="text-[10px] uppercase font-bold text-slate-400 block">Creation Origin</span>
+                                        {inspectProduct.createdByAdmin ? (
+                                            <div>
+                                                <div className="font-bold text-amber-300">{inspectProduct.createdByAdmin.name}</div>
+                                                <span className="text-[10px] text-slate-400 block truncate" title={inspectProduct.createdByAdmin.email}>
+                                                    {inspectProduct.createdByAdmin.email}
+                                                </span>
+                                                <div className="mt-1 flex items-center gap-1">
+                                                    <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[9px] font-bold uppercase border border-amber-500/30">
+                                                        {inspectProduct.createdByAdmin.role || "Product Manager"}
+                                                    </span>
+                                                </div>
+                                                {inspectProduct.createdByAdmin.at && (
+                                                    <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                                                        {new Date(inspectProduct.createdByAdmin.at).toLocaleString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <span className="font-semibold text-slate-300">Vendor Self-Listed</span>
+                                                <span className="text-[10px] text-slate-500 block">Created via vendor portal</span>
+                                                {inspectProduct.createdAt && (
+                                                    <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                                                        {new Date(inspectProduct.createdAt).toLocaleString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Last Modified By */}
+                                    <div className="p-3 bg-slate-950/80 rounded-lg border border-slate-800 space-y-1">
+                                        <span className="text-[10px] uppercase font-bold text-slate-400 block">Last Modification</span>
+                                        {inspectProduct.lastModifiedByAdmin ? (
+                                            <div>
+                                                <div className="font-bold text-teal-300">{inspectProduct.lastModifiedByAdmin.name}</div>
+                                                <span className="text-[10px] text-slate-400 block truncate" title={inspectProduct.lastModifiedByAdmin.email}>
+                                                    {inspectProduct.lastModifiedByAdmin.email}
+                                                </span>
+                                                <div className="mt-1 flex items-center gap-1">
+                                                    <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-400 text-[9px] font-bold uppercase border border-teal-500/30">
+                                                        {inspectProduct.lastModifiedByAdmin.role || "Manager"}
+                                                    </span>
+                                                    {inspectProduct.lastModifiedByAdmin.action && (
+                                                        <span className="text-[9px] text-slate-400 font-mono">
+                                                            ({inspectProduct.lastModifiedByAdmin.action})
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {inspectProduct.lastModifiedByAdmin.at && (
+                                                    <span className="text-[9px] text-slate-500 block mt-1 font-mono">
+                                                        {new Date(inspectProduct.lastModifiedByAdmin.at).toLocaleString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <span className="font-semibold text-slate-300">No Admin Edits</span>
+                                                <span className="text-[10px] text-slate-500 block">Original seller listing</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Action Chronology Log */}
+                                {inspectProduct.auditLogs && inspectProduct.auditLogs.length > 0 && (
+                                    <div className="pt-2 border-t border-slate-800">
+                                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5 flex items-center gap-1">
+                                            <History size={12} className="text-amber-400" /> Action Chronology ({inspectProduct.auditLogs.length}):
+                                        </span>
+                                        <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                                            {inspectProduct.auditLogs.map((log: any, idx: number) => (
+                                                <div
+                                                    key={idx}
+                                                    className="p-2 bg-slate-950/90 rounded-lg border border-slate-800 flex items-start justify-between text-[11px] gap-2"
+                                                >
+                                                    <div className="space-y-0.5 min-w-0">
+                                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                                            <span className="font-bold text-amber-300">{log.performedBy?.name || "Manager"}</span>
+                                                            <span className="text-[9px] px-1.5 py-0.2 bg-slate-800 text-slate-300 rounded font-mono">
+                                                                {log.performedBy?.role || "admin"}
+                                                            </span>
+                                                            <span className="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-1 rounded">
+                                                                {log.action}
+                                                            </span>
+                                                        </div>
+                                                        {log.details && (
+                                                            <p className="text-slate-300 text-[10px] leading-relaxed break-words">{log.details}</p>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-[9px] text-slate-500 shrink-0 font-mono">
+                                                        {log.timestamp ? new Date(log.timestamp).toLocaleString() : ""}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Modal Actions */}
+                            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
+                                <Link
+                                    href={`/admin/products/${inspectProduct._id}`}
+                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5"
+                                >
+                                    <Edit size={14} /> Full Edit
+                                </Link>
+                                <button
+                                    onClick={() => setInspectProduct(null)}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Delete Confirmation Modal */}
                 {deleteModal.isOpen && (

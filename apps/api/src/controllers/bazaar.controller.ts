@@ -33,6 +33,24 @@ function generateTicketCode(): string {
   return "GTB-" + crypto.randomBytes(3).toString("hex").toUpperCase();
 }
 
+// Helper to extract authenticated manager/admin details for action blame/audit tracking
+function extractAdminActor(req: Request) {
+  const user = (req as any).user;
+  if (!user) return null;
+  const name =
+    user.name ||
+    [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+    user.username ||
+    user.email ||
+    "Admin Manager";
+  return {
+    adminId: String(user._id || user.id || ""),
+    name,
+    email: user.email || "",
+    role: user.role || "bazaar_manager",
+  };
+}
+
 export class BazaarController {
   // Public: Get portal config & seasonal status
   static async getPublicConfig(req: Request, res: Response, next: NextFunction) {
@@ -395,7 +413,7 @@ export class BazaarController {
     }
   }
 
-  // Admin: Update booking status or notes
+  // Admin: Update booking status or notes (with Manager Action Audit Blame Tracking)
   static async updateBookingStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
@@ -406,15 +424,74 @@ export class BazaarController {
         return res.status(404).json({ status: "fail", message: "Booking not found." });
       }
 
+      const actor = extractAdminActor(req);
       const previousStatus = booking.paymentStatus;
-      if (paymentStatus) booking.paymentStatus = paymentStatus;
-      if (checkInStatus) {
-        booking.checkInStatus = checkInStatus;
-        if (checkInStatus === "checked_in" && !booking.checkInTime) {
-          booking.checkInTime = new Date();
+      const previousCheckIn = booking.checkInStatus;
+
+      if (!booking.auditLogs) {
+        booking.auditLogs = [];
+      }
+
+      if (paymentStatus && paymentStatus !== previousStatus) {
+        booking.paymentStatus = paymentStatus;
+        if (paymentStatus === "paid" && actor) {
+          booking.paymentApprovedBy = { ...actor, at: new Date() };
+          booking.auditLogs.push({
+            action: "PAYMENT_MARKED_PAID",
+            performedBy: actor,
+            details: `Payment status updated from '${previousStatus}' to 'PAID'`,
+            timestamp: new Date(),
+          });
+        } else if (actor) {
+          booking.auditLogs.push({
+            action: "PAYMENT_STATUS_CHANGE",
+            performedBy: actor,
+            details: `Payment status updated from '${previousStatus}' to '${paymentStatus}'`,
+            timestamp: new Date(),
+          });
         }
       }
-      if (notes !== undefined) booking.notes = notes;
+
+      if (checkInStatus && checkInStatus !== previousCheckIn) {
+        booking.checkInStatus = checkInStatus;
+        if (checkInStatus === "checked_in") {
+          if (!booking.checkInTime) {
+            booking.checkInTime = new Date();
+          }
+          if (actor) {
+            booking.checkedInBy = { ...actor, at: new Date() };
+            booking.auditLogs.push({
+              action: "GATE_CHECK_IN",
+              performedBy: actor,
+              details: `Guest admitted & checked in at gate`,
+              timestamp: new Date(),
+            });
+          }
+        } else if (actor) {
+          booking.auditLogs.push({
+            action: "CHECK_IN_STATUS_CHANGE",
+            performedBy: actor,
+            details: `Gate check-in status reset to '${checkInStatus}'`,
+            timestamp: new Date(),
+          });
+        }
+      }
+
+      if (notes !== undefined && notes !== booking.notes) {
+        booking.notes = notes;
+        if (actor) {
+          booking.auditLogs.push({
+            action: "NOTES_UPDATED",
+            performedBy: actor,
+            details: `Booking notes/special requests updated`,
+            timestamp: new Date(),
+          });
+        }
+      }
+
+      if (actor) {
+        booking.lastModifiedBy = { ...actor, action: "UPDATE_BOOKING", at: new Date() };
+      }
 
       await booking.save();
 
@@ -431,7 +508,7 @@ export class BazaarController {
     }
   }
 
-  // Admin: Create manual ticket / exhibitor / sponsorship booking
+  // Admin: Create manual ticket / exhibitor / sponsorship booking with Manager Actor Tagging
   static async createManualBooking(req: Request, res: Response, next: NextFunction) {
     try {
       const {
@@ -451,9 +528,23 @@ export class BazaarController {
         return res.status(400).json({ status: "fail", message: "Customer name, email, and phone number are required." });
       }
 
+      const actor = extractAdminActor(req);
       const prefix = type === "ticket" ? "TK" : type === "exhibitor" ? "EX" : type === "sponsorship" ? "SP" : "CT";
       const reference = `BZ-${prefix}-M-${Date.now()}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
       const ticketCode = generateTicketCode();
+
+      const registeredBy = actor ? { ...actor, at: new Date() } : undefined;
+      const paymentApprovedBy = actor && paymentStatus === "paid" ? { ...actor, at: new Date() } : undefined;
+      const auditLogs = actor
+        ? [
+            {
+              action: "MANUAL_REGISTRATION",
+              performedBy: actor,
+              details: `Manual registration created for ${packageName} (₦${Number(amount).toLocaleString("en-NG")}) - Status: ${paymentStatus.toUpperCase()}`,
+              timestamp: new Date(),
+            },
+          ]
+        : [];
 
       const booking = await BazaarBooking.create({
         reference,
@@ -470,6 +561,9 @@ export class BazaarController {
         notes,
         paymentStatus,
         checkInStatus: "pending",
+        registeredBy,
+        paymentApprovedBy,
+        auditLogs,
       });
 
       let emailSent = false;
@@ -492,13 +586,28 @@ export class BazaarController {
     }
   }
 
-  // Admin: Resend ticket confirmation email
+  // Admin: Resend ticket confirmation email with Audit Blame Logging
   static async resendConfirmationEmail(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       const booking = await BazaarBooking.findById(id);
       if (!booking) {
         return res.status(404).json({ status: "fail", message: "Booking record not found." });
+      }
+
+      const actor = extractAdminActor(req);
+      if (actor) {
+        if (!booking.auditLogs) {
+          booking.auditLogs = [];
+        }
+        booking.auditLogs.push({
+          action: "RESEND_CONFIRMATION_EMAIL",
+          performedBy: actor,
+          details: `Ticket confirmation pass resent to ${booking.customerEmail}`,
+          timestamp: new Date(),
+        });
+        booking.lastModifiedBy = { ...actor, action: "RESEND_EMAIL", at: new Date() };
+        await booking.save();
       }
 
       await emailService.sendBazaarConfirmationEmail(booking);
@@ -512,7 +621,7 @@ export class BazaarController {
     }
   }
 
-  // Admin / Gate Check-in: Verify & check in ticket
+  // Admin / Gate Check-in: Verify & check in ticket with Scanner Blame Tracking
   static async checkInTicket(req: Request, res: Response, next: NextFunction) {
     try {
       const { code } = req.body;
@@ -542,13 +651,31 @@ export class BazaarController {
       if (booking.checkInStatus === "checked_in") {
         return res.status(400).json({
           status: "fail",
-          message: `Ticket ALREADY CHECKED IN at ${booking.checkInTime ? new Date(booking.checkInTime).toLocaleTimeString() : "earlier"}.`,
+          message: `Ticket ALREADY CHECKED IN at ${booking.checkInTime ? new Date(booking.checkInTime).toLocaleTimeString() : "earlier"}${
+            booking.checkedInBy?.name ? ` by ${booking.checkedInBy.name}` : ""
+          }.`,
           booking,
         });
       }
 
+      const actor = extractAdminActor(req);
       booking.checkInStatus = "checked_in";
       booking.checkInTime = new Date();
+
+      if (actor) {
+        booking.checkedInBy = { ...actor, at: new Date() };
+        if (!booking.auditLogs) {
+          booking.auditLogs = [];
+        }
+        booking.auditLogs.push({
+          action: "GATE_CHECK_IN",
+          performedBy: actor,
+          details: `Validated QR code and granted entrance at Harrow Park gate`,
+          timestamp: new Date(),
+        });
+        booking.lastModifiedBy = { ...actor, action: "GATE_CHECK_IN", at: new Date() };
+      }
+
       await booking.save();
 
       res.json({
