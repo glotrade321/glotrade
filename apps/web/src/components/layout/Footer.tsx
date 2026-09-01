@@ -103,6 +103,11 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/about" className="hover:text-[#2EA5FF] transition-colors flex items-center gap-2">
+                                    {translate(locale, "footer.about") || "About Us"}
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/gdip" className="hover:text-[#2EA5FF] transition-colors flex items-center gap-2">
                                     <ShieldCheck size={14} className="text-[#F9A407]" />
                                     {translate(locale, "footer.gdip")}
@@ -122,7 +127,7 @@ export default function Footer() {
                                 <Link href="/orders" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.trackOrder")}</Link>
                             </li>
                             <li>
-                                <Link href="/support#returns" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.shipping")}</Link>
+                                <Link href="/shipping-policy" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.shipping")}</Link>
                             </li>
                             <li>
                                 <Link href="/support#contact" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.contact")}</Link>
@@ -156,10 +161,16 @@ export default function Footer() {
                         <h3 className="text-white font-bold uppercase tracking-wider text-sm">{translate(locale, "footer.legal")}</h3>
                         <ul className="space-y-3 text-sm">
                             <li>
-                                <Link href="/security/report" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.privacy")}</Link>
+                                <Link href="/privacy-policy" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.privacy")}</Link>
                             </li>
                             <li>
-                                <Link href="/security/report" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.terms")}</Link>
+                                <Link href="/terms-of-service" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.terms")}</Link>
+                            </li>
+                            <li>
+                                <Link href="/refund-policy" className="hover:text-[#2EA5FF] transition-colors flex items-center gap-2">
+                                    <RotateCcw size={14} className="text-orange-400" />
+                                    {translate(locale, "footer.refundPolicy") || "Refund Policy"}
+                                </Link>
                             </li>
                             <li>
                                 <Link href="/security/fraud-cases" className="hover:text-[#2EA5FF] transition-colors">{translate(locale, "footer.fraud")}</Link>

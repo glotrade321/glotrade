@@ -985,11 +985,11 @@ export default function PlatformSettingsPage() {
                       Payment Gateway Priority
                     </label>
                     <select
-                      defaultValue="flutterwave"
+                      defaultValue="paystack"
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
-                      <option value="flutterwave">Flutterwave (Primary)</option>
-                      <option value="paystack">Paystack (Secondary)</option>
+                      <option value="paystack">Paystack (Primary)</option>
+                      <option value="flutterwave" disabled>Flutterwave (Unavailable)</option>
                       <option value="orange_money">Orange Money (XOF Countries)</option>
                       <option value="stripe">Stripe (International)</option>
                       <option value="paypal">PayPal (International)</option>

@@ -1112,10 +1112,7 @@ export default function CheckoutPage() {
                   }
 
                   // BANK PAYMENT: Create order first, then redirect to gateway
-                  const provider =
-                    paymentMethod === "flutterwave"
-                      ? "flutterwave"
-                      : "paystack";
+                  const provider = "paystack";
 
                   const orderRes = await createOrder({
                     buyerId,
