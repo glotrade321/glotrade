@@ -8,16 +8,15 @@ import {
   Target,
   Heart,
   ShieldCheck,
-  Users,
   TrendingUp,
   Zap,
   MapPin,
   Phone,
   Mail,
   ArrowRight,
-  Store,
   Package,
-  Star,
+  RotateCcw,
+  Clock,
 } from "lucide-react";
 import { translate } from "@/utils/translate";
 
@@ -33,10 +32,10 @@ const colorMap: Record<string, { bg: string; icon: string }> = {
 
 export default function AboutPage() {
   const stats = [
-    { value: "10,000+", labelKey: "about.stats.products", icon: Package, color: "blue" },
-    { value: "5,000+", labelKey: "about.stats.buyers", icon: Users, color: "purple" },
-    { value: "100%", labelKey: "about.stats.sellers", icon: ShieldCheck, color: "orange" },
-    { value: "4.8★", labelKey: "about.stats.rating", icon: Star, color: "amber" },
+    { value: "36 States", labelKey: "about.stats.coverage",  icon: MapPin,      color: "blue" },
+    { value: "100%",      labelKey: "about.stats.authentic", icon: ShieldCheck, color: "green" },
+    { value: "7 Days",    labelKey: "about.stats.returns",   icon: RotateCcw,   color: "orange" },
+    { value: "24/7",      labelKey: "about.stats.support",   icon: Clock,       color: "purple" },
   ];
 
   const values = [
