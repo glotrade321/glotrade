@@ -59,7 +59,7 @@ export default function TicketsPage() {
             {translate("bazaar.ticketsHeading") || "Book Your Event Pass"}
           </h1>
           <p className="text-slate-400 mt-4 text-base sm:text-lg">
-            {translate("bazaar.ticketsSubtitle") || "Choose your ticket tier. All passes include verified entrance, event access, and Paystack instant payment confirmation."}
+            {translate("bazaar.ticketsSubtitle") || "Choose your ticket tier. All passes include verified entrance, event access, and instant booking confirmation."}
           </p>
         </div>
 

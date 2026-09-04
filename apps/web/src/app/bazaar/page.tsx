@@ -369,7 +369,7 @@ export default function BazaarHome() {
                   {translate("bazaar.navTickets") || "Event Tickets & Passes"}
                 </h2>
                 <p className="text-slate-400 mt-2">
-                  {translate("bazaar.ticketsSubtitle") || "Select your preferred entry tier and pay securely via Paystack."}
+                  {translate("bazaar.ticketsSubtitle") || "Select your preferred entry tier and complete your booking."}
                 </p>
               </div>
 
@@ -596,6 +596,7 @@ export default function BazaarHome() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         pkg={selectedPkg}
+        config={config}
       />
 
       <BazaarFooter />

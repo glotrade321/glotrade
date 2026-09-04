@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   X,
@@ -16,7 +16,7 @@ import {
   ExternalLink,
   ShieldAlert
 } from "lucide-react";
-import { apiPost } from "@/utils/api";
+import { apiPost, apiGet } from "@/utils/api";
 import { translate } from "@/utils/translate";
 
 export interface BookingPackage {
@@ -35,7 +35,8 @@ interface BookingModalProps {
 }
 
 export default function BookingModal({ isOpen, onClose, pkg, config }: BookingModalProps) {
-  const [paymentMode, setPaymentMode] = useState<"paystack" | "bank_transfer">("paystack");
+  const [internalConfig, setInternalConfig] = useState<any>(config || null);
+  const [paymentMode, setPaymentMode] = useState<"paystack" | "bank_transfer">("bank_transfer");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -49,12 +50,25 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
   const [copied, setCopied] = useState(false);
   const [transferSubmitted, setTransferSubmitted] = useState<any>(null);
 
+  useEffect(() => {
+    if (config) {
+      setInternalConfig(config);
+    } else if (isOpen) {
+      apiGet("/api/v1/bazaar/config")
+        .then((res: any) => {
+          if (res?.data) setInternalConfig(res.data);
+        })
+        .catch(() => {});
+    }
+  }, [config, isOpen]);
+
   if (!isOpen || !pkg) return null;
 
-  const bankName = config?.bankName || "Wema Bank";
-  const bankAccountName = config?.bankAccountName || "GloTrade Platform Limited";
-  const bankAccountNumber = config?.bankAccountNumber || "0127131496";
-  const whatsappNumber = config?.whatsappNumber || "2347044600924";
+  const activeConfig = config || internalConfig;
+  const bankName = activeConfig?.bankName || "Wema Bank";
+  const bankAccountName = activeConfig?.bankAccountName || "GloTrade Platform Limited";
+  const bankAccountNumber = activeConfig?.bankAccountNumber || "0127131496";
+  const whatsappNumber = activeConfig?.whatsappNumber || "2347044600924";
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(bankAccountNumber);
@@ -73,6 +87,7 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
     setTermsError(false);
     setShowTermsModal(false);
     setTransferSubmitted(null);
+    setPaymentMode("bank_transfer");
     onClose();
   };
 
@@ -243,16 +258,6 @@ Please verify my payment and send my ticket confirmation email.`;
             <div className="grid grid-cols-2 gap-2 mb-4 p-1 bg-slate-950/80 border border-slate-800 rounded-xl">
               <button
                 type="button"
-                onClick={() => setPaymentMode("paystack")}
-                className={`py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${paymentMode === "paystack"
-                  ? "bg-amber-500 text-slate-950 shadow-md"
-                  : "text-slate-400 hover:text-white"
-                  }`}
-              >
-                <CreditCard size={15} /> Instant Card / Paystack
-              </button>
-              <button
-                type="button"
                 onClick={() => setPaymentMode("bank_transfer")}
                 className={`py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${paymentMode === "bank_transfer"
                   ? "bg-amber-500 text-slate-950 shadow-md"
@@ -260,6 +265,18 @@ Please verify my payment and send my ticket confirmation email.`;
                   }`}
               >
                 <Building2 size={15} /> Bank Transfer / WhatsApp
+              </button>
+              <button
+                type="button"
+                disabled
+                className="py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 opacity-60 cursor-not-allowed text-slate-400 border border-slate-800/40 select-none"
+                title="Instant Card / Paystack is coming soon"
+              >
+                <CreditCard size={15} />
+                <span>Instant Card</span>
+                <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  Coming Soon
+                </span>
               </button>
             </div>
 

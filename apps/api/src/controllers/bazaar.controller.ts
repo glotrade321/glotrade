@@ -276,23 +276,27 @@ export class BazaarController {
         return res.json({ status: "success", data: { booking, paid: true } });
       }
 
-      // Verify with Paystack
-      const verifyRef = booking.paystackReference || booking.reference;
-      const verifyRes = await paystackProvider.verify(verifyRef);
+      // If booking was initialized with Paystack, attempt verification
+      if (booking.paystackReference) {
+        try {
+          const verifyRes = await paystackProvider.verify(booking.paystackReference);
+          if (verifyRes?.paid) {
+            booking.paymentStatus = "paid";
+            await booking.save();
 
-      if (verifyRes.paid) {
-        booking.paymentStatus = "paid";
-        await booking.save();
+            // Send confirmation email with ticket code
+            emailService.sendBazaarConfirmationEmail(booking).catch((emailErr) => {
+              console.error("Failed to send bazaar confirmation email:", emailErr);
+            });
 
-        // Send confirmation email with ticket code
-        emailService.sendBazaarConfirmationEmail(booking).catch((emailErr) => {
-          console.error("Failed to send bazaar confirmation email:", emailErr);
-        });
-
-        return res.json({ status: "success", data: { booking, paid: true } });
-      } else {
-        return res.json({ status: "success", data: { booking, paid: false } });
+            return res.json({ status: "success", data: { booking, paid: true } });
+          }
+        } catch (paystackErr: any) {
+          console.warn("Paystack verification check returned error or was unavailable:", paystackErr?.message || paystackErr);
+        }
       }
+
+      return res.json({ status: "success", data: { booking, paid: false } });
     } catch (err) {
       next(err);
     }

@@ -51,7 +51,7 @@ function CallbackContent() {
         }
       } catch (err: any) {
         console.error("Verification error:", err);
-        setError("Failed to verify transaction. Please refresh or contact support.");
+        setError(err?.message || "Failed to verify transaction. Please refresh or contact support.");
       } finally {
         setLoading(false);
       }
@@ -64,7 +64,7 @@ function CallbackContent() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-8">
         <Loader2 className="animate-spin text-amber-500 mb-4" size={36} />
-        <h2 className="text-xl font-bold text-white mb-1">Verifying Your Paystack Payment...</h2>
+        <h2 className="text-xl font-bold text-white mb-1">Verifying Your Booking Payment...</h2>
         <p className="text-xs text-slate-400">Please wait while we confirm your reference: {reference}</p>
       </div>
     );
@@ -86,12 +86,21 @@ function CallbackContent() {
     );
   }
 
+  const isPaid = booking.paymentStatus === "paid";
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-16">
       <div className="bg-slate-900 border-2 border-amber-500/40 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
         {/* Ticket Header Pill */}
-        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-6">
-          <CheckCircle2 size={16} /> Official Entry Pass Confirmed
+        <div
+          className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border mb-6 ${
+            isPaid
+              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+              : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+          }`}
+        >
+          {isPaid ? <CheckCircle2 size={16} /> : <Loader2 size={16} className="animate-spin" />}
+          {isPaid ? "Official Entry Pass Confirmed" : "Booking Received • Awaiting Verification"}
         </div>
 
         <h1 className="text-3xl font-black text-white mb-2">
@@ -105,9 +114,15 @@ function CallbackContent() {
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 mb-8 flex items-center justify-center gap-3 text-left">
           <Mail className="text-amber-400 shrink-0" size={24} />
           <div>
-            <p className="text-sm font-bold text-amber-300">Confirmation Email Sent!</p>
+            <p className="text-sm font-bold text-amber-300">
+              {isPaid ? "Confirmation Email Sent!" : "Bank Transfer Verification in Progress"}
+            </p>
             <p className="text-xs text-slate-300">
-              A copy of your official ticket pass and QR Code has been sent to <span className="font-bold text-white">{booking.customerEmail}</span>.
+              {isPaid ? (
+                <>A copy of your official ticket pass and QR Code has been sent to <span className="font-bold text-white">{booking.customerEmail}</span>.</>
+              ) : (
+                <>Your booking is registered. Once your bank transfer is verified on WhatsApp by the admin team, your pass status will update to Paid and ticket confirmation will be emailed to <span className="font-bold text-white">{booking.customerEmail}</span>.</>
+              )}
             </p>
           </div>
         </div>
@@ -127,7 +142,7 @@ function CallbackContent() {
               <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
                 Payment Status
               </span>
-              <p className="text-sm font-bold text-emerald-400 uppercase">
+              <p className={`text-sm font-bold uppercase ${isPaid ? "text-emerald-400" : "text-amber-400"}`}>
                 {booking.paymentStatus}
               </p>
             </div>
@@ -178,7 +193,7 @@ function CallbackContent() {
           <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
             <span>Ref: {booking.reference}</span>
             <span className="flex items-center gap-1 text-slate-400">
-              <ShieldCheck size={13} className="text-amber-400" /> Paystack Secured
+              <ShieldCheck size={13} className="text-amber-400" /> {booking.paystackReference ? "Paystack Secured" : "GloTrade Verified"}
             </span>
           </div>
         </div>
