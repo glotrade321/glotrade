@@ -24,6 +24,13 @@ async function getOrCreateConfig() {
       whatsappNumber: "2347044600924",
       email: "glotradebazaar@glotrade.online",
     });
+  } else if (
+    !config.whatsappNumber ||
+    config.whatsappNumber === "2348000000000" ||
+    config.whatsappNumber.includes("8000000000")
+  ) {
+    config.whatsappNumber = "2347044600924";
+    await config.save();
   }
   return config;
 }
@@ -93,11 +100,20 @@ export class BazaarController {
       if (eventTitle !== undefined) config.eventTitle = eventTitle;
       if (eventDateLabel !== undefined) config.eventDateLabel = eventDateLabel;
       if (eventVenue !== undefined) config.eventVenue = eventVenue;
-      if (whatsappNumber !== undefined) config.whatsappNumber = whatsappNumber;
+      if (whatsappNumber !== undefined) {
+        const cleaned = String(whatsappNumber).replace(/[^0-9]/g, "");
+        config.whatsappNumber =
+          cleaned === "2348000000000" || !cleaned ? "2347044600924" : cleaned;
+      }
       if (email !== undefined) config.email = email;
-      if (bankName !== undefined) config.bankName = bankName;
-      if (bankAccountName !== undefined) config.bankAccountName = bankAccountName;
-      if (bankAccountNumber !== undefined) config.bankAccountNumber = bankAccountNumber;
+
+      // Only Super Admin can modify official bank transfer checkout account details
+      const isSuperAdmin = Boolean((req as any).user?.isSuperAdmin);
+      if (isSuperAdmin) {
+        if (bankName !== undefined) config.bankName = bankName;
+        if (bankAccountName !== undefined) config.bankAccountName = bankAccountName;
+        if (bankAccountNumber !== undefined) config.bankAccountNumber = bankAccountNumber;
+      }
 
       config.updatedAt = new Date();
       if ((req as any).user) {
@@ -105,7 +121,13 @@ export class BazaarController {
       }
 
       await config.save();
-      res.json({ status: "success", data: config, message: "Bazaar settings updated" });
+      res.json({
+        status: "success",
+        data: config,
+        message: isSuperAdmin
+          ? "Bazaar settings and bank account details updated"
+          : "Bazaar settings updated (bank account details are restricted to Super Admin)",
+      });
     } catch (err) {
       next(err);
     }

@@ -68,7 +68,11 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
   const bankName = activeConfig?.bankName || "Wema Bank";
   const bankAccountName = activeConfig?.bankAccountName || "GloTrade Platform Limited";
   const bankAccountNumber = activeConfig?.bankAccountNumber || "0127131496";
-  const whatsappNumber = activeConfig?.whatsappNumber || "2347044600924";
+  const rawWhatsapp = (activeConfig?.whatsappNumber || "").replace(/[^0-9]/g, "");
+  const whatsappNumber =
+    rawWhatsapp && rawWhatsapp !== "2348000000000" && !rawWhatsapp.includes("8000000000")
+      ? rawWhatsapp
+      : "2347044600924";
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(bankAccountNumber);
@@ -152,12 +156,13 @@ export default function BookingModal({ isOpen, onClose, pkg, config }: BookingMo
         const ticketCode = res?.data?.booking?.ticketCode || res?.data?.ticketCode || "";
 
         // Build WhatsApp pre-filled text
+        const notesLine = notes?.trim() ? `\n- Special Requests / Notes: ${notes.trim()}` : "";
         const waMsg = `Hi GloTrade Bazaar Team, I have made a bank transfer of NGN ${pkg.price.toLocaleString("en-NG")} for my booking:
 - Package: ${pkg.name}
 - Name: ${name}
 - Email: ${email}
 - Phone: ${phone}
-${businessName ? `- Business: ${businessName}\n` : ""}- Ref: ${bookingRef}${ticketCode ? `\n- Ticket Code: ${ticketCode}` : ""}
+${businessName ? `- Business: ${businessName}\n` : ""}- Ref: ${bookingRef}${ticketCode ? `\n- Ticket Code: ${ticketCode}` : ""}${notesLine}
 
 Please verify my payment and send my ticket confirmation email.`;
 
@@ -229,6 +234,12 @@ Please verify my payment and send my ticket confirmation email.`;
                 <span className="text-slate-400">Status:</span>
                 <span className="font-bold text-amber-400 uppercase">Pending Bank Verification</span>
               </div>
+              {notes?.trim() && (
+                <div className="flex justify-between gap-3 pt-1 border-t border-slate-800/80">
+                  <span className="text-slate-400 shrink-0">Special Requests:</span>
+                  <span className="text-slate-200 text-right break-words">{notes.trim()}</span>
+                </div>
+              )}
             </div>
 
             <p className="text-xs text-slate-400">
@@ -242,7 +253,7 @@ Please verify my payment and send my ticket confirmation email.`;
                 rel="noopener noreferrer"
                 className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg"
               >
-                <MessageSquare size={16} /> Open WhatsApp Chat
+                <MessageSquare size={16} /> Open WhatsApp Chat (+234 704 460 0924)
               </a>
               <button
                 onClick={handleModalClose}

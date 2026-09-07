@@ -35,6 +35,8 @@ import {
   ShieldCheck,
   History,
   UserCheck,
+  Lock,
+  ShieldAlert,
 } from "lucide-react";
 import { apiGet, apiPut, apiPost, apiPatch, apiDelete } from "@/utils/api";
 import QRCodeScanner from "@/components/wallet/QRCodeScanner";
@@ -196,6 +198,10 @@ export default function AdminBazaarPage() {
       setManualPkgName("Table of 4");
       setManualAmount(250000);
       setManualType("ticket");
+    } else if (pkgId === "stall-half") {
+      setManualPkgName("Half Space Stall");
+      setManualAmount(25000);
+      setManualType("exhibitor");
     } else if (pkgId === "stall-standard") {
       setManualPkgName("Standard Stall");
       setManualAmount(50000);
@@ -244,7 +250,14 @@ export default function AdminBazaarPage() {
         apiGet("/api/v1/bazaar/config"),
       ]);
       if (statsRes?.data) setStats(statsRes.data);
-      if (configRes?.data) setConfig(configRes.data);
+      if (configRes?.data) {
+        const cfg = configRes.data;
+        const rawWa = (cfg.whatsappNumber || "").replace(/[^0-9]/g, "");
+        if (!rawWa || rawWa === "2348000000000" || rawWa.includes("8000000000")) {
+          cfg.whatsappNumber = "2347044600924";
+        }
+        setConfig(cfg);
+      }
     } catch (err) {
       console.error("Failed to load bazaar admin data:", err);
     } finally {
@@ -544,42 +557,117 @@ export default function AdminBazaarPage() {
 
           {/* Bank Account Details Form */}
           <div className="border-t border-gray-100 pt-4 mt-4 space-y-4">
-            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
-              <Building2 size={16} className="text-amber-600" /> Manual Bank Transfer Checkout Account Details
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Building2 size={16} className="text-amber-600" /> Manual Bank Transfer Checkout Account Details
+              </h3>
+              {isSuperAdmin ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 w-fit">
+                  <ShieldCheck size={11} /> Super Admin Editable
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 w-fit">
+                  <Lock size={11} /> Read Only (Super Admin Restricted)
+                </span>
+              )}
+            </div>
+
+            {!isSuperAdmin && (
+              <div className="flex items-start gap-2 p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900">
+                <ShieldAlert size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold">Restricted Bank Settlement Details</p>
+                  <p className="text-[11px] text-amber-800/90 mt-0.5">
+                    Manual bank transfer checkout credentials are read-only for Event Bazaar Managers. Only <strong>Super Administrators</strong> can modify official payment account information.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Bank Name</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  Bank Name {!isSuperAdmin && <Lock size={11} className="text-gray-400" />}
+                </label>
                 <input
                   type="text"
+                  disabled={!isSuperAdmin}
+                  readOnly={!isSuperAdmin}
                   value={config.bankName || ""}
-                  onChange={(e) => setConfig({ ...config, bankName: e.target.value })}
+                  onChange={(e) => isSuperAdmin && setConfig({ ...config, bankName: e.target.value })}
                   placeholder="e.g. Wema Bank"
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  className={`w-full rounded-lg px-3 py-2 text-xs transition-all ${
+                    !isSuperAdmin
+                      ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none font-medium"
+                      : "bg-white text-gray-900 border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Account Name</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  Account Name {!isSuperAdmin && <Lock size={11} className="text-gray-400" />}
+                </label>
                 <input
                   type="text"
+                  disabled={!isSuperAdmin}
+                  readOnly={!isSuperAdmin}
                   value={config.bankAccountName || ""}
-                  onChange={(e) => setConfig({ ...config, bankAccountName: e.target.value })}
+                  onChange={(e) => isSuperAdmin && setConfig({ ...config, bankAccountName: e.target.value })}
                   placeholder="e.g. GloTrade Platform Limited"
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  className={`w-full rounded-lg px-3 py-2 text-xs transition-all ${
+                    !isSuperAdmin
+                      ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none font-medium"
+                      : "bg-white text-gray-900 border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Account Number</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  Account Number {!isSuperAdmin && <Lock size={11} className="text-gray-400" />}
+                </label>
                 <input
                   type="text"
+                  disabled={!isSuperAdmin}
+                  readOnly={!isSuperAdmin}
                   value={config.bankAccountNumber || ""}
-                  onChange={(e) => setConfig({ ...config, bankAccountNumber: e.target.value })}
+                  onChange={(e) => isSuperAdmin && setConfig({ ...config, bankAccountNumber: e.target.value })}
                   placeholder="e.g. 0127131496"
+                  className={`w-full rounded-lg px-3 py-2 text-xs font-mono transition-all ${
+                    !isSuperAdmin
+                      ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none font-medium"
+                      : "bg-white text-gray-900 border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                  }`}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Official WhatsApp Number (Ticket & Transfer Verification)
+                </label>
+                <input
+                  type="text"
+                  value={config.whatsappNumber || ""}
+                  onChange={(e) => setConfig({ ...config, whatsappNumber: e.target.value })}
+                  placeholder="e.g. 2347044600924"
                   className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500 font-mono"
                 />
+                <p className="text-[11px] text-gray-500 mt-1">Country code format without + (e.g. 2347044600924 for (+234) 704-460-0924).</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Official Enquiries Email</label>
+                <input
+                  type="email"
+                  value={config.email || ""}
+                  onChange={(e) => setConfig({ ...config, email: e.target.value })}
+                  placeholder="e.g. glotradebazaar@glotrade.online"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">Contact address displayed to buyers and attendees.</p>
               </div>
             </div>
 
@@ -603,7 +691,8 @@ export default function AdminBazaarPage() {
               disabled={configSaving}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow-sm inline-flex items-center gap-2"
             >
-              {configSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Save Controls & Bank Settings
+              {configSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}{" "}
+              {isSuperAdmin ? "Save Controls & Bank Settings" : "Save Portal Controls"}
             </button>
           </div>
         </div>
@@ -1419,6 +1508,7 @@ export default function AdminBazaarPage() {
                   <option value="vip">⭐ VIP Pass (₦15,000)</option>
                   <option value="vvip">👑 VVIP Pass (₦25,000)</option>
                   <option value="table">🥂 Table of 4 (₦250,000)</option>
+                  <option value="stall-half">🎪 Half Space Exhibitor Stall (₦25,000)</option>
                   <option value="stall-standard">🎪 Standard Exhibitor Stall (₦50,000)</option>
                   <option value="sponsor-gold">🏆 Gold Sponsorship (₦500,000)</option>
                   <option value="sponsor-headline">👑 Headline Sponsorship (₦1,500,000)</option>
