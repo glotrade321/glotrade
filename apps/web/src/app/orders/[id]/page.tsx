@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiGet, apiPatch, apiGetBlob, getAuthHeader } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
-import { Check, ChevronRight, Package, Truck, BadgeCheck, Printer, ChevronLeft, RotateCcw, FileText, MapPin, Clock, X, Star, ArrowLeft } from "lucide-react";
+import { Check, ChevronRight, Package, Truck, BadgeCheck, Printer, ChevronLeft, RotateCcw, FileText, MapPin, Clock, X, Star, ArrowLeft, Building2, MessageSquare } from "lucide-react";
 import ReviewForm from "@/components/reviews/ReviewForm";
 import { getStoredLocale, Locale, translate } from "@/utils/i18n";
 import { getOptimizedImageUrl } from "@/utils/image";
@@ -14,6 +14,7 @@ type OrderDoc = {
   _id: string;
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "disputed";
   paymentStatus?: "pending" | "completed" | "failed" | "refunded";
+  paymentMethod?: "card" | "wallet" | "bank_transfer" | "net_terms";
   totalPrice?: number;
   currency?: string;
   createdAt?: string;
@@ -248,8 +249,34 @@ export default function OrderDetailPage() {
                   <button onClick={() => setShowInvoicePreview(true)} className="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium inline-flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><FileText className="w-4 h-4" /> {translate(locale, "orders.details.actions.invoice")}</button>
                   <button onClick={() => window.print()} className="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium inline-flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><Printer className="w-4 h-4" /> {translate(locale, "orders.details.actions.print")}</button>
                 </div>
-
               </div>
+
+              {/* Bank Transfer Notice if pending */}
+              {order.paymentMethod === 'bank_transfer' && order.paymentStatus !== 'completed' && order.status !== 'cancelled' && (
+                <div className="rounded-xl border border-amber-300 dark:border-amber-700/60 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-neutral-900 dark:to-neutral-950 p-4 sm:p-5 text-neutral-800 dark:text-neutral-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2 text-amber-900 dark:text-amber-300 font-bold text-sm">
+                        <Building2 size={16} className="text-amber-600" />
+                        Direct Bank Transfer Pending Verification
+                      </div>
+                      <p className="text-xs text-amber-850 dark:text-amber-300/90 mt-1">
+                        Please ensure you have transferred <strong>₦{Number(order.totalPrice || 0).toLocaleString()}</strong> to <strong>Wema Bank (0127131496 - GloTrade Platform Limited)</strong>.
+                      </p>
+                    </div>
+                    <a
+                      href={`https://wa.me/2347044600924?text=${encodeURIComponent(
+                        `Hi GloTrade Support, I am sending payment proof for Order #${order._id} (₦${Number(order.totalPrice || 0).toLocaleString()}). Please verify my transfer!`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 shadow transition-colors"
+                    >
+                      <MessageSquare size={14} /> Send Receipt on WhatsApp
+                    </a>
+                  </div>
+                </div>
+              )}
 
               {/* Items */}
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900">

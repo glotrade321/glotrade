@@ -371,6 +371,165 @@ export class EmailService {
             },
         });
     }
+
+    /**
+     * Send Rich Order Confirmation Email to Buyer
+     */
+    async sendOrderConfirmationEmail(orderData: {
+        orderId: string;
+        orderNumber: string;
+        customerName: string;
+        customerEmail: string;
+        customerPhone?: string;
+        totalAmount: number;
+        currency: string;
+        paymentMethod: string;
+        paymentStatus: string;
+        lineItems: Array<{
+            productTitle: string;
+            qty: number;
+            unitPrice: number;
+            currency?: string;
+        }>;
+        shippingDetails: {
+            address: string;
+            city: string;
+            state?: string;
+            country: string;
+            phone?: string;
+        };
+        bankDetails?: {
+            bankName: string;
+            accountName: string;
+            accountNumber: string;
+            whatsappNumber: string;
+        };
+    }): Promise<void> {
+        const isBankTransfer = orderData.paymentMethod === 'bank_transfer';
+        const isPaid = orderData.paymentStatus === 'completed';
+        const formattedAmount = `₦${orderData.totalAmount.toLocaleString("en-NG")}`;
+        const orderUrl = `${process.env.FRONTEND_URL || "https://glotrade.online"}/orders/${orderData.orderId}`;
+        const whatsappNumber = (orderData.bankDetails?.whatsappNumber || "2347044600924").replace(/[^0-9]/g, "");
+
+        const bankBox = isBankTransfer && !isPaid ? `
+        <div style="background: #fffbeb; border: 2px solid #fde68a; border-radius: 12px; padding: 18px; margin: 20px 0;">
+            <div style="margin-bottom: 10px;">
+                <span style="font-size: 15px; font-weight: bold; color: #92400e;">⚠️ Action Required: Complete Bank Transfer</span>
+            </div>
+            <p style="font-size: 13px; color: #78350f; margin: 0 0 12px 0; line-height: 1.4;">
+                Please transfer the exact amount of <strong>${formattedAmount}</strong> to our official company bank account:
+            </p>
+            <table width="100%" style="background: #ffffff; border-radius: 8px; border: 1px solid #fef3c7; font-size: 13px; margin-bottom: 12px;" cellpadding="8" cellspacing="0">
+                <tr>
+                    <td style="color: #6b7280; width: 40%;">Bank Name:</td>
+                    <td style="color: #111827; font-weight: bold;">${orderData.bankDetails?.bankName || "Wema Bank"}</td>
+                </tr>
+                <tr style="border-top: 1px solid #f3f4f6;">
+                    <td style="color: #6b7280;">Account Name:</td>
+                    <td style="color: #111827; font-weight: bold;">${orderData.bankDetails?.accountName || "GloTrade Platform Limited"}</td>
+                </tr>
+                <tr style="border-top: 1px solid #f3f4f6;">
+                    <td style="color: #6b7280;">Account Number:</td>
+                    <td style="color: #d97706; font-size: 16px; font-weight: 900; font-family: monospace;">${orderData.bankDetails?.accountNumber || "0127131496"}</td>
+                </tr>
+            </table>
+            <p style="font-size: 12px; color: #92400e; margin: 0 0 12px 0;">
+                After sending the transfer, click below to share your transfer receipt on WhatsApp for instant payment confirmation:
+            </p>
+            <div style="text-align: center;">
+                <a href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi GloTrade Team, I have sent payment of ${formattedAmount} for Order #${orderData.orderId}. Attached is my transfer receipt.`)}" 
+                   style="display: inline-block; background: #059669; color: #ffffff !important; text-decoration: none; padding: 11px 22px; border-radius: 8px; font-size: 13px; font-weight: bold;">
+                   📱 Send Receipt on WhatsApp (+234 704 460 0924)
+                </a>
+            </div>
+        </div>
+        ` : '';
+
+        const itemsRows = orderData.lineItems.map(item => `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; color: #1e293b; font-size: 14px;">
+                    <strong>${item.productTitle}</strong>
+                    <div style="font-size: 12px; color: #64748b;">Qty: ${item.qty} × ₦${item.unitPrice.toLocaleString("en-NG")}</div>
+                </td>
+                <td align="right" style="padding: 10px 0; color: #0f172a; font-weight: bold; font-size: 14px;">
+                    ₦${(item.qty * item.unitPrice).toLocaleString("en-NG")}
+                </td>
+            </tr>
+        `).join('');
+
+        const contentHtml = `
+            <p style="font-size: 15px; color: #1e293b; margin-top: 0;">Dear <strong>${orderData.customerName}</strong>,</p>
+            <p style="font-size: 14px; color: #475569; line-height: 1.5;">
+                ${isPaid 
+                    ? "Thank you for shopping with GloTrade! Your payment has been confirmed and your order is now being prepared for shipping."
+                    : isBankTransfer
+                    ? "Thank you for your order! Your items and inventory stock are currently reserved. Please finalize your bank transfer using the details below so we can process your shipment."
+                    : "Thank you for your order! We have received your purchase request and will update you as it progresses."}
+            </p>
+
+            ${bankBox}
+
+            <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 18px; margin: 20px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+                    <tr>
+                        <td>
+                            <span style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; display: block;">Order Reference</span>
+                            <span style="font-size: 16px; font-weight: bold; color: #0f172a; font-family: monospace;">#${orderData.orderId}</span>
+                        </td>
+                        <td align="right">
+                            <span style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; display: block;">Payment Status</span>
+                            <span style="font-size: 12px; font-weight: bold; color: ${isPaid ? '#059669' : '#d97706'}; background: ${isPaid ? '#ecfdf5' : '#fffbeb'}; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">
+                                ${isPaid ? 'PAID' : isBankTransfer ? 'PENDING TRANSFER' : orderData.paymentStatus.toUpperCase()}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 12px;">
+                    <div style="font-size: 12px; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 8px;">Order Items</div>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        ${itemsRows}
+                    </table>
+                </div>
+
+                <div style="border-top: 1px solid #e2e8f0; margin-top: 12px; padding-top: 12px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; color: #475569;">
+                        <tr>
+                            <td style="padding-bottom: 6px;">Shipping:</td>
+                            <td align="right" style="padding-bottom: 6px; color: #059669; font-weight: bold;">FREE</td>
+                        </tr>
+                        <tr>
+                            <td style="font-size: 15px; font-weight: bold; color: #0f172a;">Total Amount:</td>
+                            <td align="right" style="font-size: 16px; font-weight: 900; color: #ea580c;">${formattedAmount}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; margin: 20px 0; font-size: 13px;">
+                <div style="font-weight: bold; color: #0f172a; margin-bottom: 6px;">📦 Delivery Address</div>
+                <div style="color: #334155; line-height: 1.5;">
+                    <div><strong>${orderData.customerName}</strong></div>
+                    <div>${orderData.shippingDetails.address}</div>
+                    <div>${orderData.shippingDetails.city}, ${orderData.shippingDetails.country}</div>
+                    ${orderData.shippingDetails.phone ? `<div>Phone: ${orderData.shippingDetails.phone}</div>` : ''}
+                </div>
+            </div>
+        `;
+
+        await this.sendEmail({
+            to: orderData.customerEmail,
+            subject: isBankTransfer && !isPaid 
+                ? `⏳ Action Required: Bank Transfer for Order #${orderData.orderId.slice(-8)}`
+                : `🛍️ Order Confirmed #${orderData.orderId.slice(-8)} - GloTrade`,
+            text: `Hi ${orderData.customerName}, thank you for your order #${orderData.orderId}! Total: ${formattedAmount}. View order: ${orderUrl}`,
+            html: contentHtml,
+            cta: {
+                label: "View & Track Order",
+                url: orderUrl,
+            },
+        });
+    }
 }
 
 export default new EmailService();

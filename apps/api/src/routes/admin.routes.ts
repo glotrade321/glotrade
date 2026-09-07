@@ -74,6 +74,10 @@ router.post("/orders/:id/refund", adminController.processRefund);
 // Body: { reason: string, amount?: number }
 router.put("/orders/:id/refund", adminController.refundOrder);
 
+// Super admin order deletion endpoints
+router.post("/orders/bulk-delete", superAdminAuth, adminController.bulkDeleteOrders);
+router.delete("/orders/:id", superAdminAuth, adminController.deleteOrder);
+
 // ==================== BULK OPERATIONS ====================
 router.post("/users/bulk/verify", adminController.bulkVerifyUsers);
 router.post("/users/bulk/block", adminController.bulkToggleUserBlock);

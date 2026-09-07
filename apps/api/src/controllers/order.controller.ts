@@ -8,6 +8,7 @@ import { WalletService } from "../services/WalletService";
 import { InvoiceService } from "../services/invoice.service";
 import { CreditService } from "../services/CreditService";
 import { CommissionService } from "../services/CommissionService";
+import EmailService from "../services/EmailService";
 import path from 'path';
 import fs from 'fs';
 
@@ -138,10 +139,64 @@ export class OrderController {
         });
       }
 
-      // Create notification for order placed (Only for immediate payment methods or if already paid)
+      // Send Rich Order Confirmation Email to Buyer (detailed breakdown, bank info if transfer, items, address)
       try {
-        const isImmediatePayment = ['wallet', 'net_terms'].includes(paymentMethod) || req.body.paymentStatus === "completed";
-        if (buyer && isImmediatePayment) {
+        let customerEmail = guestEmail;
+        let customerName = shippingDetails.displayName || "Valued Customer";
+        let customerPhone = shippingDetails.phone;
+
+        if (buyer) {
+          const { User } = require("../models");
+          const buyerDoc = await User.findById(buyer).lean();
+          if (buyerDoc) {
+            customerEmail = buyerDoc.email || customerEmail;
+            customerName = [buyerDoc.firstName, buyerDoc.lastName].filter(Boolean).join(" ") || buyerDoc.username || customerName;
+            customerPhone = buyerDoc.phoneNumber || customerPhone;
+          }
+        }
+
+        if (customerEmail) {
+          const BazaarConfig = (await import("../models/BazaarConfig")).default;
+          const bazaarConfig = await BazaarConfig.findOne().lean();
+
+          await EmailService.sendOrderConfirmationEmail({
+            orderId: (created._id as any).toString(),
+            orderNumber: (created._id as any).toString().slice(-6),
+            customerName,
+            customerEmail,
+            customerPhone,
+            totalAmount: totalPrice,
+            currency,
+            paymentMethod: paymentMethod || "card",
+            paymentStatus: created.paymentStatus || "pending",
+            lineItems: detailed.map((item: any) => ({
+              productTitle: item.productTitle || "Product",
+              qty: item.qty,
+              unitPrice: item.unitPrice,
+              currency: item.currency,
+            })),
+            shippingDetails: {
+              address: shippingDetails.address,
+              city: shippingDetails.city,
+              state: shippingDetails.state,
+              country: shippingDetails.country,
+              phone: shippingDetails.phone || customerPhone,
+            },
+            bankDetails: {
+              bankName: bazaarConfig?.bankName || "Wema Bank",
+              accountName: bazaarConfig?.bankAccountName || "GloTrade Platform Limited",
+              accountNumber: bazaarConfig?.bankAccountNumber || "0127131496",
+              whatsappNumber: bazaarConfig?.whatsappNumber || "2347044600924",
+            },
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send order confirmation email:', emailError);
+      }
+
+      // Create notification for order placed (in-app notifications for registered users)
+      try {
+        if (buyer) {
           const notificationService = new NotificationService();
           await notificationService.createOrderNotification('order_placed', {
             orderId: (created._id as any).toString(),
@@ -155,7 +210,7 @@ export class OrderController {
           });
         }
       } catch (error) {
-        console.error('Failed to create order notification:', error);
+        console.error('Failed to create in-app order notification:', error);
       }
 
       // Auto-generate invoice

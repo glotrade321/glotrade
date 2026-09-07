@@ -11,6 +11,8 @@ export default function ExhibitorsPage() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const packages: BookingPackage[] = [
+    /*
+    // Temporarily commented out - Sold out
     {
       id: "stall-half",
       name: translate("bazaar.halfSpaceStall") || "Half Space Stall",
@@ -20,6 +22,7 @@ export default function ExhibitorsPage() {
         translate("bazaar.halfSpaceStallSummary") ||
         "Shared exhibitor space with dedicated display table, chair and brand listing in event directory.",
     },
+    */
     {
       id: "stall-standard",
       name: translate("bazaar.standardStall") || "Standard Stall",
@@ -30,6 +33,8 @@ export default function ExhibitorsPage() {
         "Full exhibitor space with table, chairs and brand listing in event directory.",
     },
   ];
+
+  const standardStall = packages.find((p) => p.id === "stall-standard") || packages[0];
 
   const handleOpenModal = (pkg: BookingPackage) => {
     setSelectedPkg(pkg);
@@ -53,8 +58,9 @@ export default function ExhibitorsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16 items-stretch">
-          {/* Half Space Stall */}
+        <div className="max-w-xl mx-auto mb-16">
+          {/*
+          // HALF SPACE BOOTH / Shared Space / Half Space Stall - Temporarily commented out (SOLD OUT)
           <div className="bg-slate-900 border border-slate-800 hover:border-amber-500/40 rounded-3xl p-8 flex flex-col justify-between transition-all hover:-translate-y-1">
             <div>
               <div className="flex items-center justify-between mb-1">
@@ -72,7 +78,9 @@ export default function ExhibitorsPage() {
                 <span className="text-4xl font-black text-amber-400">₦25,000</span>
                 <span className="text-xs text-slate-400 ml-1">/ {translate("bazaar.perHalfBooth") || "half space"}</span>
               </div>
-              <p className="text-sm text-slate-300 mb-6">{packages[0].summary}</p>
+              <p className="text-sm text-slate-300 mb-6">
+                {translate("bazaar.halfSpaceStallSummary") || "Shared exhibitor space with dedicated display table, chair and brand listing in event directory."}
+              </p>
               <ul className="space-y-3 text-sm text-slate-300 mb-8">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
@@ -93,12 +101,18 @@ export default function ExhibitorsPage() {
               </ul>
             </div>
             <button
-              onClick={() => handleOpenModal(packages[0])}
+              onClick={() => handleOpenModal({
+                id: "stall-half",
+                name: translate("bazaar.halfSpaceStall") || "Half Space Stall",
+                price: 25000,
+                type: "exhibitor",
+              })}
               className="w-full py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 hover:border-amber-500/50 shadow-md transition-all"
             >
               {translate("bazaar.bookHalfStallCta") || "Apply for Half Space Stall"}
             </button>
           </div>
+          */}
 
           {/* Standard Full Stall */}
           <div className="bg-slate-900 border-2 border-amber-500/50 hover:border-amber-500 rounded-3xl p-8 flex flex-col justify-between relative shadow-xl shadow-amber-500/5 transition-all hover:-translate-y-1">
@@ -118,7 +132,7 @@ export default function ExhibitorsPage() {
                 <span className="text-4xl font-black text-amber-400">₦50,000</span>
                 <span className="text-xs text-slate-400 ml-1">/ {translate("bazaar.perBooth") || "booth"}</span>
               </div>
-              <p className="text-sm text-slate-300 mb-6">{packages[1].summary}</p>
+              <p className="text-sm text-slate-300 mb-6">{standardStall?.summary}</p>
               <ul className="space-y-3 text-sm text-slate-300 mb-8">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
@@ -139,7 +153,7 @@ export default function ExhibitorsPage() {
               </ul>
             </div>
             <button
-              onClick={() => handleOpenModal(packages[1])}
+              onClick={() => handleOpenModal(standardStall)}
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all"
             >
               {translate("bazaar.bookStallCta") || "Apply for Standard Stall"}

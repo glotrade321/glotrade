@@ -846,13 +846,13 @@ export class AdminController {
   updateOrderStatus = async (req: any, res: any, next: any) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { status, paymentStatus } = req.body;
 
-      if (!status) {
-        throw new ValidationError('Status is required');
+      if (!status && !paymentStatus) {
+        throw new ValidationError('Either status or paymentStatus is required');
       }
 
-      const result = await this.adminService.updateOrderStatus(id, status, req.user);
+      const result = await this.adminService.updateOrderStatus(id, status, req.user, paymentStatus);
 
       res.status(200).json({
         status: 'success',
@@ -1011,6 +1011,43 @@ export class AdminController {
         });
       }
 
+      next(error);
+    }
+  };
+
+  /**
+   * POST /api/v1/admin/orders/bulk-delete
+   * Bulk delete orders (Super Admin only)
+   */
+  bulkDeleteOrders = async (req: any, res: any, next: any) => {
+    try {
+      const { orderIds } = req.body;
+      const result = await this.adminService.bulkDeleteOrders(orderIds, req.user!);
+
+      res.status(200).json({
+        status: 'success',
+        message: `Successfully deleted ${result.deletedCount} order(s)`,
+        data: result
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * DELETE /api/v1/admin/orders/:id
+   * Delete single order (Super Admin only)
+   */
+  deleteOrder = async (req: any, res: any, next: any) => {
+    try {
+      const { id } = req.params;
+      await this.adminService.deleteSingleOrder(id, req.user!);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Order deleted successfully'
+      });
+    } catch (error) {
       next(error);
     }
   };

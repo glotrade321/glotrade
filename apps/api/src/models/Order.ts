@@ -61,6 +61,7 @@ export interface IOrder extends Document {
     postalCode?: string;
   };
   deliveredAt?: Date;
+  paidAt?: Date;
   // Invoice fields
   invoiceNumber?: string;
   invoiceUrl?: string;
@@ -130,6 +131,7 @@ const orderSchema = new Schema<IOrder>(
       enum: ["none", "pending", "settled", "partial", "failed"],
       default: "none",
     },
+    paidAt: Date,
     transactionHash: String,
     shippingDetails: {
       address: {

@@ -21,9 +21,11 @@ import {
   CalendarDays,
   ShieldCheck,
   History,
-  UserCheck
+  UserCheck,
+  Trash2,
+  Loader2
 } from "lucide-react";
-import { apiGet, apiPost, apiPut } from "@/utils/api";
+import { apiGet, apiPost, apiPut, apiDelete } from "@/utils/api";
 import { formatCurrency } from "@/utils/format";
 import { getCountryPhoneCode } from "@/utils/countryData";
 
@@ -67,6 +69,7 @@ interface Order {
   };
   status: string;
   paymentStatus: string;
+  paymentMethod?: string;
   totalPrice: number;
   currency: string;
   createdAt: string;
@@ -134,10 +137,39 @@ export default function AdminOrdersPage() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+interface SuccessInfo {
+  title: string;
+  subtitle: string;
+  description: string;
+  type: 'delete' | 'payment' | 'cancel' | 'refund' | 'status' | 'general';
+  orderCount?: number;
+  orderNumbers?: string[];
+  stockReleased?: boolean;
+  actionBy?: string;
+  timestamp?: string;
+}
+
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [successInfo, setSuccessInfo] = useState<SuccessInfo | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Super Admin & Bulk Operations state
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'single' | 'bulk'; id?: string; ids?: string[] } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('afritrade:user');
+      if (raw) setCurrentUser(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  const isSuperAdmin = Boolean(currentUser?.isSuperAdmin);
 
   const getOrdersApiBase = () => {
     try {
@@ -238,6 +270,45 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handleConfirmPayment = async (orderId: string) => {
+    try {
+      setActionLoading(true);
+      await apiPut(`${getOrdersApiBase()}/${orderId}/status`, {
+        status: "processing",
+        paymentStatus: "completed"
+      });
+
+      setOrders(prev => prev.map(order =>
+        order._id === orderId
+          ? { ...order, status: "processing", paymentStatus: "completed", updatedAt: new Date().toISOString() }
+          : order
+      ));
+
+      if (selectedOrder?._id === orderId) {
+        setSelectedOrder(prev => prev ? { ...prev, status: "processing", paymentStatus: "completed", updatedAt: new Date().toISOString() } : null);
+      }
+
+      fetchOrderStats();
+      setSuccessInfo({
+        title: 'Payment Confirmed',
+        subtitle: 'Direct Bank Transfer Verified',
+        description: `Payment for Order #${selectedOrder?.orderNumber || 'N/A'} has been confirmed and verified as Completed. The order has been moved to Processing.`,
+        type: 'payment',
+        orderNumbers: [selectedOrder?.orderNumber || 'N/A'],
+        actionBy: currentUser?.username || currentUser?.email || 'Admin',
+        timestamp: new Date().toLocaleString()
+      });
+      setSuccessMessage(`Payment confirmed for order #${selectedOrder?.orderNumber || 'N/A'}. Order moved to Processing.`);
+      setShowSuccessModal(true);
+    } catch (error: any) {
+      console.error("Error confirming payment:", error);
+      setErrorMessage(error?.message || "Failed to confirm payment. Please try again.");
+      setShowErrorModal(true);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleOrderCancel = async () => {
     if (!selectedOrder) return;
 
@@ -247,13 +318,23 @@ export default function AdminOrdersPage() {
       fetchOrders(); // Refresh orders to show updated status
       fetchOrderStats(); // Refresh stats
       setShowCancelModal(false);
+      setSuccessInfo({
+        title: 'Order Cancelled',
+        subtitle: 'Administrative Cancellation',
+        description: `Order #${selectedOrder.orderNumber || 'N/A'} has been cancelled. Any reserved stock has been released back to available inventory.`,
+        type: 'cancel',
+        orderNumbers: [selectedOrder.orderNumber || 'N/A'],
+        stockReleased: true,
+        actionBy: currentUser?.username || currentUser?.email || 'Admin',
+        timestamp: new Date().toLocaleString()
+      });
       setSuccessMessage(`Order #${selectedOrder.orderNumber || 'N/A'} has been successfully cancelled.`);
       setShowSuccessModal(true);
       setSelectedOrder(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error cancelling order:", error);
-      setSuccessMessage(`Failed to cancel order #${selectedOrder.orderNumber || 'N/A'}. Please try again.`);
-      setShowSuccessModal(true);
+      setErrorMessage(error?.message || `Failed to cancel order #${selectedOrder.orderNumber || 'N/A'}. Please try again.`);
+      setShowErrorModal(true);
     } finally {
       setActionLoading(false);
     }
@@ -264,25 +345,112 @@ export default function AdminOrdersPage() {
 
     try {
       setActionLoading(true);
-      // Using POST /api/v1/admin/orders/:id/refund (processRefund)
-      // This is the simple admin refund endpoint that:
-      // - Requires no request body
-      // - Uses default "Admin refund" reason
-      // - Refunds full order amount
-      // - Perfect for quick admin actions from the orders page
       await apiPost(`${getOrdersApiBase()}/${selectedOrder._id}/refund`, {});
       fetchOrders(); // Refresh orders to show updated status
       fetchOrderStats(); // Refresh stats
       setShowRefundModal(false);
+      setSuccessInfo({
+        title: 'Refund Processed',
+        subtitle: 'Payment Refund Completed',
+        description: `Refund for Order #${selectedOrder.orderNumber || 'N/A'} has been successfully processed and recorded in the audit trail.`,
+        type: 'refund',
+        orderNumbers: [selectedOrder.orderNumber || 'N/A'],
+        actionBy: currentUser?.username || currentUser?.email || 'Admin',
+        timestamp: new Date().toLocaleString()
+      });
       setSuccessMessage(`Refund for order #${selectedOrder.orderNumber || 'N/A'} has been successfully processed.`);
       setShowSuccessModal(true);
       setSelectedOrder(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error processing refund:", error);
-      setSuccessMessage(`Failed to process refund for order #${selectedOrder.orderNumber || 'N/A'}. Please try again.`);
-      setShowSuccessModal(true);
+      setErrorMessage(error?.message || `Failed to process refund for order #${selectedOrder.orderNumber || 'N/A'}. Please try again.`);
+      setShowErrorModal(true);
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  // Selection helpers for Super Admin
+  const isAllSelected = orders.length > 0 && orders.every(o => selectedOrderIds.includes(o._id));
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedOrderIds([]);
+    } else {
+      setSelectedOrderIds(orders.map(o => o._id));
+    }
+  };
+
+  const toggleSelectOrder = (orderId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedOrderIds(prev =>
+      prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]
+    );
+  };
+
+  const promptDeleteBulk = () => {
+    if (selectedOrderIds.length === 0) return;
+    setDeleteTarget({ type: 'bulk', ids: selectedOrderIds });
+    setShowDeleteModal(true);
+  };
+
+  const promptDeleteSingle = (order: Order) => {
+    setDeleteTarget({ type: 'single', id: order._id });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteOrders = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+
+    const targetIds = deleteTarget.type === 'bulk' ? (deleteTarget.ids || []) : [deleteTarget.id!];
+    const targetOrders = orders.filter(o => targetIds.includes(o._id));
+    const deletedNumbers = targetOrders.map(o => o.orderNumber || o._id.slice(-6));
+
+    try {
+      if (deleteTarget.type === 'bulk' && deleteTarget.ids) {
+        const res: any = await apiPost('/api/v1/admin/orders/bulk-delete', { orderIds: deleteTarget.ids });
+        const count = res?.data?.deletedCount || deleteTarget.ids.length;
+        setSuccessInfo({
+          title: 'Orders Deleted Successfully',
+          subtitle: 'Permanent deletion completed by Super Admin',
+          description: `${count} order(s) have been permanently deleted from the database. Reserved inventory stock has been released and restored to products, and related payment records have been wiped.`,
+          type: 'delete',
+          orderCount: count,
+          orderNumbers: deletedNumbers.length > 0 ? deletedNumbers : undefined,
+          stockReleased: true,
+          actionBy: currentUser?.username || currentUser?.email || 'Super Admin',
+          timestamp: new Date().toLocaleString()
+        });
+        setSuccessMessage(`Successfully deleted ${count} order(s).`);
+        setShowSuccessModal(true);
+      } else if (deleteTarget.type === 'single' && deleteTarget.id) {
+        await apiDelete(`/api/v1/admin/orders/${deleteTarget.id}`);
+        const orderNum = deletedNumbers[0] || selectedOrder?.orderNumber || deleteTarget.id.slice(-6);
+        setSuccessInfo({
+          title: 'Order Deleted Successfully',
+          subtitle: `Order #${orderNum} permanently removed`,
+          description: `Order #${orderNum} has been completely removed from the database. Any reserved inventory stock has been released back to product inventory.`,
+          type: 'delete',
+          orderCount: 1,
+          orderNumbers: [orderNum],
+          stockReleased: true,
+          actionBy: currentUser?.username || currentUser?.email || 'Super Admin',
+          timestamp: new Date().toLocaleString()
+        });
+        setSuccessMessage(`Order #${orderNum} permanently deleted successfully.`);
+        setShowSuccessModal(true);
+      }
+      setSelectedOrderIds([]);
+      setShowDeleteModal(false);
+      setShowOrderModal(false);
+      setDeleteTarget(null);
+      fetchOrders();
+      fetchOrderStats();
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Failed to delete order(s)");
+      setShowErrorModal(true);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -584,6 +752,34 @@ export default function AdminOrdersPage() {
             <h3 className="text-base sm:text-lg font-medium text-gray-900">Orders</h3>
           </div>
 
+          {/* Super Admin Bulk Action Toolbar */}
+          {isSuperAdmin && selectedOrderIds.length > 0 && (
+            <div className="bg-red-50 border-b border-red-200 p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                <span className="text-xs sm:text-sm font-bold text-red-900">
+                  {selectedOrderIds.length} order(s) selected for deletion
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrderIds([])}
+                  className="px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm"
+                >
+                  Deselect All
+                </button>
+                <button
+                  type="button"
+                  onClick={promptDeleteBulk}
+                  className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-sm inline-flex items-center gap-1.5 transition-colors"
+                >
+                  <Trash2 size={14} /> Delete Selected ({selectedOrderIds.length})
+                </button>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div className="p-6 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -601,6 +797,17 @@ export default function AdminOrdersPage() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
+                      {isSuperAdmin && (
+                        <th className="px-4 py-3 w-10 text-center">
+                          <input
+                            type="checkbox"
+                            checked={isAllSelected}
+                            onChange={toggleSelectAll}
+                            className="w-4 h-4 text-red-600 rounded focus:ring-red-500 cursor-pointer"
+                            title="Select all orders on this page"
+                          />
+                        </th>
+                      )}
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Order Details
                       </th>
@@ -623,7 +830,22 @@ export default function AdminOrdersPage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orders.map((order) => (
-                      <tr key={order._id} className="hover:bg-gray-50">
+                      <tr 
+                        key={order._id} 
+                        className={`hover:bg-gray-50 transition-colors ${
+                          selectedOrderIds.includes(order._id) ? "bg-red-50/50 hover:bg-red-50/70" : ""
+                        }`}
+                      >
+                        {isSuperAdmin && (
+                          <td className="px-4 py-4 text-center" onClick={(e) => e.stopPropagation()}>
+                            <input
+                              type="checkbox"
+                              checked={selectedOrderIds.includes(order._id)}
+                              onChange={(e) => toggleSelectOrder(order._id, e as any)}
+                              className="w-4 h-4 text-red-600 rounded focus:ring-red-500 cursor-pointer"
+                            />
+                          </td>
+                        )}
                         <td className="px-6 py-4">
                           <div>
                             <p className="text-sm font-medium text-gray-900">
@@ -649,12 +871,15 @@ export default function AdminOrdersPage() {
                               {getStatusIcon(order.status)}
                               <span className="ml-1 capitalize">{order.status}</span>
                             </span>
-                            {order.paymentStatus === 'refunded' && (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                <DollarSign size={12} className="mr-1" />
-                                Refunded
-                              </span>
-                            )}
+                            <span className={`w-fit inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                              order.paymentStatus === 'completed'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : order.paymentStatus === 'refunded'
+                                ? 'bg-orange-100 text-orange-800'
+                                : 'bg-amber-50 text-amber-700 border border-amber-200'
+                            }`}>
+                              {order.paymentMethod === 'bank_transfer' ? '🏦 Transfer' : order.paymentMethod === 'wallet' ? '💰 Wallet' : '💳 Online'}: {order.paymentStatus || 'pending'}
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -706,6 +931,17 @@ export default function AdminOrdersPage() {
                                 <DollarSign size={16} />
                               </button>
                             )}
+
+                            {/* Super Admin Permanent Delete */}
+                            {isSuperAdmin && (
+                              <button
+                                onClick={() => promptDeleteSingle(order)}
+                                className="text-red-500 hover:text-red-700"
+                                title="Permanently Delete Order (Super Admin)"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -718,28 +954,48 @@ export default function AdminOrdersPage() {
               <div className="lg:hidden">
                 <div className="space-y-4 p-4">
                   {orders.map((order) => (
-                    <div key={order._id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div 
+                      key={order._id} 
+                      className={`rounded-lg p-4 border transition-colors ${
+                        selectedOrderIds.includes(order._id) 
+                          ? "bg-red-50/60 border-red-300" 
+                          : "bg-gray-50 border-gray-200"
+                      }`}
+                    >
                       {/* Order Header */}
                       <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-900">
-                            #{order.orderNumber || 'N/A'}
-                          </h4>
-                          <p className="text-xs text-gray-500">
-                            {order.itemCount || 0} item{(order.itemCount || 0) !== 1 ? 's' : ''}
-                          </p>
+                        <div className="flex items-center gap-2.5">
+                          {isSuperAdmin && (
+                            <input
+                              type="checkbox"
+                              checked={selectedOrderIds.includes(order._id)}
+                              onChange={(e) => toggleSelectOrder(order._id, e as any)}
+                              className="w-4 h-4 text-red-600 rounded focus:ring-red-500 cursor-pointer shrink-0"
+                            />
+                          )}
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-900">
+                              #{order.orderNumber || 'N/A'}
+                            </h4>
+                            <p className="text-xs text-gray-500">
+                              {order.itemCount || 0} item{(order.itemCount || 0) !== 1 ? 's' : ''}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-1 items-end">
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                             {getStatusIcon(order.status)}
                             <span className="ml-1 capitalize">{order.status}</span>
                           </span>
-                          {order.paymentStatus === 'refunded' && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                              <DollarSign size={12} className="mr-1" />
-                              Refunded
-                            </span>
-                          )}
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                            order.paymentStatus === 'completed'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : order.paymentStatus === 'refunded'
+                              ? 'bg-orange-100 text-orange-800'
+                              : 'bg-amber-50 text-amber-700 border border-amber-200'
+                          }`}>
+                            {order.paymentMethod === 'bank_transfer' ? '🏦 Transfer' : order.paymentMethod === 'wallet' ? '💰 Wallet' : '💳 Online'}: {order.paymentStatus || 'pending'}
+                          </span>
                         </div>
                       </div>
 
@@ -803,6 +1059,17 @@ export default function AdminOrdersPage() {
                               title="Process Refund"
                             >
                               <DollarSign size={16} />
+                            </button>
+                          )}
+
+                          {/* Super Admin Permanent Delete */}
+                          {isSuperAdmin && (
+                            <button
+                              onClick={() => promptDeleteSingle(order)}
+                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Permanently Delete Order (Super Admin)"
+                            >
+                              <Trash2 size={16} />
                             </button>
                           )}
                         </div>
@@ -885,12 +1152,24 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
               <h2 className="text-lg sm:text-2xl font-bold text-gray-900">Order Details</h2>
-              <button
-                onClick={() => setShowOrderModal(false)}
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X size={20} className="text-gray-500 sm:w-6 sm:h-6" />
-              </button>
+              <div className="flex items-center gap-2">
+                {isSuperAdmin && (
+                  <button
+                    onClick={() => promptDeleteSingle(selectedOrder)}
+                    className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-lg border border-red-200 flex items-center gap-1.5 transition-colors"
+                    title="Permanently Delete Order (Super Admin)"
+                  >
+                    <Trash2 size={14} />
+                    Delete Order
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowOrderModal(false)}
+                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X size={20} className="text-gray-500 sm:w-6 sm:h-6" />
+                </button>
+              </div>
             </div>
 
             <div className="p-3 sm:p-6 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]">
@@ -1026,6 +1305,39 @@ export default function AdminOrdersPage() {
                     <div className="flex justify-between text-sm sm:text-base">
                       <span className="text-gray-600">Subtotal:</span>
                       <span className="font-medium">{formatCurrency(selectedOrder.totalPrice, selectedOrder.currency)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm sm:text-base">
+                      <span className="text-gray-600">Payment Method:</span>
+                      <span className="font-semibold text-gray-900 capitalize">
+                        {selectedOrder.paymentMethod === 'bank_transfer'
+                          ? '🏦 Bank Transfer / WhatsApp'
+                          : selectedOrder.paymentMethod === 'wallet'
+                          ? '💰 Wallet'
+                          : '💳 Card / Online'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm sm:text-base">
+                      <span className="text-gray-600">Payment Status:</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
+                          selectedOrder.paymentStatus === 'completed'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : selectedOrder.paymentStatus === 'refunded'
+                            ? 'bg-orange-100 text-orange-800'
+                            : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {selectedOrder.paymentStatus || 'pending'}
+                        </span>
+                        {selectedOrder.paymentStatus !== 'completed' && selectedOrder.paymentStatus !== 'refunded' && selectedOrder.status !== 'cancelled' && (
+                          <button
+                            onClick={() => handleConfirmPayment(selectedOrder._id)}
+                            disabled={actionLoading}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded shadow transition-colors"
+                          >
+                            Mark as Paid
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="flex justify-between items-center text-sm sm:text-base">
                       <span className="text-gray-600">Status:</span>
@@ -1325,36 +1637,130 @@ export default function AdminOrdersPage() {
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4" onClick={() => setShowSuccessModal(false)}>
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 sm:gap-3 p-4 sm:p-6 border-b border-gray-200">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <CheckCircle size={16} className="text-green-600 sm:w-5 sm:h-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 truncate">Action Completed</h2>
-                <p className="text-xs sm:text-sm text-gray-600 truncate">Order management action</p>
-              </div>
-            </div>
-
-            <div className="p-3 sm:p-6">
-              <div className="mb-4 sm:mb-6">
-                <div className="w-fit mx-auto bg-green-50 border border-green-200 rounded-lg p-2 sm:p-3">
-                  <p className="text-xs sm:text-sm text-green-800 text-center">
-                    {successMessage}
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-fadeIn" onClick={() => setShowSuccessModal(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-gray-100" onClick={(e) => e.stopPropagation()}>
+            {/* Header with dynamic style based on action */}
+            <div className={`p-5 sm:p-6 border-b flex items-start justify-between gap-4 ${
+              successInfo?.type === 'delete' 
+                ? 'bg-gradient-to-r from-red-50/90 via-amber-50/40 to-white border-red-100' 
+                : 'bg-gradient-to-r from-emerald-50/90 via-teal-50/40 to-white border-emerald-100'
+            }`}>
+              <div className="flex items-center gap-3.5">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm ${
+                  successInfo?.type === 'delete'
+                    ? 'bg-red-600 text-white shadow-red-600/20'
+                    : 'bg-emerald-600 text-white shadow-emerald-600/20'
+                }`}>
+                  {successInfo?.type === 'delete' ? (
+                    <Trash2 size={22} className="text-white" />
+                  ) : (
+                    <CheckCircle size={24} className="text-white" />
+                  )}
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 leading-snug">
+                    {successInfo?.title || 'Action Completed'}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5 font-medium">
+                    {successInfo?.subtitle || 'Operation finished successfully'}
                   </p>
                 </div>
               </div>
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  setShowOrderModal(false);
+                  setSuccessInfo(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-              <div className="flex justify-center">
+            {/* Modal Body */}
+            <div className="p-5 sm:p-6 space-y-4">
+              {/* Primary description */}
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {successInfo?.description || successMessage}
+              </p>
+
+              {/* Rich Details Card */}
+              {successInfo?.type === 'delete' ? (
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 space-y-3">
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Operation Summary</span>
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">
+                      Permanent Wipe
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
+                      <span className="text-gray-500 block text-[11px]">Orders Deleted</span>
+                      <span className="text-base font-black text-gray-900 mt-0.5 block">
+                        {successInfo.orderCount || 1}
+                      </span>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
+                      <span className="text-gray-500 block text-[11px]">Inventory Stock</span>
+                      <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 mt-1">
+                        <CheckCircle size={13} /> Released & Restored
+                      </span>
+                    </div>
+                  </div>
+
+                  {successInfo.orderNumbers && successInfo.orderNumbers.length > 0 && (
+                    <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5">
+                      <span className="text-[11px] font-semibold text-gray-600 block">Affected References:</span>
+                      <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                        {successInfo.orderNumbers.map((num, idx) => (
+                          <span key={idx} className="font-mono text-[11px] font-bold bg-slate-100 text-slate-800 px-2 py-0.5 rounded border border-slate-200">
+                            #{num}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-[11px] text-gray-500 pt-1 border-t border-slate-200/60 font-mono">
+                    <span>Actor: <strong className="text-gray-700">{successInfo.actionBy || 'Super Admin'}</strong></span>
+                    <span>{successInfo.timestamp || new Date().toLocaleTimeString()}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 text-xs space-y-2">
+                  {successInfo?.orderNumbers && successInfo.orderNumbers.length > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 font-medium">Order Reference:</span>
+                      <span className="font-mono font-bold text-gray-900 bg-white px-2 py-0.5 rounded border border-emerald-200">
+                        #{successInfo.orderNumbers[0]}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 font-medium">Recorded By:</span>
+                    <span className="font-semibold text-gray-800">{successInfo?.actionBy || 'Admin'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 font-medium">Timestamp:</span>
+                    <span className="font-mono text-gray-600">{successInfo?.timestamp || new Date().toLocaleTimeString()}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Button */}
+              <div className="pt-2">
                 <button
+                  type="button"
                   onClick={() => {
                     setShowSuccessModal(false);
                     setShowOrderModal(false);
+                    setSuccessInfo(null);
                   }}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                  className="w-full py-3 bg-gray-900 hover:bg-black text-white font-bold text-sm rounded-xl shadow-md transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  Continue
+                  <CheckCircle size={16} /> Got It, Return to Orders
                 </button>
               </div>
             </div>
@@ -1391,6 +1797,90 @@ export default function AdminOrdersPage() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Super Admin Bulk & Single Order Deletion Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-3 sm:p-4" onClick={() => !deleting && setShowDeleteModal(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-fadeIn" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 p-5 sm:p-6 border-b border-gray-100 bg-red-50/50">
+              <div className="w-10 h-10 bg-red-100 text-red-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Trash2 size={20} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  {deleteTarget?.type === 'bulk' 
+                    ? `Delete ${deleteTarget.ids?.length} Orders`
+                    : `Delete Order #${orders.find(o => o._id === deleteTarget?.id)?.orderNumber || selectedOrder?.orderNumber || 'N/A'}`}
+                </h2>
+                <span className="inline-block text-[11px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded uppercase tracking-wider mt-0.5">
+                  Super Admin Action
+                </span>
+              </div>
+              <button
+                disabled={deleting}
+                onClick={() => !deleting && setShowDeleteModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-5 sm:p-6 space-y-4">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {deleteTarget?.type === 'bulk' ? (
+                  <>
+                    Are you sure you want to permanently delete <strong>{deleteTarget.ids?.length} selected orders</strong>?
+                  </>
+                ) : (
+                  <>
+                    Are you sure you want to permanently delete order <strong>#{orders.find(o => o._id === deleteTarget?.id)?.orderNumber || selectedOrder?.orderNumber || 'N/A'}</strong>?
+                  </>
+                )}
+              </p>
+
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 text-xs text-red-800 space-y-1.5">
+                <div className="font-bold flex items-center gap-1.5 text-red-900">
+                  ⚠️ Critical Notice
+                </div>
+                <ul className="space-y-1 list-disc list-inside text-red-700">
+                  <li>This action is <strong>permanent</strong> and cannot be undone.</li>
+                  <li>Any reserved inventory stock will be <strong>released back</strong> to available products.</li>
+                  <li>Associated payment records will be removed.</li>
+                </ul>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 rounded-xl border border-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={confirmDeleteOrders}
+                  className="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xl shadow-sm inline-flex items-center gap-2 transition-colors"
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={14} />
+                      Permanently Delete
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

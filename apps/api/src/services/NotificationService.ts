@@ -122,6 +122,7 @@ export class NotificationService extends BaseService<INotification> {
         type,
         title: '', // Will be formatted by template
         message: '', // Will be formatted by template
+        channels: type === 'order_placed' ? ['in_app'] : undefined, // Order placed email is handled exclusively by EmailService.sendOrderConfirmationEmail
         data: {
           orderId: orderData.orderId,
           orderNumber: orderData.orderNumber,

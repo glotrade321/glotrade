@@ -16,7 +16,7 @@ export class NotificationTemplates {
       title: 'Order Placed successfully',
       message: 'Your order for "{productTitle}" (ID: #{orderNumber}) has been placed successfully. Amount: {currency} {totalAmount}',
       priority: 'high',
-      defaultChannels: ['in_app', 'email'],
+      defaultChannels: ['in_app'], // Email is handled exclusively by EmailService.sendOrderConfirmationEmail
       variables: ['orderNumber', 'currency', 'totalAmount', 'productTitle']
     });
 

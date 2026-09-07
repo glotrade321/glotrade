@@ -16,6 +16,9 @@ import {
   Building2,
   X,
   Tag,
+  Copy,
+  CheckCircle2,
+  MessageSquare,
 } from "lucide-react";
 import { apiGet, apiDelete, apiPost } from "@/utils/api";
 import { getStoredLocale, translate, Locale } from "@/utils/i18n";
@@ -128,7 +131,7 @@ export default function CheckoutPage() {
   const [shippingMethod, setShippingMethod] = useState<"standard" | "pickup">(
     "standard"
   );
-  const [paymentMethod, setPaymentMethod] = useState("paystack"); // default to paystack (safe for guests)
+  const [paymentMethod, setPaymentMethod] = useState("bank_transfer"); // default to bank_transfer (reliable while Paystack live keys are pending)
   const [donateTree, setDonateTree] = useState(false);
   const [showItemsModal, setShowItemsModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -147,7 +150,38 @@ export default function CheckoutPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [locale, setLocale] = useState<Locale>("en");
+  const [bankConfig, setBankConfig] = useState<{
+    bankName: string;
+    bankAccountName: string;
+    bankAccountNumber: string;
+    whatsappNumber: string;
+  }>({
+    bankName: "Wema Bank",
+    bankAccountName: "GloTrade Platform Limited",
+    bankAccountNumber: "0127131496",
+    whatsappNumber: "2347044600924",
+  });
+  const [copiedBankAcc, setCopiedBankAcc] = useState(false);
+  const [showBankTransferConfirmModal, setShowBankTransferConfirmModal] = useState(false);
+  const [transferAcknowledged, setTransferAcknowledged] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    // Fetch live bank transfer settings from config (same as Bazaar portal)
+    apiGet<any>("/api/v1/bazaar/config")
+      .then((res) => {
+        if (res?.data) {
+          const rawWa = (res.data.whatsappNumber || "").replace(/[^0-9]/g, "");
+          setBankConfig({
+            bankName: res.data.bankName || "Wema Bank",
+            bankAccountName: res.data.bankAccountName || "GloTrade Platform Limited",
+            bankAccountNumber: res.data.bankAccountNumber || "0127131496",
+            whatsappNumber: rawWa && !rawWa.includes("8000000000") ? rawWa : "2347044600924",
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setLocale(getStoredLocale());
@@ -965,14 +999,29 @@ export default function CheckoutPage() {
               </h3>
               <div className="space-y-3 mb-4">
                 {[
-                  { id: "wallet", name: walletBalance ? translate(locale, "checkout.walletAvailable", { amount: formatCurrency((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))) }) : translate(locale, "checkout.wallet"), logo: "💰" },
-                  // { id: "apple", name: "Apple Pay", logo: "🍎" },
-                  // { id: "card", name: "Card", logo: "💳" },
-                  // { id: "google", name: "Google Pay", logo: "G" },
-                  // { id: "bank", name: "Bank transfer", logo: "🏦" },
-                  // { id: "flutterwave", name: "Flutterwave", logo: "F" },
-                  { id: "paystack", name: translate(locale, "checkout.payWithBank"), logo: "P" },
-                  // { id: "orange_money", name: "Orange Money", logo: "🍊" },
+                  {
+                    id: "bank_transfer",
+                    name: "Direct Bank Transfer / WhatsApp",
+                    subtitle: "Instant confirmation via WhatsApp receipt upload",
+                    badge: "Active & Instant",
+                    badgeColor: "emerald",
+                    disabled: false,
+                    icon: <Building2 size={18} className="text-emerald-600 dark:text-emerald-400" />,
+                  },
+                  // {
+                  //   id: "wallet",
+                  //   name: walletBalance ? translate(locale, "checkout.walletAvailable", { amount: formatCurrency((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))) }) : translate(locale, "checkout.wallet"),
+                  //   icon: <span className="text-base">💰</span>,
+                  // },
+                  {
+                    id: "paystack",
+                    name: "Card & Online Payment Gateway",
+                    subtitle: "Mastercard, Visa, Verve & Bank USSD",
+                    badge: "Coming Soon",
+                    badgeColor: "amber",
+                    disabled: true,
+                    icon: <CreditCard size={18} className="text-neutral-400 dark:text-neutral-500" />,
+                  },
                 ].filter(method => {
                   // Hide wallet for guest users
                   if (method.id === 'wallet') {
@@ -989,24 +1038,120 @@ export default function CheckoutPage() {
                 }).map((method) => (
                   <label
                     key={method.id}
-                    className="flex items-center gap-3 cursor-pointer"
+                    className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all ${
+                      method.disabled
+                        ? "opacity-65 bg-neutral-50/60 dark:bg-neutral-900/30 border-dashed border-neutral-300 dark:border-neutral-700 cursor-not-allowed select-none"
+                        : paymentMethod === method.id
+                        ? "border-emerald-500/80 bg-emerald-50/40 dark:bg-emerald-950/20 ring-1 ring-emerald-500/30 cursor-pointer"
+                        : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 cursor-pointer"
+                    }`}
                   >
                     <input
                       name="payment"
                       type="radio"
                       value={method.id}
+                      disabled={method.disabled}
                       checked={paymentMethod === method.id}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-4 h-4 text-orange-500"
+                      onChange={(e) => {
+                        if (!method.disabled) setPaymentMethod(e.target.value);
+                      }}
+                      className="w-4 h-4 text-emerald-600 mt-0.5 focus:ring-emerald-500 disabled:opacity-40"
                     />
-                    <div className="flex-1">
-                      <span className="text-sm text-neutral-800 dark:text-neutral-400">
-                        {method.name}
-                      </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {method.icon}
+                          <span className={`text-sm font-semibold truncate ${
+                            method.disabled
+                              ? "text-neutral-500 dark:text-neutral-400"
+                              : "text-neutral-900 dark:text-neutral-100"
+                          }`}>
+                            {method.name}
+                          </span>
+                        </div>
+                        {method.badge && (
+                          <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full shrink-0 ${
+                            method.badgeColor === "amber"
+                              ? "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300/60 dark:border-amber-700/60"
+                              : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-700/60"
+                          }`}>
+                            {method.badge}
+                          </span>
+                        )}
+                      </div>
+                      {method.subtitle && (
+                        <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1 pl-6">
+                          {method.subtitle}
+                        </p>
+                      )}
                     </div>
                   </label>
                 ))}
               </div>
+
+              {/* Official Bank Account Details Box */}
+              {paymentMethod === "bank_transfer" && (
+                <div className="mb-4 p-3.5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-neutral-800 dark:to-neutral-900 border border-amber-300 dark:border-amber-700/60 rounded-xl space-y-2.5 text-xs animate-fadeIn">
+                  <div className="flex items-center justify-between text-amber-900 dark:text-amber-300 font-semibold text-xs sm:text-sm">
+                    <div className="flex items-center gap-2">
+                      <Building2 size={16} className="text-amber-600 dark:text-amber-400" />
+                      <span>Official GloTrade Bank Account</span>
+                    </div>
+                    <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/50 px-2 py-0.5 rounded-full">
+                      Zero Processing Fees
+                    </span>
+                  </div>
+
+                  <div className="bg-white dark:bg-neutral-950 p-2.5 rounded-lg border border-amber-200 dark:border-neutral-800 space-y-1.5">
+                    <div className="flex justify-between items-center text-neutral-600 dark:text-neutral-400">
+                      <span>Bank Name:</span>
+                      <span className="font-bold text-neutral-900 dark:text-neutral-100">{bankConfig.bankName}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-neutral-600 dark:text-neutral-400">
+                      <span>Account Name:</span>
+                      <span className="font-bold text-neutral-900 dark:text-neutral-100">{bankConfig.bankAccountName}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-neutral-600 dark:text-neutral-400 pt-1.5 border-t border-neutral-100 dark:border-neutral-800">
+                      <span>Account Number:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-black text-sm text-amber-700 dark:text-amber-400">
+                          {bankConfig.bankAccountNumber}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigator.clipboard.writeText(bankConfig.bankAccountNumber);
+                            setCopiedBankAcc(true);
+                            setTimeout(() => setCopiedBankAcc(false), 2000);
+                          }}
+                          className="flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/60 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-200 rounded transition-colors"
+                          title="Copy Account Number"
+                        >
+                          {copiedBankAcc ? (
+                            <>
+                              <Check size={12} className="text-emerald-600" />
+                              <span className="text-emerald-700 font-bold">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={12} />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-1.5 text-[11px] text-amber-850 dark:text-amber-300/90 leading-tight">
+                    <MessageSquare size={13} className="shrink-0 text-emerald-600 mt-0.5" />
+                    <span>
+                      After transfer, placing your order will auto-open WhatsApp with your receipt pre-formatted for rapid dispatch!
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="border-t border-neutral-200 dark:border-neutral-800 my-3 pt-2">
@@ -1111,7 +1256,20 @@ export default function CheckoutPage() {
                     return;
                   }
 
-                  // BANK PAYMENT: Create order first, then redirect to gateway
+                  // DIRECT BANK TRANSFER / WHATSAPP: Open Confirmation Modal first
+                  if (paymentMethod === "bank_transfer") {
+                    setTransferAcknowledged(false);
+                    setShowBankTransferConfirmModal(true);
+                    return;
+                  }
+
+                  // ONLINE PAYMENT GATEWAY: Guarded as Coming Soon
+                  if (paymentMethod === "paystack") {
+                    alert("Card & Online Payment Gateway is coming soon. Please choose Direct Bank Transfer / WhatsApp to complete your order.");
+                    return;
+                  }
+
+                  // PAYSTACK / ONLINE PAYMENT: Create order first, then redirect to gateway
                   const provider = "paystack";
 
                   const orderRes = await createOrder({
@@ -1120,6 +1278,8 @@ export default function CheckoutPage() {
                     lineItems: items,
                     currency: "NGN",
                     shippingDetails: address || {},
+                    paymentMethod: "card",
+                    paymentStatus: "pending",
                   });
                   orderId = orderRes?.data?.orderId;
 
@@ -1177,10 +1337,16 @@ export default function CheckoutPage() {
                 !address.city ||
                 !address.country
                 ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                : paymentMethod === "bank_transfer"
+                ? "bg-amber-600 text-white hover:bg-amber-700 shadow-md"
                 : "bg-orange-500 text-white hover:bg-orange-600"
                 }`}
             >
-              {isProcessing ? translate(locale, "checkout.processing") : `${translate(locale, "checkout.submitOrder")} (${summary?.items || 0})`}
+              {isProcessing
+                ? translate(locale, "checkout.processing")
+                : paymentMethod === "bank_transfer"
+                ? `Review & Confirm Bank Transfer (${summary?.items || 0})`
+                : `${translate(locale, "checkout.submitOrder")} (${summary?.items || 0})`}
             </button>
             {
               (summary?.finalTotal || 0) <= 0 && (
@@ -1545,6 +1711,222 @@ export default function CheckoutPage() {
           />
         )
       }
+      {/* Bank Transfer Final Confirmation Modal */}
+      {showBankTransferConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <Building2 size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-neutral-900 dark:text-neutral-100">
+                    Confirm Bank Transfer Order
+                  </h3>
+                  <p className="text-xs text-neutral-500">Step 2 of 2: Final Verification</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBankTransferConfirmModal(false)}
+                className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Total Payable Banner */}
+            <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30 border border-amber-200 dark:border-amber-900/60 rounded-xl flex items-center justify-between">
+              <div>
+                <span className="text-xs font-medium text-amber-800 dark:text-amber-300">Total Amount to Pay:</span>
+                <div className="text-xl sm:text-2xl font-black text-amber-900 dark:text-amber-200">
+                  ₦{Math.round(summary?.finalTotal || 0).toLocaleString("en-NG")}
+                </div>
+              </div>
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-200/80 text-amber-900 dark:bg-amber-900/80 dark:text-amber-200 uppercase">
+                {summary?.items || 0} Item{(summary?.items || 0) !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Official Bank Account Details Card */}
+            <div className="bg-neutral-50 dark:bg-neutral-950/80 p-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-2 text-xs">
+              <div className="flex items-center justify-between text-neutral-500 dark:text-neutral-400 font-semibold">
+                <span>OFFICIAL BENEFICIARY ACCOUNT</span>
+                <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded">
+                  Zero Fees
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center text-neutral-700 dark:text-neutral-300">
+                <span>Bank Name:</span>
+                <strong className="text-neutral-900 dark:text-neutral-100">{bankConfig.bankName}</strong>
+              </div>
+              <div className="flex justify-between items-center text-neutral-700 dark:text-neutral-300">
+                <span>Account Name:</span>
+                <strong className="text-neutral-900 dark:text-neutral-100">{bankConfig.bankAccountName}</strong>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                <span className="font-medium text-neutral-700 dark:text-neutral-300">Account Number:</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-base font-black text-amber-600 dark:text-amber-400">
+                    {bankConfig.bankAccountNumber}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(bankConfig.bankAccountNumber);
+                      setCopiedBankAcc(true);
+                      setTimeout(() => setCopiedBankAcc(false), 2000);
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/50 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-200 rounded transition-colors"
+                  >
+                    {copiedBankAcc ? (
+                      <>
+                        <Check size={13} className="text-emerald-600" />
+                        <span className="text-emerald-700 font-bold">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery & Customer Snapshot */}
+            <div className="p-3 bg-neutral-50 dark:bg-neutral-950/60 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs space-y-1.5">
+              <div className="flex justify-between text-neutral-500">
+                <span>Deliver To:</span>
+                <span className="font-medium text-neutral-800 dark:text-neutral-200 text-right">
+                  {address?.displayName || userData?.firstName || "Customer"} ({address?.phone || userData?.phoneNumber || "N/A"})
+                </span>
+              </div>
+              <div className="flex justify-between text-neutral-500">
+                <span>Delivery Address:</span>
+                <span className="font-medium text-neutral-800 dark:text-neutral-200 text-right truncate max-w-[260px]">
+                  {address?.address}, {address?.city}
+                </span>
+              </div>
+            </div>
+
+            {/* Compulsory Acknowledgement Checkbox requested by user */}
+            <label className="flex items-start gap-3 p-3.5 rounded-xl border-2 border-amber-300 dark:border-amber-700/60 bg-amber-50/60 dark:bg-amber-950/30 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors">
+              <input
+                type="checkbox"
+                checked={transferAcknowledged}
+                onChange={(e) => setTransferAcknowledged(e.target.checked)}
+                className="w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500 mt-0.5 cursor-pointer shrink-0"
+              />
+              <span className="text-xs text-neutral-850 dark:text-neutral-200 leading-relaxed font-medium">
+                💡 Please ensure you have transferred the exact amount to the account above. On confirmation, your order is secured and WhatsApp will open to share your receipt.
+              </span>
+            </label>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowBankTransferConfirmModal(false)}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-sm font-semibold transition-colors"
+              >
+                Back to Edit
+              </button>
+              <button
+                type="button"
+                disabled={!transferAcknowledged || isProcessing}
+                onClick={async () => {
+                  let orderId: string | undefined;
+                  try {
+                    setIsProcessing(true);
+
+                    let buyerId: string | undefined = undefined;
+                    if (userData) {
+                      buyerId = userData.id || userData._id;
+                    }
+
+                    const items = products.map((p) => {
+                      const discountedPrice = typeof p.discount === "number" && p.discount > 0
+                        ? Math.max(0, Math.round((p.price * (100 - p.discount)) / 100))
+                        : p.price;
+
+                      return {
+                        productId: p._id,
+                        vendorId: p.seller as any,
+                        qty: idToQty[p._id] || 1,
+                        unitPrice: discountedPrice,
+                        currency: p.currency,
+                      };
+                    });
+
+                    const orderRes = await createOrder({
+                      buyerId,
+                      email: buyerId ? undefined : guestEmail,
+                      lineItems: items,
+                      currency: "NGN",
+                      shippingDetails: address || {},
+                      paymentMethod: "bank_transfer",
+                      paymentStatus: "pending",
+                    });
+                    orderId = orderRes?.data?.orderId || orderRes?.data?._id;
+
+                    // Clear local cart
+                    try {
+                      localStorage.setItem("cart", JSON.stringify([]));
+                      window.dispatchEvent(new CustomEvent("cart:update", { detail: { count: 0 } }));
+                    } catch {}
+
+                    // Build prefilled WhatsApp message
+                    const customerName = (address?.displayName || (userData ? `${userData.firstName || ""} ${userData.lastName || ""}`.trim() : "") || "Valued Customer").trim();
+                    const customerPhone = address?.phone || userData?.phoneNumber || "";
+                    const itemsSummary = products.map((p) => {
+                      const q = idToQty[p._id] || 1;
+                      return `${q}x ${p.title}`;
+                    }).join(", ");
+
+                    const waMsg = `Hi GloTrade Team, I have placed an order via Bank Transfer:
+- Order Ref: #${orderId}
+- Amount: ₦${Math.round(summary?.finalTotal || 0).toLocaleString("en-NG")}
+- Customer: ${customerName}${customerPhone ? ` (${customerPhone})` : ""}
+${guestEmail ? `- Email: ${guestEmail}\n` : ""}- Delivery Address: ${address?.address || ""}, ${address?.city || ""}, ${address?.country || ""}
+- Items: ${itemsSummary}
+
+I have attached my bank transfer proof of payment. Please verify and process my order!`;
+
+                    const waUrl = `https://wa.me/${bankConfig.whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(waMsg)}`;
+
+                    try {
+                      window.open(waUrl, "_blank");
+                    } catch (e) {
+                      console.error("Could not open WhatsApp window:", e);
+                    }
+
+                    setShowBankTransferConfirmModal(false);
+                    router.push(`/checkout/success?orderId=${orderId}&method=bank_transfer&amount=${Math.round(summary?.finalTotal || 0)}`);
+                  } catch (e: any) {
+                    console.error("Error creating bank transfer order:", e);
+                    alert("Failed to submit bank transfer order: " + (e?.message || "Please check network connection."));
+                  } finally {
+                    setIsProcessing(false);
+                  }
+                }}
+                className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all ${
+                  transferAcknowledged && !isProcessing
+                    ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20 cursor-pointer hover:-translate-y-0.5"
+                    : "bg-neutral-200 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 cursor-not-allowed"
+                }`}
+              >
+                <MessageSquare size={16} />
+                <span>{isProcessing ? "Securing Order..." : "Confirm & Open WhatsApp"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main >
   );
 }

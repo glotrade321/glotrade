@@ -7,6 +7,7 @@ import { NotFoundError, ValidationError } from "../utils/errors";
 import { FilterQuery, UpdateQuery } from "mongoose";
 import mongoose from "mongoose";
 import { cacheService } from "./CacheService";
+import { InventoryService } from "./InventoryService";
 
 export interface AdminDashboardMetrics {
   totalUsers: number;
@@ -1731,7 +1732,7 @@ export class AdminService extends BaseService<IUser> {
   /**
    * Update order status with manager actor audit tracking
    */
-  async updateOrderStatus(orderId: string, newStatus: string, adminUser?: any): Promise<any> {
+  async updateOrderStatus(orderId: string, newStatus?: string, adminUser?: any, paymentStatus?: string): Promise<any> {
     try {
       const order = await Order.findById(orderId);
 
@@ -1740,7 +1741,19 @@ export class AdminService extends BaseService<IUser> {
       }
 
       const previousStatus = order.status;
-      order.status = newStatus as any;
+      const previousPaymentStatus = order.paymentStatus;
+      
+      if (newStatus) {
+        order.status = newStatus as any;
+      }
+
+      if (paymentStatus) {
+        order.paymentStatus = paymentStatus as any;
+        if (paymentStatus === 'completed' && !order.paidAt) {
+          order.paidAt = new Date();
+        }
+      }
+
       order.updatedAt = new Date();
 
       if (adminUser) {
@@ -1760,15 +1773,24 @@ export class AdminService extends BaseService<IUser> {
         };
 
         order.statusUpdatedByAdmin = actor;
-        order.lastModifiedByAdmin = { ...actor, action: "STATUS_UPDATE" };
+        order.lastModifiedByAdmin = { ...actor, action: paymentStatus && !newStatus ? "PAYMENT_STATUS_UPDATE" : "STATUS_UPDATE" };
 
         if (!order.auditLogs) {
           order.auditLogs = [];
         }
+        
+        const detailsParts: string[] = [];
+        if (newStatus && newStatus !== previousStatus) {
+          detailsParts.push(`Order status updated from '${previousStatus}' to '${newStatus}'`);
+        }
+        if (paymentStatus && paymentStatus !== previousPaymentStatus) {
+          detailsParts.push(`Payment status updated from '${previousPaymentStatus}' to '${paymentStatus}'`);
+        }
+
         order.auditLogs.push({
-          action: "STATUS_UPDATE",
+          action: paymentStatus && !newStatus ? "PAYMENT_STATUS_UPDATE" : "STATUS_UPDATE",
           performedBy: actor,
-          details: `Order status updated from '${previousStatus}' to '${newStatus}'`,
+          details: detailsParts.join(" | ") || "Order updated",
           timestamp: new Date(),
         });
       }
@@ -2749,5 +2771,72 @@ export class AdminService extends BaseService<IUser> {
       console.error('Error getting geographic distribution:', error);
       throw new Error(`Failed to get geographic distribution: ${error.message}`);
     }
+  }
+
+  /**
+   * Bulk delete orders (Super Admin only)
+   */
+  async bulkDeleteOrders(orderIds: string[], adminUser: IUser): Promise<{ deletedCount: number }> {
+    if (!adminUser.isSuperAdmin) {
+      throw new ValidationError('Only super administrators are permitted to delete orders');
+    }
+
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+      throw new ValidationError('Please provide an array of order IDs to delete');
+    }
+
+    // Filter valid mongo IDs
+    const validIds = orderIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+    if (validIds.length === 0) {
+      throw new ValidationError('No valid order IDs provided');
+    }
+
+    const inventoryService = new InventoryService();
+
+    // Find the orders to release stock if necessary
+    const orders = await Order.find({ _id: { $in: validIds } });
+
+    for (const order of orders) {
+      // Only release stock if order was not already cancelled
+      if (order.status !== 'cancelled') {
+        if (order.lineItems && order.lineItems.length > 0) {
+          for (const item of order.lineItems) {
+            try {
+              if (item.productId && item.qty) {
+                await inventoryService.releaseStock(
+                  item.productId.toString(),
+                  item.qty,
+                  (order._id as any).toString(),
+                  `Order deleted by super admin (${adminUser.username || adminUser.email})`
+                );
+              }
+            } catch (stockErr) {
+              console.error(`Failed to release stock for item ${item.productId} on deleted order ${order._id}:`, stockErr);
+            }
+          }
+        }
+      }
+    }
+
+    // Delete associated payments
+    try {
+      await Payment.deleteMany({ orderId: { $in: validIds } });
+    } catch (payErr) {
+      console.error('Failed to clean up payments for deleted orders:', payErr);
+    }
+
+    // Delete the orders
+    const deleteResult = await Order.deleteMany({ _id: { $in: validIds } });
+
+    console.log(`[AdminService] ${deleteResult.deletedCount} orders permanently deleted by super admin ${adminUser.username || adminUser.email}`);
+
+    return { deletedCount: deleteResult.deletedCount || 0 };
+  }
+
+  /**
+   * Delete single order (Super Admin only)
+   */
+  async deleteSingleOrder(orderId: string, adminUser: IUser): Promise<void> {
+    await this.bulkDeleteOrders([orderId], adminUser);
   }
 } 
